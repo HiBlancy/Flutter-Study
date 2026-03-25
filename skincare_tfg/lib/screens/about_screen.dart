@@ -1,6 +1,6 @@
 // lib/screens/about_screen.dart
 import 'package:flutter/material.dart';
-import '../widgets/custom_app_bar.dart';
+import '../widgets/main_toolbar.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
