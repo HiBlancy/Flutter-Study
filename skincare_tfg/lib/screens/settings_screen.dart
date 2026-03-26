@@ -19,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: 'Configuración',
       showDrawer: true,
       showBackButton: true,
-      body: SettingsContent(
+      child: SettingsContent(
         notificationsEnabled: _notificationsEnabled,
         darkModeEnabled: _darkModeEnabled,
         onNotificationsChanged: (value) {

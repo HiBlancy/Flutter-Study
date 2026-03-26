@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
-  final Widget body;
+  final Widget body; // La pantalla actual que se muestra
   final int initialIndex;
 
   const BottomNavBar({
@@ -29,18 +29,19 @@ class _BottomNavBarState extends State<BottomNavBar> {
       _currentIndex = index;
     });
     
+    // Lógica de navegación interna
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/profile');
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/search');
+        Navigator.pushReplacementNamed(context, '/profile');
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/create');
+        Navigator.pushReplacementNamed(context, '/profile');
         break;
       case 3:
-        Navigator.pushReplacementNamed(context, '/favorites');
+        Navigator.pushReplacementNamed(context, '/profile');
         break;
       case 4:
         Navigator.pushReplacementNamed(context, '/profile');
@@ -72,9 +73,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
             label: 'Buscar',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_box_outlined),
-            activeIcon: Icon(Icons.add_box),
-            label: 'Publicar',
+            icon: Icon(Icons.camera_alt_outlined),
+            activeIcon: Icon(Icons.camera_alt_outlined),
+            label: 'Escanear',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite_outline),

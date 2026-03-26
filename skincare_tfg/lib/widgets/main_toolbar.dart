@@ -1,24 +1,23 @@
+// lib/widgets/main_toolbar.dart
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
 class CustomAppBar extends StatefulWidget {
   final String title;
-  final Widget body;
+  final Widget child; // Cambiado de 'body' a 'child'
   final List<Widget>? actions;
   final Color? backgroundColor;
   final bool centerTitle;
-  final FloatingActionButton? floatingActionButton;
   final bool showDrawer;
   final bool showBackButton;
 
   const CustomAppBar({
     super.key,
     required this.title,
-    required this.body,
+    required this.child,
     this.actions,
     this.backgroundColor,
     this.centerTitle = true,
-    this.floatingActionButton,
     this.showDrawer = true,
     this.showBackButton = false,
   });
@@ -53,7 +52,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
   void _navigateTo(String route) {
     _scaffoldKey.currentState?.closeEndDrawer();
     if (mounted) {
-      // Cambiar de pushReplacementNamed a pushNamed para mantener el historial
       Navigator.pushNamed(context, route);
     }
   }
@@ -90,8 +88,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         ],
       ),
       endDrawer: widget.showDrawer ? _buildDrawer() : null,
-      body: widget.body,
-      floatingActionButton: widget.floatingActionButton,
+      body: widget.child,
     );
   }
 
@@ -175,7 +172,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
               _scaffoldKey.currentState?.closeEndDrawer();
               await _authService.logout();
               if (mounted) {
-                // Limpiar todo el historial y ir al login
                 Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
               }
             }

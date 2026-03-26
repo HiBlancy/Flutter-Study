@@ -38,13 +38,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       title: 'Mi Perfil',
       showDrawer: true,
       showBackButton: true,
-      body: ProfileContent(
+      child: ProfileContent(
         userName: _userName,
         userEmail: _userEmail,
       ),
     );
   }
 }
+
+
 
 class ProfileContent extends StatelessWidget {
   final String userName;

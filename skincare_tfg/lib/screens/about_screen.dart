@@ -16,7 +16,7 @@ class _AboutScreenState extends State<AboutScreen> {
       title: 'Acerca de',
       showDrawer: true,
       showBackButton: true,
-      body: const AboutContent(),
+      child: AboutContent(),
     );
   }
 }

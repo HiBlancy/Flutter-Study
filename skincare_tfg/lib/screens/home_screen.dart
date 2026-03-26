@@ -30,13 +30,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
-    return CustomAppBar(
-      title: 'MiAppName',
-      showDrawer: true,
-      showBackButton: false,
-      body: HomeContent(userName: _userName),
+    // El body que se pasa al BottomNavBar debe ser el contenido de la pantalla actual
+    // El BottomNavBar se encargará de la navegación entre pantallas
+    return BottomNavBar(
+      initialIndex: 0,
+      body: CustomAppBar(
+        title: 'MiAppName',
+        showDrawer: true,
+        showBackButton: false,
+        child: HomeContent(userName: _userName),
+      ),
     );
   }
 }
