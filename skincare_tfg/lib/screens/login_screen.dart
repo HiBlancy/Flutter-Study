@@ -41,7 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (success && mounted) {
-      // 👈 Navegar directamente a HomeScreen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
