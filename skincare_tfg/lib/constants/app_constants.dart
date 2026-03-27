@@ -13,5 +13,6 @@ class AppConstants {
   // SharedPreferences keys
   static const String prefUserEmail = 'user_email';
   static const String prefUserName = 'user_name';
+  static const String prefUserId = 'user_id';
   static const String prefIsLoggedIn = 'is_logged_in';
 }

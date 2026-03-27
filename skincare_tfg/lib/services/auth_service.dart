@@ -1,71 +1,167 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
+import 'api_config.dart';
 
 class AuthService {
-  // Credenciales válidas (después las conectarás a BD)
-  static const String _validEmail = 'usuario@ejemplo.com';
-  static const String _validPassword = '123456';
+  static const String _tokenKey = 'auth_token';
   
-  // Simulación de base de datos
-  static final Map<String, Map<String, String>> _users = {
-    'usuario@ejemplo.com': {
-      'password': '123456',
-      'name': 'Usuario Demo',
-    },
-  };
-  
-  // Getters para SharedPreferences
   Future<SharedPreferences> get _prefs async => 
       await SharedPreferences.getInstance();
   
-  // Guardar sesión
-  Future<void> saveSession(String email, String name) async {
+  // Guardar token y datos de usuario
+  Future<void> saveSession(String token, Map<String, dynamic> userData) async {
     final prefs = await _prefs;
-    await prefs.setString(AppConstants.prefUserEmail, email);
-    await prefs.setString(AppConstants.prefUserName, name);
+    await prefs.setString(_tokenKey, token);
+    await prefs.setString(AppConstants.prefUserEmail, userData['email'] ?? '');
+    await prefs.setString(AppConstants.prefUserName, userData['name'] ?? '');
+    await prefs.setString(AppConstants.prefUserId, userData['_id'] ?? '');
     await prefs.setBool(AppConstants.prefIsLoggedIn, true);
+    
+    print('✅ Sesión guardada - Email: ${userData['email']}, Name: ${userData['name']}');
   }
   
-  // Verificar sesión activa
-  Future<bool> isLoggedIn() async {
+  // Obtener token
+  Future<String?> getToken() async {
     final prefs = await _prefs;
-    return prefs.getBool(AppConstants.prefIsLoggedIn) ?? false;
+    return prefs.getString(_tokenKey);
   }
   
-  // Obtener datos del usuario
-  Future<String?> getUserEmail() async {
-    final prefs = await _prefs;
-    return prefs.getString(AppConstants.prefUserEmail);
-  }
-  
+  // Obtener nombre del usuario
   Future<String?> getUserName() async {
     final prefs = await _prefs;
-    return prefs.getString(AppConstants.prefUserName);
+    final name = prefs.getString(AppConstants.prefUserName);
+    print('📛 Obteniendo nombre de usuario: $name');
+    return name;
   }
   
-  // Iniciar sesión
-  Future<bool> login(String email, String password) async {
-    final user = _users[email];
-    if (user != null && user['password'] == password) {
-      await saveSession(email, user['name'] ?? email.split('@').first);
-      return true;
-    }
-    return false;
+  // Obtener email del usuario
+  Future<String?> getUserEmail() async {
+    final prefs = await _prefs;
+    final email = prefs.getString(AppConstants.prefUserEmail);
+    print('📧 Obteniendo email de usuario: $email');
+    return email;
   }
   
-  // Registrar nuevo usuario
-  Future<bool> register(String email, String password, String name) async {
-    if (_users.containsKey(email)) return false;
+  // Obtener ID del usuario
+  Future<String?> getUserId() async {
+    final prefs = await _prefs;
+    return prefs.getString(AppConstants.prefUserId);
+  }
+  
+  // Verificar si está autenticado
+  Future<bool> isLoggedIn() async {
+    final prefs = await _prefs;
+    final token = prefs.getString(_tokenKey);
+    final isLoggedIn = token != null && token.isNotEmpty;
+    print('🔐 Verificando autenticación: $isLoggedIn');
+    return isLoggedIn;
+  }
+  
+  // Registrar usuario con JWT
+  Future<Map<String, dynamic>?> register(String email, String password, String name) async {
+  try {
+    final url = Uri.parse(ApiConfig.getRegisterUrl());
     
-    _users[email] = {'password': password, 'name': name};
-    return true;
+    // IMPORTANTE: Enviar la contraseña en texto plano, NO hasheada
+    final cleanPassword = password; // No aplicar ningún hash
+    
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'password': cleanPassword, // Enviar texto plano
+      }),
+    ).timeout(const Duration(seconds: 10));
+      
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['status'] == true && data['data'] != null) {
+          final authData = data['data'];
+          await saveSession(authData['token'], authData['user']);
+          return authData;
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  // Iniciar sesión con JWT
+  Future<Map<String, dynamic>?> login(String email, String password) async {
+    try {
+      final url = Uri.parse(ApiConfig.getLoginUrl());
+      
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 10));
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['status'] == true && data['data'] != null) {
+          final authData = data['data'];
+          await saveSession(authData['token'], authData['user']);
+          return authData;
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  // Obtener perfil del usuario autenticado
+  Future<Map<String, dynamic>?> getProfile() async {
+    final token = await getToken();
+    if (token == null) return null;
+    
+    try {
+      final response = await http.get(
+        Uri.parse(ApiConfig.getProfileUrl()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+          'x-token': token,
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == true && data['data'] != null) {
+          // Actualizar los datos en SharedPreferences
+          final userData = data['data'];
+          await saveSession(token, userData);
+          return userData;
+        }
+      }
+      return null;
+    } catch (e) {
+      print('❌ Error al obtener perfil: $e');
+      return null;
+    }
   }
   
   // Cerrar sesión
   Future<void> logout() async {
     final prefs = await _prefs;
+    await prefs.remove(_tokenKey);
     await prefs.remove(AppConstants.prefUserEmail);
     await prefs.remove(AppConstants.prefUserName);
+    await prefs.remove(AppConstants.prefUserId);
     await prefs.setBool(AppConstants.prefIsLoggedIn, false);
+    print('👋 Sesión cerrada');
   }
 }

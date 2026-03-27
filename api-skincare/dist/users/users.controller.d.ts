@@ -1,21 +1,21 @@
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './interfaces/user.interface';
+import { JwtService } from '@nestjs/jwt';
+import * as express from 'express';
 export declare class UsersController {
     private readonly usersService;
-    constructor(usersService: UsersService);
-    create(createUserDto: CreateUserDto): Promise<User>;
-    findById(id: string): Promise<User | null>;
-    findAllUsers(): Promise<{
-        status: boolean;
-        news: (import("mongoose").Document<unknown, {}, User, {}, import("mongoose").DefaultSchemaOptions> & User & Required<{
-            _id: string;
-        }> & {
-            __v: number;
-        } & {
-            id: string;
-        })[];
-    }>;
-    update(id: string, updateUserDto: UpdateUserDto): Promise<User | null>;
+    private readonly jwtService;
+    constructor(usersService: UsersService, jwtService: JwtService);
+    register(createUserDto: CreateUserDto): Promise<any>;
+    login(body: {
+        email: string;
+        password: string;
+    }): Promise<any>;
+    getProfile(request: express.Request): Promise<any>;
+    findById(id: string): Promise<any>;
+    findAllUsers(request: express.Request): Promise<any>;
+    update(id: string, updateUserDto: UpdateUserDto, request: express.Request): Promise<any>;
+    delete(id: string, request: express.Request): Promise<any>;
+    deleteWithoutAuth(id: string): Promise<any>;
 }

@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
+const jwt_1 = require("@nestjs/jwt");
 const user_schema_1 = require("./schemas/user.schema");
 const users_service_1 = require("./users.service");
 const users_controller_1 = require("./users.controller");
@@ -20,15 +21,19 @@ exports.UserModule = UserModule = __decorate([
         imports: [
             mongoose_1.MongooseModule.forFeature([
                 {
-                    name: "Users",
+                    name: 'Users',
                     schema: user_schema_1.UserSchema,
-                    collection: "users",
+                    collection: 'users',
                 },
             ]),
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET || 'mi_clave_secreta_temporal_para_desarrollo',
+                signOptions: { expiresIn: '3h' },
+            }),
         ],
         controllers: [users_controller_1.UsersController],
         providers: [users_service_1.UsersService],
-        exports: [users_service_1.UsersService]
+        exports: [users_service_1.UsersService],
     })
 ], UserModule);
 //# sourceMappingURL=users.module.js.map

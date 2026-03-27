@@ -19,6 +19,7 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -28,6 +29,8 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <base href="/">
 
   <title>skincare_tfg</title>
   <link rel="manifest" href="manifest.json">
@@ -41,6 +44,13 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
+  <script>
+    // Configuración para desarrollo
+    window._env_ = {
+      API_URL: 'http://localhost:3000'
+    };
+  </script>
+  <script src="main.dart.js" type="application/javascript"></script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

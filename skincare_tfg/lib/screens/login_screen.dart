@@ -29,42 +29,60 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+  setState(() => _isLoading = true);
 
-    final success = await _authService.login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
+  try {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    
+    print('=================================');
+    print('📱 LOGIN DESDE SCREEN');
+    print('📧 Email ingresado: "$email"');
+    print('🔑 Password ingresado: "$password"');
+    print('=================================');
+    
+    final authData = await _authService.login(email, password);
 
     setState(() => _isLoading = false);
 
-    if (success && mounted) {
+    print('🔍 authData después del login: $authData');
+    
+    if (authData != null && mounted) {
+      print('✅ Login exitoso, redirigiendo a HomeScreen...');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } else if (mounted) {
+      print('❌ authData es null');
       _showErrorDialog();
     }
+  } catch (e) {
+    print('❌ Excepción en login: $e');
+    setState(() => _isLoading = false);
+    if (mounted) {
+      _showErrorDialog(e.toString());
+    }
   }
+}
 
-  void _showErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Error de inicio de sesión'),
-        content: const Text('Usuario o contraseña incorrectos'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Aceptar'),
-          ),
-        ],
-      ),
-    );
-  }
+  void _showErrorDialog([String? customMessage]) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Error de inicio de sesión'),
+      content: Text(customMessage ?? 'Usuario o contraseña incorrectos'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Aceptar'),
+        ),
+      ],
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {

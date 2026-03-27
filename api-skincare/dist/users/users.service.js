@@ -59,31 +59,57 @@ let UsersService = class UsersService {
         const emailExists = await this.userModel.findOne({
             email: createUserDto.email.toLowerCase(),
         });
-        if (emailExists)
+        if (emailExists) {
             throw new common_1.ConflictException('El email ya está registrado');
+        }
         const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
         const newUser = new this.userModel({
             ...createUserDto,
+            email: createUserDto.email.toLowerCase(),
             password: hashedPassword,
         });
-        return newUser.save();
+        const savedUser = await newUser.save();
+        return savedUser;
     }
     async findOne(condition) {
         return this.userModel.findOne(condition).exec();
     }
     async findById(id) {
-        return this.userModel.findById(id);
+        return this.userModel.findById(id).exec();
     }
     async getAllUsers() {
-        return this.userModel.find().exec();
+        return this.userModel.find().select('-password').exec();
     }
     async update(id, updateUserDto) {
+        const existingUser = await this.userModel.findById(id).exec();
+        if (!existingUser) {
+            throw new common_1.NotFoundException(`Usuario con ID ${id} no encontrado`);
+        }
+        if (updateUserDto.email) {
+            const emailExists = await this.userModel
+                .findOne({
+                email: updateUserDto.email.toLowerCase(),
+                _id: { $ne: id },
+            })
+                .exec();
+            if (emailExists) {
+                throw new common_1.ConflictException('El email ya está registrado por otro usuario');
+            }
+        }
         if (updateUserDto.password) {
             updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
         }
         return this.userModel
             .findByIdAndUpdate(id, updateUserDto, { new: true })
-            .select('-password');
+            .select('-password')
+            .exec();
+    }
+    async delete(id) {
+        const deletedUser = await this.userModel
+            .findByIdAndDelete(id)
+            .select('-password')
+            .exec();
+        return deletedUser;
     }
 };
 exports.UsersService = UsersService;

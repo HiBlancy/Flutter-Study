@@ -33,14 +33,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate() || !_acceptTerms) {
-      if (!_acceptTerms) _showErrorDialog('Debes aceptar los términos');
-      return;
-    }
+  if (!_formKey.currentState!.validate() || !_acceptTerms) {
+    if (!_acceptTerms) _showErrorDialog('Debes aceptar los términos');
+    return;
+  }
 
-    setState(() => _isLoading = true);
+  setState(() => _isLoading = true);
 
-    final success = await _authService.register(
+  try {
+    final authData = await _authService.register(
       _emailController.text.trim(),
       _passwordController.text,
       _nameController.text.trim(),
@@ -48,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isLoading = false);
 
-    if (success && mounted) {
+    if (authData != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('¡Cuenta creada exitosamente!'),
@@ -56,13 +57,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           duration: Duration(seconds: 2),
         ),
       );
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) Navigator.pushReplacementNamed(context, '/');
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) Navigator.pushReplacementNamed(context, '/home');
       });
     } else if (mounted) {
-      _showErrorDialog('El correo ya está registrado');
+      _showErrorDialog('Error al crear la cuenta. El correo podría estar registrado.');
+    }
+  } catch (e) {
+    setState(() => _isLoading = false);
+    if (mounted) {
+      _showErrorDialog(e.toString());
     }
   }
+}
 
   void _showErrorDialog(String message) {
     showDialog(

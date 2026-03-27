@@ -17,10 +17,11 @@ dependencies:
   cupertino_icons: ^1.0.6
   
   #manejo de rutas
-  go_router: ^14.0.0
+  go_router: ^17.1.0
   
   #almacenamiento seguro (token de sesion)
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^10.0.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_test:
