@@ -94,34 +94,53 @@ class AuthService {
   }
   
   // Iniciar sesión con JWT
-  Future<Map<String, dynamic>?> login(String email, String password) async {
-    try {
-      final url = Uri.parse(ApiConfig.getLoginUrl());
+// Iniciar sesión con JWT
+Future<Map<String, dynamic>?> login(String email, String password) async {
+  try {
+    final url = Uri.parse(ApiConfig.getLoginUrl());
+    
+    print('🌐 URL: $url');
+    print('📧 Email: $email');
+    print('🔑 Password length: ${password.length}');
+    
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({
+        'email': email.trim(),
+        'password': password,
+      }),
+    ).timeout(const Duration(seconds: 10));
+    
+    print('📡 Status code: ${response.statusCode}');
+    print('📡 Response body: ${response.body}');
+    
+    // ✅ ACEPTAR TANTO 200 COMO 201
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      print('📦 Parsed data: $data');
       
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': email,
-          'password': password,
-        }),
-      ).timeout(const Duration(seconds: 10));
-      
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        
-        if (data['status'] == true && data['data'] != null) {
-          final authData = data['data'];
-          await saveSession(authData['token'], authData['user']);
-          return authData;
-        }
+      if (data['status'] == true && data['data'] != null) {
+        final authData = data['data'];
+        await saveSession(authData['token'], authData['user']);
+        return authData;
+      } else {
+        print('❌ Status false o data null');
+        return null;
       }
-      
-      return null;
-    } catch (e) {
+    } else {
+      print('❌ Status code no es 200/201: ${response.statusCode}');
+      print('❌ Response: ${response.body}');
       return null;
     }
+  } catch (e) {
+    print('❌ Excepción en login: $e');
+    return null;
   }
+}
   
   // Obtener perfil del usuario autenticado
   Future<Map<String, dynamic>?> getProfile() async {

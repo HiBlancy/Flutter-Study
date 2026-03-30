@@ -68,8 +68,7 @@ let UsersService = class UsersService {
             email: createUserDto.email.toLowerCase(),
             password: hashedPassword,
         });
-        const savedUser = await newUser.save();
-        return savedUser;
+        return newUser.save();
     }
     async findOne(condition) {
         return this.userModel.findOne(condition).exec();
@@ -81,17 +80,12 @@ let UsersService = class UsersService {
         return this.userModel.find().select('-password').exec();
     }
     async update(id, updateUserDto) {
-        const existingUser = await this.userModel.findById(id).exec();
-        if (!existingUser) {
-            throw new common_1.NotFoundException(`Usuario con ID ${id} no encontrado`);
-        }
         if (updateUserDto.email) {
             const emailExists = await this.userModel
                 .findOne({
                 email: updateUserDto.email.toLowerCase(),
                 _id: { $ne: id },
-            })
-                .exec();
+            });
             if (emailExists) {
                 throw new common_1.ConflictException('El email ya está registrado por otro usuario');
             }
@@ -99,10 +93,14 @@ let UsersService = class UsersService {
         if (updateUserDto.password) {
             updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
         }
-        return this.userModel
+        const updated = await this.userModel
             .findByIdAndUpdate(id, updateUserDto, { new: true })
             .select('-password')
             .exec();
+        if (!updated) {
+            throw new common_1.NotFoundException(`Usuario ${id} no encontrado`);
+        }
+        return updated;
     }
     async delete(id) {
         const deletedUser = await this.userModel

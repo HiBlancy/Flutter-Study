@@ -1,4 +1,3 @@
-// screens/about_screen.dart
 import 'package:flutter/material.dart';
 import '../widgets/main_toolbar.dart';
 import '../constants/app_constants.dart';

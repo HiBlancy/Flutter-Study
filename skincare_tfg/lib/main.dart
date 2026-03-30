@@ -1,11 +1,9 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:skincare_tfg/screens/about_screen.dart';
 import 'package:skincare_tfg/screens/settings_screen.dart';
 import 'screens/login_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/register_screen.dart';
-import 'screens/profile_screen.dart';
+import 'widgets/bottom_app_bar.dart';
 import 'constants/app_constants.dart';
 
 void main() {
@@ -29,10 +27,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: AppConstants.routeLogin,
       routes: {
-        AppConstants.routeLogin: (context) => const LoginScreen(),
-        AppConstants.routeHome: (context) => const HomeScreen(),
         AppConstants.routeRegister: (context) => const RegisterScreen(),
-        AppConstants.routeProfile: (context) => const ProfileScreen(),
+        AppConstants.routeLogin: (context) => const LoginScreen(),
+        AppConstants.routeHome: (context) => const BottomNavBar(),
+        AppConstants.routeProfile: (context) => const BottomNavBar(initialIndex: 3),
         AppConstants.routeSettings: (context) => const SettingsScreen(),
         AppConstants.routeAbout: (context) => const AboutScreen(),
       },

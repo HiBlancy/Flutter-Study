@@ -32,8 +32,7 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    const savedUser = await newUser.save();
-    return savedUser;
+    return newUser.save();
   }
 
   // LOGIN — igual que tu findOne anterior
@@ -53,21 +52,12 @@ export class UsersService {
 
   // EDITAR
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
-    // Verificar si el usuario existe
-    const existingUser = await this.userModel.findById(id).exec();
-    if (!existingUser) {
-      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
-    }
-
-    // Verificar si el email ya está en uso por otro usuario
     if (updateUserDto.email) {
       const emailExists = await this.userModel
         .findOne({
           email: updateUserDto.email.toLowerCase(),
           _id: { $ne: id },
-        })
-        .exec();
-
+        });
       if (emailExists) {
         throw new ConflictException(
           'El email ya está registrado por otro usuario',
@@ -79,10 +69,15 @@ export class UsersService {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
-    return this.userModel
+    const updated = await this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
       .select('-password')
       .exec();
+
+    if (!updated) {
+      throw new NotFoundException(`Usuario ${id} no encontrado`);
+    }
+    return updated;
   }
 
   // ELIMINAR

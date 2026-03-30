@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
-import '../screens/home_screen.dart'; 
+import '../widgets/bottom_app_bar.dart';  // Cambiar esta importación
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,60 +29,50 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  try {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
     
-    print('=================================');
-    print('📱 LOGIN DESDE SCREEN');
-    print('📧 Email ingresado: "$email"');
-    print('🔑 Password ingresado: "$password"');
-    print('=================================');
-    
-    final authData = await _authService.login(email, password);
+      final authData = await _authService.login(email, password);
 
-    setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
 
-    print('🔍 authData después del login: $authData');
-    
-    if (authData != null && mounted) {
-      print('✅ Login exitoso, redirigiendo a HomeScreen...');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    } else if (mounted) {
-      print('❌ authData es null');
-      _showErrorDialog();
-    }
-  } catch (e) {
-    print('❌ Excepción en login: $e');
-    setState(() => _isLoading = false);
-    if (mounted) {
-      _showErrorDialog(e.toString());
+      if (authData != null && mounted) {
+        // Cambiar aquí: navegar a BottomNavBar en lugar de HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        );
+      } else if (mounted) {
+        _showErrorDialog();
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        _showErrorDialog(e.toString());
+      }
     }
   }
-}
 
   void _showErrorDialog([String? customMessage]) {
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      title: const Text('Error de inicio de sesión'),
-      content: Text(customMessage ?? 'Usuario o contraseña incorrectos'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Aceptar'),
-        ),
-      ],
-    ),
-  );
-}
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Error de inicio de sesión'),
+        content: Text(customMessage ?? 'Usuario o contraseña incorrectos'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,8 +148,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildLoginButton(),
                     const SizedBox(height: 16),
                     _buildRegisterButton(),
-                    const SizedBox(height: 16),
-                    _buildTestCredentials(),
                   ],
                 ),
               ),
@@ -201,25 +189,4 @@ class _LoginScreenState extends State<LoginScreen> {
       size: ButtonSize.full,
     );
   }
-
-   Widget _buildTestCredentials() => Container(
-    margin: const EdgeInsets.only(top: 20),
-    padding: const EdgeInsets.all(12),
-    decoration: BoxDecoration(
-      color: Colors.blue.shade50,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.blue.shade100),
-    ),
-    child: const Column(
-      children: [
-        Text(
-          '📱 Credenciales de prueba:',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-        ),
-        SizedBox(height: 8),
-        Text('Email: usuario@ejemplo.com', style: TextStyle(fontSize: 12)),
-        Text('Contraseña: 123456', style: TextStyle(fontSize: 12)),
-      ],
-    ),
-  );
 }

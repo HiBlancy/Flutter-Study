@@ -6,4 +6,5 @@ export interface User {
     isActive: boolean;
     createdAt: Date;
     updatedAt: Date;
+    comparePassword(candidatePassword: string): Promise<boolean>;
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/bottom_app_bar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -32,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  Future<void> _register() async {
+Future<void> _register() async {
   if (!_formKey.currentState!.validate() || !_acceptTerms) {
     if (!_acceptTerms) _showErrorDialog('Debes aceptar los términos');
     return;
@@ -58,7 +59,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       );
       Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) Navigator.pushReplacementNamed(context, '/home');
+        if (mounted) {
+          // Cambiar aquí: navegar a BottomNavBar
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const BottomNavBar()),
+          );
+        }
       });
     } else if (mounted) {
       _showErrorDialog('Error al crear la cuenta. El correo podría estar registrado.');

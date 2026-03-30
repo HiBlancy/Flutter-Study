@@ -1,6 +1,4 @@
-import { Document } from 'mongoose';
-
-export interface User{
+export interface User {
   _id: string;
   name: string;
   email: string;
@@ -8,4 +6,6 @@ export interface User{
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
