@@ -79,29 +79,9 @@ let UsersController = class UsersController {
         const updatedUser = await this.usersService.update(req.user._id, updateUserDto);
         return this.successResponse('Perfil actualizado', updatedUser);
     }
-    async findById(id) {
-        const user = await this.usersService.findById(id);
-        if (!user)
-            throw new common_1.NotFoundException(`Usuario ${id} no encontrado`);
-        return this.successResponse('Usuario encontrado', user);
-    }
     async findAllUsers() {
         const users = await this.usersService.getAllUsers();
         return this.successResponse('Usuarios obtenidos', users);
-    }
-    async update(id, updateUserDto, req) {
-        if (req.user._id !== id) {
-            throw new common_1.UnauthorizedException('No puedes actualizar otro usuario');
-        }
-        const updatedUser = await this.usersService.update(id, updateUserDto);
-        return this.successResponse('Usuario actualizado', updatedUser);
-    }
-    async delete(id, req) {
-        if (req.user._id !== id) {
-            throw new common_1.UnauthorizedException('No puedes eliminar otro usuario');
-        }
-        const deletedUser = await this.usersService.delete(id);
-        return this.successResponse('Usuario eliminado', deletedUser);
     }
     async deleteWithoutAuth(id) {
         try {
@@ -162,37 +142,11 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "updateProfile", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "findById", null);
-__decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findAllUsers", null);
-__decorate([
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_user_dto_1.UpdateUserDto, Object]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "update", null);
-__decorate([
-    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "delete", null);
 __decorate([
     (0, common_1.Delete)('delete/:id'),
     __param(0, (0, common_1.Param)('id')),

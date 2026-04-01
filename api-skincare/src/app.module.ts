@@ -5,6 +5,7 @@ import { UserModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
       signOptions: { expiresIn: '3h' },
     }),
     UserModule,
+    ProductModule
   ],
   controllers: [AppController],
   providers: [AppService],

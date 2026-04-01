@@ -1,5 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateUserDto {
 
@@ -16,4 +15,11 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsDateString()
+  birthDate?: string;
 }

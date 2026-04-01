@@ -13,6 +13,7 @@ exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const users_service_1 = require("../users.service");
+const mongoose_1 = require("mongoose");
 let AuthGuard = class AuthGuard {
     jwtService;
     usersService;
@@ -25,40 +26,28 @@ let AuthGuard = class AuthGuard {
             req.headers['x-token'] ||
             null);
     }
-    async verifyAndGetUser(token) {
-        if (!token) {
-            throw new common_1.UnauthorizedException('Token no proporcionado');
-        }
-        try {
-            const payload = await this.jwtService.verifyAsync(token);
-            const user = await this.usersService.findById(payload._id);
-            if (!user) {
-                throw new common_1.UnauthorizedException('Usuario no encontrado');
-            }
-            return user;
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException('Token inválido');
-        }
-    }
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
         const token = this.extractToken(request);
         if (!token) {
             throw new common_1.UnauthorizedException('Token no proporcionado');
         }
+        let payload;
         try {
-            const payload = await this.jwtService.verifyAsync(token);
-            const user = await this.usersService.findById(payload._id);
-            if (!user) {
-                throw new common_1.UnauthorizedException('Usuario no encontrado');
-            }
-            request.user = user;
-            return true;
+            payload = await this.jwtService.verifyAsync(token);
         }
         catch {
-            throw new common_1.UnauthorizedException('Token inválido');
+            throw new common_1.UnauthorizedException('Token inválido o expirado');
         }
+        if (!payload._id || !mongoose_1.Types.ObjectId.isValid(payload._id)) {
+            throw new common_1.UnauthorizedException('Token malformado');
+        }
+        const user = await this.usersService.findById(payload._id);
+        if (!user) {
+            throw new common_1.UnauthorizedException('Usuario no encontrado');
+        }
+        request.user = user;
+        return true;
     }
 };
 exports.AuthGuard = AuthGuard;

@@ -7,7 +7,7 @@ export declare const UserSchema: Schema<any, import("mongoose").Model<any, any, 
     password: string;
     isActive: boolean;
     phone?: string | null | undefined;
-    birthDate?: string | null | undefined;
+    birthDate?: NativeDate | null | undefined;
     profileImage?: string | null | undefined;
 } & import("mongoose").DefaultTimestampProps, import("mongoose").Document<unknown, {}, {
     name: string;
@@ -15,7 +15,7 @@ export declare const UserSchema: Schema<any, import("mongoose").Model<any, any, 
     password: string;
     isActive: boolean;
     phone?: string | null | undefined;
-    birthDate?: string | null | undefined;
+    birthDate?: NativeDate | null | undefined;
     profileImage?: string | null | undefined;
 } & import("mongoose").DefaultTimestampProps, {
     id: string;
@@ -27,7 +27,7 @@ export declare const UserSchema: Schema<any, import("mongoose").Model<any, any, 
     password: string;
     isActive: boolean;
     phone?: string | null | undefined;
-    birthDate?: string | null | undefined;
+    birthDate?: NativeDate | null | undefined;
     profileImage?: string | null | undefined;
 } & import("mongoose").DefaultTimestampProps & {
     _id: import("mongoose").Types.ObjectId;
@@ -41,7 +41,7 @@ export declare const UserSchema: Schema<any, import("mongoose").Model<any, any, 
     password: string;
     isActive: boolean;
     phone?: string | null | undefined;
-    birthDate?: string | null | undefined;
+    birthDate?: NativeDate | null | undefined;
     profileImage?: string | null | undefined;
     createdAt: NativeDate;
     updatedAt: NativeDate;

@@ -9,10 +9,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
-const jwt_1 = require("@nestjs/jwt");
 const user_schema_1 = require("./schemas/user.schema");
 const users_service_1 = require("./users.service");
 const users_controller_1 = require("./users.controller");
+const jwt_1 = require("@nestjs/jwt");
+const auth_guard_1 = require("./guards/auth.guard");
+const config_1 = require("@nestjs/config");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
@@ -23,17 +25,21 @@ exports.UserModule = UserModule = __decorate([
                 {
                     name: 'Users',
                     schema: user_schema_1.UserSchema,
-                    collection: 'users',
+                    collection: 'users'
                 },
             ]),
-            jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET || 'mi_clave_secreta_temporal_para_desarrollo',
-                signOptions: { expiresIn: '3h' },
+            jwt_1.JwtModule.registerAsync({
+                imports: [config_1.ConfigModule],
+                useFactory: async (configService) => ({
+                    secret: configService.get('JWT_SECRET') || 'mi_clave_secreta_temporal_para_desarrollo',
+                    signOptions: { expiresIn: '3h' },
+                }),
+                inject: [config_1.ConfigService],
             }),
         ],
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService],
-        exports: [users_service_1.UsersService],
+        providers: [users_service_1.UsersService, auth_guard_1.AuthGuard],
+        exports: [users_service_1.UsersService, auth_guard_1.AuthGuard, jwt_1.JwtModule,],
     })
 ], UserModule);
 //# sourceMappingURL=users.module.js.map

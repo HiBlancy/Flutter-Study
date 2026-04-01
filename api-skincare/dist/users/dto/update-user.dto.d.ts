@@ -3,6 +3,6 @@ export declare class UpdateUserDto {
     email?: string;
     password?: string;
     phone?: string;
-    birthDate?: string;
+    birthDate?: Date;
     profileImage?: string;
 }

@@ -14,6 +14,7 @@ const users_module_1 = require("./users/users.module");
 const mongoose_1 = require("@nestjs/mongoose");
 const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
+const product_module_1 = require("./product/product.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,6 +28,7 @@ exports.AppModule = AppModule = __decorate([
                 signOptions: { expiresIn: '3h' },
             }),
             users_module_1.UserModule,
+            product_module_1.ProductModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

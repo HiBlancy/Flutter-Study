@@ -53,31 +53,28 @@ export class UsersService {
   // EDITAR
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
   if (updateUserDto.email) {
-    const emailExists = await this.userModel
-      .findOne({
-        email: updateUserDto.email.toLowerCase(),
-        _id: { $ne: id },
-      });
+    const emailExists = await this.userModel.findOne({
+      email: updateUserDto.email.toLowerCase(),
+      _id: { $ne: id },
+    });
     if (emailExists) {
-      throw new ConflictException(
-        'El email ya está registrado por otro usuario',
-      );
+      throw new ConflictException('El email ya está registrado por otro usuario');
     }
     updateUserDto.email = updateUserDto.email.toLowerCase();
   }
 
-  const updateData: any = { ...updateUserDto };
-  if (updateUserDto.birthDate) {
-    updateData.birthDate = new Date(updateUserDto.birthDate);
-  }
-
-  // Si se actualiza password, hashearla
+  // Hashear password si viene
   if (updateUserDto.password) {
     updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
   }
 
+  // Convertir birthDate si viene
+  if (updateUserDto.birthDate) {
+    updateUserDto.birthDate = new Date(updateUserDto.birthDate);
+  }
+
   const updated = await this.userModel
-    .findByIdAndUpdate(id, updateUserDto, { new: true })
+    .findByIdAndUpdate(id, updateUserDto, { returnDocument: 'after' })
     .select('-password')
     .exec();
 

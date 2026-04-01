@@ -30,22 +30,7 @@ export declare class UsersController {
         message: string;
         data: any;
     }>;
-    findById(id: string): Promise<{
-        status: boolean;
-        message: string;
-        data: any;
-    }>;
     findAllUsers(): Promise<{
-        status: boolean;
-        message: string;
-        data: any;
-    }>;
-    update(id: string, updateUserDto: UpdateUserDto, req: any): Promise<{
-        status: boolean;
-        message: string;
-        data: any;
-    }>;
-    delete(id: string, req: any): Promise<{
         status: boolean;
         message: string;
         data: any;

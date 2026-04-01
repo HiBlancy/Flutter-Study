@@ -81,8 +81,7 @@ let UsersService = class UsersService {
     }
     async update(id, updateUserDto) {
         if (updateUserDto.email) {
-            const emailExists = await this.userModel
-                .findOne({
+            const emailExists = await this.userModel.findOne({
                 email: updateUserDto.email.toLowerCase(),
                 _id: { $ne: id },
             });
@@ -94,8 +93,11 @@ let UsersService = class UsersService {
         if (updateUserDto.password) {
             updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
         }
+        if (updateUserDto.birthDate) {
+            updateUserDto.birthDate = new Date(updateUserDto.birthDate);
+        }
         const updated = await this.userModel
-            .findByIdAndUpdate(id, updateUserDto, { new: true })
+            .findByIdAndUpdate(id, updateUserDto, { returnDocument: 'after' })
             .select('-password')
             .exec();
         if (!updated) {

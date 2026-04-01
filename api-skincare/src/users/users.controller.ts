@@ -91,47 +91,13 @@ export class UsersController {
     return this.successResponse('Perfil actualizado', updatedUser);
   }
 
-  // @Get(':id')
-  // async findById(@Param('id') id: string) {
-  //   const user = await this.usersService.findById(id);
-  //   if (!user) throw new NotFoundException(`Usuario ${id} no encontrado`);
-  //   return this.successResponse('Usuario encontrado', user);
-  // }
-
   @Get()
   async findAllUsers() {
     const users = await this.usersService.getAllUsers();
     return this.successResponse('Usuarios obtenidos', users);
   }
 
-  // @UseGuards(AuthGuard)
-  // @Patch(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() updateUserDto: UpdateUserDto,
-  //   @Req() req,
-  // ) {
-  //   if (req.user._id !== id) {
-  //     throw new UnauthorizedException('No puedes actualizar otro usuario');
-  //   }
-
-  //   const updatedUser = await this.usersService.update(id, updateUserDto);
-
-  //   return this.successResponse('Usuario actualizado', updatedUser);
-  // }
-
-  @UseGuards(AuthGuard)
-  @Delete(':id')
-  async delete(@Param('id') id: string, @Req() req) {
-    if (req.user._id !== id) {
-      throw new UnauthorizedException('No puedes eliminar otro usuario');
-    }
-
-    const deletedUser = await this.usersService.delete(id);
-
-    return this.successResponse('Usuario eliminado', deletedUser);
-  }
-
+  // ver mas adelante tema seguridad de esto 
   @Delete('delete/:id') 
   async deleteWithoutAuth(@Param('id') id: string): Promise<any> {
     try {
