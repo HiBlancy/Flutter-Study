@@ -43,6 +43,7 @@ void _onBarcodeDetected(BarcodeCapture capture) async {
           barcode: barcode.rawValue!,
           name: 'Producto desconocido',
           brand: '',
+          addedAt: DateTime(DateTime.april)
         ),
       ),
     ),

@@ -1,9 +1,11 @@
-constaseñas seguras
-comprobar correos validos
+constaseñas seguras y comprobar correos validos
 mantener sesion abierta?
 guardar datos en local, los guardados en favs
 rutinas?
-
+foto de perfil editar y almacenar para mostrarse ya sea desde movil o navegador
+tema delete arreglarlo para hacerlo con token
+implementar en flutter tema de eliminar cuenta, con confirmacion
+añadir tema de paginacion de productos
 
 HECHO
 comprobar el funcionamiento de la camara
