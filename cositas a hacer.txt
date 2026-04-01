@@ -1,8 +1,11 @@
 constaseñas seguras
 comprobar correos validos
-pantalla nueva para el cambio de datos (nombre y contraseña)
-comprobar el funcionamiento de la camara
-los elementos que se ven en base de datos, guardarlos
 mantener sesion abierta?
 guardar datos en local, los guardados en favs
 rutinas?
+
+
+HECHO
+comprobar el funcionamiento de la camara
+pantalla nueva para el cambio de datos (nombre y contraseña)
+los elementos que se ven en base de datos, guardarlos

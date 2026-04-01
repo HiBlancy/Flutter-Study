@@ -84,12 +84,19 @@ export class UsersController {
     return this.successResponse('Perfil obtenido', req.user);
   }
 
-  @Get(':id')
-  async findById(@Param('id') id: string) {
-    const user = await this.usersService.findById(id);
-    if (!user) throw new NotFoundException(`Usuario ${id} no encontrado`);
-    return this.successResponse('Usuario encontrado', user);
+  @UseGuards(AuthGuard)
+  @Patch('me')
+  async updateProfile(@Body() updateUserDto: UpdateUserDto, @Req() req) {
+    const updatedUser = await this.usersService.update(req.user._id, updateUserDto);
+    return this.successResponse('Perfil actualizado', updatedUser);
   }
+
+  // @Get(':id')
+  // async findById(@Param('id') id: string) {
+  //   const user = await this.usersService.findById(id);
+  //   if (!user) throw new NotFoundException(`Usuario ${id} no encontrado`);
+  //   return this.successResponse('Usuario encontrado', user);
+  // }
 
   @Get()
   async findAllUsers() {
@@ -97,21 +104,21 @@ export class UsersController {
     return this.successResponse('Usuarios obtenidos', users);
   }
 
-  @UseGuards(AuthGuard)
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-    @Req() req,
-  ) {
-    if (req.user._id !== id) {
-      throw new UnauthorizedException('No puedes actualizar otro usuario');
-    }
+  // @UseGuards(AuthGuard)
+  // @Patch(':id')
+  // async update(
+  //   @Param('id') id: string,
+  //   @Body() updateUserDto: UpdateUserDto,
+  //   @Req() req,
+  // ) {
+  //   if (req.user._id !== id) {
+  //     throw new UnauthorizedException('No puedes actualizar otro usuario');
+  //   }
 
-    const updatedUser = await this.usersService.update(id, updateUserDto);
+  //   const updatedUser = await this.usersService.update(id, updateUserDto);
 
-    return this.successResponse('Usuario actualizado', updatedUser);
-  }
+  //   return this.successResponse('Usuario actualizado', updatedUser);
+  // }
 
   @UseGuards(AuthGuard)
   @Delete(':id')

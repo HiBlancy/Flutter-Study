@@ -27,7 +27,6 @@ class _EditScreenState extends State<EditScreen> {
   bool _isSaving = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  String _userId = '';
 
   @override
   void initState() {
@@ -36,64 +35,75 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   Future<void> _loadUserData() async {
-  setState(() => _isLoading = true);
-  
-  final name = await _authService.getUserName();
-  final phone = await _authService.getUserPhone();
-  final birthDate = await _authService.getUserBirthDate();
-  final userId = await _authService.getUserId();
-  final token = await _authService.getToken(); // Add this
-  
-  print('🔑 Token: ${token?.substring(0, 20)}...'); // Print first 20 chars of token
-  print('👤 User ID from SharedPreferences: $userId');
-  
-  if (mounted) {
-    _nameController = TextEditingController(text: name ?? '');
-    _phoneController = TextEditingController(text: phone ?? '');
-    _birthDateController = TextEditingController(text: birthDate ?? '');
-    _passwordController = TextEditingController();
-    _confirmPasswordController = TextEditingController();
-    _userId = userId ?? '';
+    setState(() => _isLoading = true);
     
-    print('📝 Will update user with ID: $_userId');
-    
-    setState(() => _isLoading = false);
+    try {
+      // Obtener datos actuales del usuario desde SharedPreferences
+      final name = await _authService.getUserName();
+      final phone = await _authService.getUserPhone();
+      final birthDate = await _authService.getUserBirthDate();
+      
+      // Formatear fecha para mostrar en DD/MM/YYYY si es ISO
+      String formattedBirthDate = '';
+      if (birthDate != null && birthDate.isNotEmpty) {
+        formattedBirthDate = _formatDateForDisplay(birthDate);
+      }
+      
+      if (mounted) {
+        _nameController = TextEditingController(text: name ?? '');
+        _phoneController = TextEditingController(text: phone ?? '');
+        _birthDateController = TextEditingController(text: formattedBirthDate);
+        _passwordController = TextEditingController();
+        _confirmPasswordController = TextEditingController();
+        
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      print('❌ Error loading user data: $e');
+      setState(() => _isLoading = false);
+    }
   }
-}
+
+  String _formatDateForDisplay(String dateStr) {
+    // Si ya viene en formato DD/MM/YYYY, devolverlo
+    if (dateStr.contains('/')) return dateStr;
+    
+    // Si viene en ISO (YYYY-MM-DD), convertir a DD/MM/YYYY
+    try {
+      final date = DateTime.parse(dateStr);
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    } catch (e) {
+      return dateStr;
+    }
+  }
 
   Future<void> _saveChanges() async {
-    print('🔍 Iniciando guardado...');
-  print('📝 Nombre: ${_nameController.text}');
-  print('📞 Teléfono: ${_phoneController.text}');
-  print('📅 Fecha: ${_birthDateController.text}');
-  print('🔑 Contraseña: ${_passwordController.text.isNotEmpty ? "***" : "vacía"}');
     if (!_formKey.currentState!.validate()) return;
     
-    setState(() => _isSaving = true);
-    
-    // Validar que las contraseñas coincidan si se ingresó una
+    // Validar contraseñas
     if (_passwordController.text.isNotEmpty && 
         _passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Las contraseñas no coinciden')),
       );
-      setState(() => _isSaving = false);
       return;
     }
-
     
+    setState(() => _isSaving = true);
+    
+    // Convertir fecha a ISO si es necesario
     String? formattedBirthDate;
-  if (_birthDateController.text.isNotEmpty) {
-    formattedBirthDate = _convertToISODate(_birthDateController.text);
-  }
-  
-  final result = await _authService.updateUser(
-    userId: _userId,
-    name: _nameController.text.isNotEmpty ? _nameController.text : null,
-    phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
-    birthDate: formattedBirthDate, // Enviar en formato ISO
-    password: _passwordController.text.isNotEmpty ? _passwordController.text : null,
-  );
+    if (_birthDateController.text.isNotEmpty) {
+      formattedBirthDate = _convertToISODate(_birthDateController.text);
+    }
+    
+    // ✅ Ya no necesitas pasar el userId, el endpoint /me lo maneja
+    final result = await _authService.updateUser(
+      name: _nameController.text.isNotEmpty ? _nameController.text : null,
+      phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
+      birthDate: formattedBirthDate,
+      password: _passwordController.text.isNotEmpty ? _passwordController.text : null,
+    );
     
     setState(() => _isSaving = false);
     
@@ -107,38 +117,69 @@ class _EditScreenState extends State<EditScreen> {
         const SnackBar(content: Text('Error al actualizar el perfil')),
       );
     }
-    
   }
   
 
-  Future<void> _selectDate() async {
+ Future<void> _selectDate() async {
+    DateTime initialDate = DateTime.now();
+    
+    // Intentar parsear la fecha actual
+    if (_birthDateController.text.isNotEmpty) {
+      try {
+        if (_birthDateController.text.contains('/')) {
+          final parts = _birthDateController.text.split('/');
+          initialDate = DateTime(
+            int.parse(parts[2]), 
+            int.parse(parts[1]), 
+            int.parse(parts[0])
+          );
+        } else {
+          initialDate = DateTime.parse(_birthDateController.text);
+        }
+      } catch (e) {
+        initialDate = DateTime.now();
+      }
+    }
+    
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _birthDateController.text.isNotEmpty 
-          ? _parseDate(_birthDateController.text)
-          : DateTime.now(),
+      initialDate: initialDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      helpText: 'Selecciona tu fecha de nacimiento',
     );
     
     if (picked != null) {
       setState(() {
-        _birthDateController.text = _formatDate(picked);
+        // Guardar en formato DD/MM/YYYY para mostrar
+        _birthDateController.text = _formatDateForUI(picked);
       });
     }
   }
 
-  DateTime _parseDate(String dateStr) {
-    try {
-      final parts = dateStr.split('/');
-      return DateTime(int.parse(parts[2]), int.parse(parts[1]), int.parse(parts[0]));
-    } catch (e) {
-      return DateTime.now();
-    }
+  String _formatDateForUI(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  String _convertToISODate(String dateStr) {
+    try {
+      if (dateStr.contains('/')) {
+        final parts = dateStr.split('/');
+        // parts[0] = día, parts[1] = mes, parts[2] = año
+        final date = DateTime(
+          int.parse(parts[2]), 
+          int.parse(parts[1]), 
+          int.parse(parts[0])
+        );
+        // Devolver solo YYYY-MM-DD (sin hora)
+        return date.toIso8601String().split('T')[0];
+      }
+      // Si ya es ISO, devolverlo
+      return dateStr;
+    } catch (e) {
+      print('❌ Error parsing date: $e');
+      return dateStr;
+    }
   }
 
   @override
@@ -289,23 +330,11 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   Widget _buildSaveButton() {
-  return context.primaryButton(
-    _isSaving ? 'Guardando...' : 'Guardar Cambios',
-    _saveChanges,  // Siempre pasa la función
-    //enabled: !_isSaving,  // Deshabilita el botón mientras guarda
-    size: ButtonSize.full,
-    icon: Icons.save,
-  );
-}
-
-  String _convertToISODate(String dateStr) {
-  try {
-    final parts = dateStr.split('/');
-    // parts[0] = día, parts[1] = mes, parts[2] = año
-    final date = DateTime(int.parse(parts[2]), int.parse(parts[1]), int.parse(parts[0]));
-    return date.toIso8601String();
-  } catch (e) {
-    return dateStr; // Si falla, devolver el original
+    return context.primaryButton(
+      _isSaving ? 'Guardando...' : 'Guardar Cambios',
+      _saveChanges,
+      size: ButtonSize.full,
+      icon: Icons.save,
+    );
   }
-}
 }

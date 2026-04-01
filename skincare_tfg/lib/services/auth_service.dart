@@ -175,7 +175,6 @@ Future<Map<String, dynamic>?> login(String email, String password) async {
 
   // Actualizar usuario
   Future<Map<String, dynamic>?> updateUser({
-  required String userId,
   String? name,
   String? phone,
   String? birthDate,
@@ -186,16 +185,16 @@ Future<Map<String, dynamic>?> login(String email, String password) async {
   if (token == null) return null;
 
   try {
-    final url = Uri.parse('${ApiConfig.getUserByIdUrl(userId)}');
+    final url = Uri.parse('${ApiConfig.baseUrl}/users/me');
     
     final Map<String, dynamic> updateData = {};
-    if (name != null) updateData['name'] = name;
-    if (phone != null) updateData['phone'] = phone;
-    if (birthDate != null) updateData['birthDate'] = birthDate;
-    if (profileImage != null) updateData['profileImage'] = profileImage;
+    if (name != null && name.isNotEmpty) updateData['name'] = name;
+    if (phone != null && phone.isNotEmpty) updateData['phone'] = phone;
+    if (birthDate != null && birthDate.isNotEmpty) updateData['birthDate'] = birthDate;
+    if (profileImage != null && profileImage.isNotEmpty) updateData['profileImage'] = profileImage;
     if (password != null && password.isNotEmpty) updateData['password'] = password;
 
-    print('📤 Enviando actualización: $updateData');
+    print('📤 Enviando actualización a /me: $updateData');
 
     final response = await http.patch(
       url,
@@ -215,7 +214,7 @@ Future<Map<String, dynamic>?> login(String email, String password) async {
         final updatedUser = data['data'];
         final prefs = await _prefs;
         
-        // Actualizar todos los campos en SharedPreferences
+        // Actualizar campos en SharedPreferences
         if (updatedUser['name'] != null) {
           await prefs.setString(AppConstants.prefUserName, updatedUser['name']);
         }
@@ -223,30 +222,17 @@ Future<Map<String, dynamic>?> login(String email, String password) async {
           await prefs.setString('user_phone', updatedUser['phone']);
         }
         if (updatedUser['birthDate'] != null) {
-          // Guardar en el formato que uses en la app
-          final birthDateValue = updatedUser['birthDate'];
-          if (birthDateValue is String) {
-            // Si viene en ISO, convertir a DD/MM/YYYY para mostrar
-            try {
-              final date = DateTime.parse(birthDateValue);
-              final formattedDate = '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-              await prefs.setString('user_birth_date', formattedDate);
-            } catch (e) {
-              await prefs.setString('user_birth_date', birthDateValue);
-            }
-          }
+          // Guardar en formato ISO para consistencia
+          await prefs.setString('user_birth_date', updatedUser['birthDate']);
         }
         
         print('✅ Usuario actualizado correctamente');
         return updatedUser;
-      } else {
-        print('❌ Error en respuesta: ${data['message']}');
-        return null;
       }
-    } else {
-      print('❌ Error HTTP: ${response.statusCode}');
-      return null;
     }
+    
+    print('❌ Error al actualizar: ${response.body}');
+    return null;
   } catch (e) {
     print('❌ Error al actualizar usuario: $e');
     return null;

@@ -21,7 +21,7 @@ export class UpdateUserDto {
   phone?: string;
 
   @IsOptional()
-  @IsDateString() // Valida que sea una fecha en formato ISO
+  @IsDateString() 
   birthDate?: string;
 
   @IsOptional()

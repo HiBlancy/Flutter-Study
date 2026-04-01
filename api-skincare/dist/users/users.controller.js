@@ -75,6 +75,10 @@ let UsersController = class UsersController {
     async getProfile(req) {
         return this.successResponse('Perfil obtenido', req.user);
     }
+    async updateProfile(updateUserDto, req) {
+        const updatedUser = await this.usersService.update(req.user._id, updateUserDto);
+        return this.successResponse('Perfil actualizado', updatedUser);
+    }
     async findById(id) {
         const user = await this.usersService.findById(id);
         if (!user)
@@ -148,6 +152,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Patch)('me'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [update_user_dto_1.UpdateUserDto, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updateProfile", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

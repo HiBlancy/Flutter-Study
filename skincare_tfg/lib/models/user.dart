@@ -4,7 +4,7 @@ class User {
   final String name;
   final String email;
   final String? phone;
-  final String? birthDate;
+  final DateTime? birthDate;
   final String? profileImage;
   final bool isActive;
   final DateTime createdAt;
@@ -28,7 +28,9 @@ class User {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'],
-      birthDate: json['birthDate'],
+      birthDate: json['birthDate'] != null 
+        ? DateTime.parse(json['birthDate']) // ← API envía ISO string
+        : null,
       profileImage: json['profileImage'],
       isActive: json['isActive'] ?? true,
       createdAt: json['createdAt'] != null 

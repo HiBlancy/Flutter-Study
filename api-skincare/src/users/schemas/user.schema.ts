@@ -14,7 +14,7 @@ export const UserSchema = new Schema(
     password: { type: String, required: true },
     isActive: { type: Boolean, default: true },
     phone: { type: String, required: false, trim: true },
-    birthDate: { type: String, required: false },
+    birthDate: { type: Date, required: false },
     profileImage: { type: String, required: false },
   },
   { timestamps: true },

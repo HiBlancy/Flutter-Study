@@ -66,6 +66,11 @@ export class UsersService {
     updateUserDto.email = updateUserDto.email.toLowerCase();
   }
 
+  const updateData: any = { ...updateUserDto };
+  if (updateUserDto.birthDate) {
+    updateData.birthDate = new Date(updateUserDto.birthDate);
+  }
+
   // Si se actualiza password, hashearla
   if (updateUserDto.password) {
     updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);

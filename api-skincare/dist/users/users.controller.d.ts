@@ -25,6 +25,11 @@ export declare class UsersController {
         message: string;
         data: any;
     }>;
+    updateProfile(updateUserDto: UpdateUserDto, req: any): Promise<{
+        status: boolean;
+        message: string;
+        data: any;
+    }>;
     findById(id: string): Promise<{
         status: boolean;
         message: string;
