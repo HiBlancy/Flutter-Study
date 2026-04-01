@@ -1,3 +1,4 @@
+// lib/services/beauty_api_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/beauty_product.dart';
@@ -5,7 +6,7 @@ import '../models/beauty_product.dart';
 class BeautyApiService {
   static const String _baseUrl = 'https://world.openbeautyfacts.org';
 
-  // Búsqueda por texto libre (nombre o marca) — usa v1 que es el que soporta full text
+  // Búsqueda por texto libre (nombre o marca)
   static Future<List<BeautyProduct>> searchProducts(String query, {int page = 1}) async {
     final uri = Uri.parse(
       '$_baseUrl/cgi/search.pl'
@@ -18,7 +19,7 @@ class BeautyApiService {
       '&fields=code,product_name,brands,image_front_small_url,categories_tags',
     );
 
-    final response = await http.get(uri, headers: {'User-Agent': 'TuApp/1.0'});
+    final response = await http.get(uri, headers: {'User-Agent': 'SkincareApp/1.0'});
 
     if (response.statusCode != 200) throw Exception('Error ${response.statusCode}');
 
@@ -26,8 +27,8 @@ class BeautyApiService {
     final products = data['products'] as List<dynamic>? ?? [];
 
     return products
-        .map((p) => BeautyProduct.fromJson(p))
-        .where((p) => p.name.isNotEmpty) // filtra entradas vacías
+        .map((p) => BeautyProduct.fromOpenBeautyFacts(p)) // Usar el factory correcto
+        .where((p) => p.name.isNotEmpty)
         .toList();
   }
 
@@ -38,13 +39,13 @@ class BeautyApiService {
       '?fields=code,product_name,brands,image_front_url,categories_tags,ingredients_text',
     );
 
-    final response = await http.get(uri, headers: {'User-Agent': 'TuApp/1.0'});
+    final response = await http.get(uri, headers: {'User-Agent': 'SkincareApp/1.0'});
 
     if (response.statusCode != 200) return null;
 
     final data = json.decode(response.body);
     if (data['status'] != 1) return null;
 
-    return BeautyProduct.fromJson(data['product']);
+    return BeautyProduct.fromOpenBeautyFacts(data['product']); // Usar el factory correcto
   }
 }

@@ -30,7 +30,7 @@ class ProductService {
         if (data['status'] == true && data['data'] != null) {
           final List<dynamic> productsJson = data['data'];
           return productsJson
-              .map((json) => BeautyProduct.fromJson(json))
+              .map((json) => BeautyProduct.fromBackend(json))
               .toList();
         }
       }
@@ -58,7 +58,7 @@ class ProductService {
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == true && data['data'] != null) {
-          return BeautyProduct.fromJson(data['data']);
+          return BeautyProduct.fromBackend(data['data']);
         }
       }
       return null;
@@ -85,7 +85,7 @@ class ProductService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == true && data['data'] != null) {
-          return BeautyProduct.fromJson(data['data']);
+          return BeautyProduct.fromBackend(data['data']);
         }
       }
       return null;
@@ -132,12 +132,52 @@ class ProductService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == true && data['data'] != null) {
-          return BeautyProduct.fromJson(data['data']);
+          return BeautyProduct.fromBackend(data['data']);
         }
       }
       return null;
     } catch (e) {
       print('❌ Error moviendo producto: $e');
+      return null;
+    }
+  }
+
+  Future<BeautyProduct?> addProductToHave(BeautyProduct product) async {
+    try {
+      final token = await _authService.getToken();
+      if (token == null) return null;
+
+      // Preparar los datos para el backend
+      final productData = {
+        'name': product.name,
+        'brand': product.brand,
+        'barcode': product.barcode,
+        'imageUrl': product.imageUrl,
+        'categories': product.categories,
+        'listType': 'have', // Forzamos a "have"
+      };
+
+      final response = await http.post(
+        Uri.parse(ApiConfig.getProductsUrl()),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(productData),
+      );
+
+      print('📡 Add product response: ${response.statusCode}');
+      print('📡 Response body: ${response.body}');
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == true && data['data'] != null) {
+          return BeautyProduct.fromBackend(data['data']);
+        }
+      }
+      return null;
+    } catch (e) {
+      print('❌ Error agregando producto: $e');
       return null;
     }
   }

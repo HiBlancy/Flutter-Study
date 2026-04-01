@@ -113,7 +113,7 @@ export class ProductService {
       throw new NotFoundException(`Producto ${id} no encontrado`);
     }
     
-    if (product.userId.toString() !== userId) {
+    if (product.userId.toString() !== userId.toString()) {
       throw new ForbiddenException('No puedes eliminar este producto');
     }
     

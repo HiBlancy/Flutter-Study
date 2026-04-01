@@ -88,7 +88,7 @@ let ProductService = class ProductService {
         if (!product) {
             throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
         }
-        if (product.userId.toString() !== userId) {
+        if (product.userId.toString() !== userId.toString()) {
             throw new common_1.ForbiddenException('No puedes eliminar este producto');
         }
         const deleted = await this.productModel.findByIdAndDelete(id).exec();
