@@ -21,6 +21,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
+//ELIMINAR AL TERMINAR TESTEO
+  @override
+  void initState() {
+    super.initState();
+    // Precargar credenciales para desarrollo
+    _emailController.text = 'blancy@gmail.com';
+    _passwordController.text = '123456';
+  }
+
   @override
   void dispose() {
     _emailController.dispose();

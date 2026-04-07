@@ -1,12 +1,13 @@
-// lib/screens/product_screen.dart (actualizado)
 import 'package:flutter/material.dart';
 import '../widgets/main_toolbar.dart';
 import '../models/beauty_product.dart';
 import '../services/product_service.dart';
+import '../widgets/edit_product_dialog.dart';
+import '../widgets/custom_button.dart';
 
 class ProductScreen extends StatefulWidget {
   final BeautyProduct product;
-  final bool isFromSearch; // Para saber si viene de búsqueda externa
+  final bool isFromSearch;
 
   const ProductScreen({
     super.key, 
@@ -21,53 +22,199 @@ class ProductScreen extends StatefulWidget {
 class _ProductScreenState extends State<ProductScreen> {
   final ProductService _productService = ProductService();
   bool _isAdding = false;
+  bool _isEditing = false;
+  bool _isDeleting = false;
+  late BeautyProduct _currentProduct;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentProduct = widget.product;
+  }
 
   Future<void> _addToMyProducts() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Agregar producto'),
+        content: Text('¿Quieres agregar "${_currentProduct.name}" a tu lista de productos?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Agregar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
     setState(() => _isAdding = true);
     
-    final added = await _productService.addProductToHave(widget.product);
+    final added = await _productService.addProductToHave(_currentProduct);
     
     setState(() => _isAdding = false);
     
-    if (added != null) {
+    if (added != null && mounted) {
+      setState(() {
+        _currentProduct = added;
+      });
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✓ Producto agregado a tu lista'),
+        SnackBar(
+          content: Text('✓ "${_currentProduct.name}" agregado a tu lista'),
           backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
         ),
       );
-      Navigator.pop(context);
-    } else {
+      
+      if (widget.isFromSearch) {
+        Navigator.pop(context);
+      }
+    } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Error al agregar el producto'),
+          content: Text('Error al agregar el producto. Intenta de nuevo.'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
+  Future<void> _editProduct() async {
+    final editedProduct = await showDialog<BeautyProduct>(
+      context: context,
+      builder: (context) => EditProductDialog(product: _currentProduct),
+    );
+
+    if (editedProduct != null && editedProduct != _currentProduct) {
+      setState(() => _isEditing = true);
+      
+      final updated = await _productService.updateProduct(
+        _currentProduct.id!,
+        editedProduct.toBackendJson(),
+      );
+      
+      setState(() => _isEditing = false);
+      
+      if (updated != null && mounted) {
+        setState(() {
+          _currentProduct = updated;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✓ Producto actualizado correctamente'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        // ✅ Devolver el producto actualizado para que la pantalla anterior lo sepa
+        Navigator.pop(context, updated);
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al actualizar el producto'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _deleteProduct() async {
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Eliminar producto'),
+      content: Text('¿Estás seguro de que quieres eliminar "${_currentProduct.name}" de tu lista?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, true),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Eliminar'),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm != true) return;
+
+  setState(() => _isDeleting = true);
+  
+  final deleted = await _productService.deleteProduct(_currentProduct.id!);
+  
+  setState(() => _isDeleting = false);
+  
+  if (deleted && mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('✓ "${_currentProduct.name}" eliminado de tu lista'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // ✅ Devolver true para indicar que se eliminó
+    Navigator.pop(context, true);
+  } else if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Error al eliminar el producto. Intenta de nuevo.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
   @override
   Widget build(BuildContext context) {
+    final isProductSaved = _currentProduct.id != null;
+    final showAddButton = widget.isFromSearch && !isProductSaved;
+
     return CustomAppBar(
-      title: widget.product.name,
+      title: _currentProduct.name,
       showDrawer: false,
       showBackButton: true,
-      actions: widget.isFromSearch && widget.product.id == null
-          ? [
-              IconButton(
-                icon: _isAdding 
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.add),
-                onPressed: _isAdding ? null : _addToMyProducts,
-                tooltip: 'Agregar a mis productos',
-              ),
-            ]
-          : null,
+      actions: [
+        // Botón de editar (solo si el producto está guardado)
+        if (isProductSaved)
+          IconButton(
+            icon: _isEditing 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.edit),
+            onPressed: _isEditing ? null : _editProduct,
+            tooltip: 'Editar producto',
+          ),
+        // Botón de agregar (solo si viene de búsqueda)
+        if (showAddButton)
+          IconButton(
+            icon: _isAdding 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.add),
+            onPressed: _isAdding ? null : _addToMyProducts,
+            tooltip: 'Agregar a mis productos',
+          ),
+      ],
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -77,9 +224,9 @@ class _ProductScreenState extends State<ProductScreen> {
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: widget.product.imageUrl != null && widget.product.imageUrl!.isNotEmpty
+                child: _currentProduct.imageUrl != null && _currentProduct.imageUrl!.isNotEmpty
                     ? Image.network(
-                        widget.product.imageUrl!,
+                        _currentProduct.imageUrl!,
                         height: 220,
                         fit: BoxFit.contain,
                         errorBuilder: (_, __, ___) => const _PlaceholderImage(),
@@ -91,9 +238,9 @@ class _ProductScreenState extends State<ProductScreen> {
             const SizedBox(height: 24),
 
             // Marca
-            if (widget.product.brand.isNotEmpty)
+            if (_currentProduct.brand.isNotEmpty)
               Text(
-                widget.product.brand.toUpperCase(),
+                _currentProduct.brand.toUpperCase(),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -106,26 +253,26 @@ class _ProductScreenState extends State<ProductScreen> {
 
             // Nombre
             Text(
-              widget.product.name.isNotEmpty ? widget.product.name : 'Sin nombre',
+              _currentProduct.name.isNotEmpty ? _currentProduct.name : 'Sin nombre',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 16),
 
             // Rating (solo si existe)
-            if (widget.product.rating != null) ...[
+            if (_currentProduct.rating != null) ...[
               Row(
                 children: [
                   ...List.generate(5, (index) {
                     return Icon(
-                      index < widget.product.rating! ? Icons.star : Icons.star_border,
+                      index < _currentProduct.rating! ? Icons.star : Icons.star_border,
                       color: Colors.amber,
                       size: 20,
                     );
                   }),
                   const SizedBox(width: 8),
                   Text(
-                    '${widget.product.rating}/5',
+                    '${_currentProduct.rating}/5',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -140,48 +287,48 @@ class _ProductScreenState extends State<ProductScreen> {
             _InfoRow(
               icon: Icons.qr_code,
               label: 'Código de barras',
-              value: widget.product.barcode.isNotEmpty ? widget.product.barcode : '—',
+              value: _currentProduct.barcode.isNotEmpty ? _currentProduct.barcode : '—',
             ),
 
-            if (widget.product.id != null) ...[
-              // Solo mostrar estos campos si el producto ya está guardado
-              if (widget.product.addedAt != null) ...[
+            // Campos adicionales (solo si existen o si el producto está guardado)
+            if (isProductSaved) ...[
+              if (_currentProduct.addedAt != null) ...[
                 const SizedBox(height: 12),
                 _InfoRow(
                   icon: Icons.calendar_today,
                   label: 'Agregado',
-                  value: _formatDate(widget.product.addedAt!),
+                  value: _formatDate(_currentProduct.addedAt!),
                 ),
               ],
 
-              if (widget.product.expirationDate != null) ...[
+              if (_currentProduct.expirationDate != null) ...[
                 const SizedBox(height: 12),
                 _InfoRow(
                   icon: Icons.warning_amber,
                   label: 'Caducidad',
-                  value: _formatDate(widget.product.expirationDate!),
+                  value: _formatDate(_currentProduct.expirationDate!),
                 ),
               ],
 
-              if (widget.product.periodAfterOpening != null) ...[
+              if (_currentProduct.periodAfterOpening != null && _currentProduct.periodAfterOpening!.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 _InfoRow(
                   icon: Icons.timer,
                   label: 'Duración después de abrir',
-                  value: widget.product.periodAfterOpening!,
+                  value: _currentProduct.periodAfterOpening!,
                 ),
               ],
 
-              if (widget.product.openedDate != null) ...[
+              if (_currentProduct.openedDate != null) ...[
                 const SizedBox(height: 12),
                 _InfoRow(
                   icon: Icons.open_in_new,
                   label: 'Abierto el',
-                  value: _formatDate(widget.product.openedDate!),
+                  value: _formatDate(_currentProduct.openedDate!),
                 ),
               ],
 
-              if (widget.product.notes != null && widget.product.notes!.isNotEmpty) ...[
+              if (_currentProduct.notes != null && _currentProduct.notes!.isNotEmpty) ...[
                 const Divider(height: 32),
                 Text(
                   'Notas',
@@ -193,7 +340,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  widget.product.notes!,
+                  _currentProduct.notes!,
                   style: const TextStyle(fontSize: 14),
                 ),
               ],
@@ -202,7 +349,7 @@ class _ProductScreenState extends State<ProductScreen> {
             const Divider(height: 32),
 
             // Categorías
-            if (widget.product.categories.isNotEmpty) ...[
+            if (_currentProduct.categories.isNotEmpty) ...[
               Text(
                 'Categorías',
                 style: TextStyle(
@@ -215,7 +362,7 @@ class _ProductScreenState extends State<ProductScreen> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: widget.product.categories
+                children: _currentProduct.categories
                     .take(6)
                     .map((cat) => Chip(
                           label: Text(cat, style: const TextStyle(fontSize: 12)),
@@ -223,28 +370,35 @@ class _ProductScreenState extends State<ProductScreen> {
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ))
                     .toList(),
-              ),
+              ),  
             ],
 
-            // Botón de agregar si viene de búsqueda (al final)
-            if (widget.isFromSearch && widget.product.id == null) ...[
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isAdding ? null : _addToMyProducts,
-                  icon: _isAdding 
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.add),
-                  label: const Text('Agregar a mis productos'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
+            const SizedBox(height: 24),
+
+            // Botón de eliminar (solo si el producto está guardado)
+            if (isProductSaved) ...[
+              CustomButton(
+                text: 'Eliminar producto',
+                onPressed: _isDeleting ? () {} : _deleteProduct,
+                type: ButtonType.danger,
+                size: ButtonSize.full,
+                icon: Icons.delete,
+                isLoading: _isDeleting,
+                isEnabled: !_isDeleting,
+              ),
+              const SizedBox(height: 12),
+            ],
+
+            // Botón de agregar usando CustomButton
+            if (showAddButton) ...[
+              CustomButton(
+                text: 'Agregar a mis productos',
+                onPressed: _isAdding ? () {} : _addToMyProducts,
+                type: ButtonType.primary,
+                size: ButtonSize.full,
+                icon: Icons.add,
+                isLoading: _isAdding,
+                isEnabled: !_isAdding,
               ),
             ],
           ],

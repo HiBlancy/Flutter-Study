@@ -7,7 +7,12 @@ tema delete arreglarlo para hacerlo con token
 implementar en flutter tema de eliminar cuenta, con confirmacion
 añadir tema de paginacion de productos
 
+Crear los sub apartados de los productos -> tengo, quiero, eliminado
+dentro de los que tenga -> abierto y cerrado
+abiertos
+
 HECHO
 comprobar el funcionamiento de la camara
 pantalla nueva para el cambio de datos (nombre y contraseña)
 los elementos que se ven en base de datos, guardarlos
+Eliminar porductos desde flutter

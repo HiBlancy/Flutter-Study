@@ -1,3 +1,5 @@
+// lib/screens/home_screen.dart (actualizado)
+
 import 'package:flutter/material.dart';
 import '../models/beauty_product.dart';
 import '../services/auth_service.dart';
@@ -30,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isLoading = true);
     
     final name = await _authService.getUserName();
-    final products = await _productService.getProducts(listType: 'wishlist');
+    final products = await _productService.getProducts();
 
     if (mounted) {
       setState(() {
@@ -43,6 +45,48 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _refreshData() async {
     await _loadUserData();
+  }
+
+  // ✅ Nuevo método para navegar al detalle del producto y esperar resultado
+  Future<void> _navigateToProduct(BeautyProduct product) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductScreen(
+          product: product,
+          isFromSearch: false,
+        ),
+      ),
+    );
+    
+    // ✅ Si el resultado es true, significa que se eliminó el producto
+    if (result == true) {
+      // Recargar la lista de productos
+      await _loadUserData();
+      
+      // Mostrar mensaje opcional
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Lista de productos actualizada'),
+            backgroundColor: Colors.grey,
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+    } else if (result is BeautyProduct) {
+      // Producto actualizado
+      await _loadUserData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Producto actualizado correctamente'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -239,14 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductScreen(product: product),
-            ),
-          );
-        },
+        onTap: () => _navigateToProduct(product), // ✅ Usar el nuevo método
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(12),
