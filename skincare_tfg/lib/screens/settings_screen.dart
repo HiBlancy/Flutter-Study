@@ -11,7 +11,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dividerColor = theme.colorScheme.onSurface.withOpacity(0.1);
+    final dividerColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
     return CustomAppBar(
       title: AppLocalizations.of(context)!.settings,
@@ -72,7 +72,7 @@ class _NotificationTileState extends State<_NotificationTile> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
     final l10n = AppLocalizations.of(context)!;
 
     return ListTile(
@@ -81,7 +81,18 @@ class _NotificationTileState extends State<_NotificationTile> {
       subtitle: Text(l10n.notifText, style: TextStyle(color: subtleText)),
       trailing: Switch(
         value: _notificationsEnabled,
-        activeColor: theme.colorScheme.primary, // Switch del color de la marca
+        thumbColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
+            return theme.colorScheme.primary; // Color de tu marca cuando está activo
+          }
+          return null; // Devuelve null para usar el color por defecto cuando está inactivo
+        }),
+        trackColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
+            return theme.colorScheme.primary.withValues(alpha: 0.5); 
+          }
+          return null; 
+        }),
         onChanged: (bool value) {
           setState(() {
             _notificationsEnabled = value;
@@ -152,7 +163,7 @@ class _LanguageTile extends StatelessWidget {
     final localeProvider = Provider.of<LocaleProvider>(context);
     final currentLocale = localeProvider.locale.languageCode;
     final theme = Theme.of(context);
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
     
     return Column(
       children: [
@@ -193,7 +204,7 @@ class _AboutTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     final l10n = AppLocalizations.of(context)!;
 

@@ -178,7 +178,7 @@ class _ProductScreenState extends State<ProductScreen> {
               Text(
                 '¿Cuándo abriste este producto?',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7)
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7)
                 )
               ),
               const SizedBox(height: 16),
@@ -201,7 +201,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     if (picked != null) setDialogState(() => selectedDate = picked);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                     foregroundColor: theme.colorScheme.primary,
                     elevation: 0,
                   ),
@@ -213,7 +213,7 @@ class _ProductScreenState extends State<ProductScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false), 
-              child: Text('Cancelar', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)))
+              child: Text('Cancelar', style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6)))
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true), 
@@ -292,7 +292,7 @@ class _ProductScreenState extends State<ProductScreen> {
               value: _currentProduct.barcode.isNotEmpty ? _currentProduct.barcode : '—'
             ),
             if (isProductSaved) _buildProductDetails(theme),
-            Divider(height: 32, color: theme.colorScheme.onSurface.withOpacity(0.1)),
+            Divider(height: 32, color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
             if (_currentProduct.categories?.isNotEmpty == true) _buildCategories(theme),
             const SizedBox(height: 24),
             _buildActionButtons(isProductSaved, showAddButton),
@@ -356,7 +356,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Widget _buildProductHeader(ThemeData theme) {
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,7 +400,7 @@ class _ProductScreenState extends State<ProductScreen> {
   Widget _buildProductDetails(ThemeData theme) {
     final isReallyOpened = _currentProduct.isOpened == true && _currentProduct.openedDate != null;
     final hasExpirationInfo = (_currentProduct.periodAfterOpening?.isNotEmpty == true) || (_currentProduct.expirationDate != null);
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,7 +423,7 @@ class _ProductScreenState extends State<ProductScreen> {
         ],
         if (isReallyOpened && !hasExpirationInfo) _buildExpirationWarning(theme),
         if (_currentProduct.notes?.isNotEmpty == true) ...[
-          Divider(height: 32, color: theme.colorScheme.onSurface.withOpacity(0.1)),
+          Divider(height: 32, color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
           Text(
             'Notas', 
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: subtleText)
@@ -440,8 +440,8 @@ class _ProductScreenState extends State<ProductScreen> {
     
     // Naranja dinámico adaptado al tema para que no deslumbre en la oscuridad
     final warningColor = isDarkMode ? Colors.orange[300]! : Colors.orange[800]!;
-    final bgColor = Colors.orange.withOpacity(0.15);
-    final borderColor = warningColor.withOpacity(0.3);
+    final bgColor = Colors.orange.withValues(alpha: 0.15);
+    final borderColor = warningColor.withValues(alpha: 0.3);
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
@@ -466,7 +466,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'Edita el producto para añadir su duración después de abierto (ej: "6M") o una fecha de caducidad.',
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.7)),
+                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
                 ),
               ],
             ),
@@ -477,8 +477,8 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Widget _buildCategories(ThemeData theme) {
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
-    final chipBg = theme.colorScheme.onSurface.withOpacity(0.08);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    final chipBg = theme.colorScheme.onSurface.withValues(alpha: 0.08);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -588,8 +588,8 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final subtleIcon = theme.colorScheme.onSurface.withOpacity(0.5);
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleIcon = theme.colorScheme.onSurface.withValues(alpha: 0.5);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return Row(
       children: [
@@ -612,13 +612,13 @@ class _PlaceholderImage extends StatelessWidget {
       height: 220,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: theme.colorScheme.onSurface.withOpacity(0.05),
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Icon(
         Icons.spa_outlined, 
         size: 72, 
-        color: theme.colorScheme.onSurface.withOpacity(0.4)
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.4)
       ),
     );
   }

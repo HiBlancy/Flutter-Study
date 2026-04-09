@@ -91,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Text(
           message,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.7)
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7)
           )
         ),
         actions: [
@@ -207,7 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _buildHeader(ThemeData theme) => Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: theme.colorScheme.primary.withOpacity(0.1),
+      color: theme.colorScheme.primary.withValues(alpha: 0.1),
       shape: BoxShape.circle,
     ),
     child: Icon(
@@ -218,7 +218,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   );
 
   Widget _buildTermsCheckbox(ThemeData theme) {
-    final textColor = theme.colorScheme.onSurface.withOpacity(0.7);
+    final textColor = theme.colorScheme.onSurface.withValues(alpha: 0.7);
     final linkColor = theme.colorScheme.primary; // Reemplaza al azul por defecto
 
     return Row(
@@ -270,7 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: [
         Text(
           '¿Ya tienes una cuenta? ',
-          style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+          style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
         ),
         context.textButton(
           'Iniciar Sesión',

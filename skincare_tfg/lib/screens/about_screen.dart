@@ -8,7 +8,7 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return CustomAppBar(
       title: 'Acerca de',
@@ -24,7 +24,7 @@ class AboutScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -60,7 +60,7 @@ class AboutScreen extends StatelessWidget {
                 'Aplicación para el cuidado de la piel y \nseguimiento de tus rutinas de belleza.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.8),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                   height: 1.5,
                 ),
               ),

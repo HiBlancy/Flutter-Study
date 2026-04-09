@@ -17,6 +17,33 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get login => 'Iniciar Sesión';
+
+  @override
+  String get createAcount => 'Crear Cuenta';
+
+  @override
+  String get email => 'Correo electrónico';
+
+  @override
+  String get userEmailExample => 'usuario@ejemplo.com';
+
+  @override
+  String get enterEmailAddress => 'Ingrese su correo';
+
+  @override
+  String get invalidAddress => 'Correo inválido';
+
+  @override
+  String get password => 'Contraseña';
+
+  @override
+  String get enterPass => 'Ingrese su contraseña';
+
+  @override
+  String get pass6Char => 'Mínimo 6 caracteres';
+
+  @override
   String get myProducts => 'My products';
 
   @override

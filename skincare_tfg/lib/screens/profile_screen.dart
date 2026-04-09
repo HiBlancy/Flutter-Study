@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
 import '../widgets/main_toolbar.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart'; // Descomenta esto cuando añadas los textos a tus .arb
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -10,140 +10,211 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _authService = AuthService();
-  String _userName = '';
-  String _userEmail = '';
-  bool _isLoading = true;
+  // Mapa de categorías principales y sus subcategorías (las "pelotitas")
+  // Nota: Estos textos los puedes pasar a tu archivo .arb más adelante
+  final Map<String, List<Map<String, dynamic>>> _stashData = {
+    'Facial': [
+      {'name': 'Limpiador', 'icon': Icons.water_drop_outlined},
+      {'name': 'Tónico', 'icon': Icons.opacity},
+      {'name': 'Sérum', 'icon': Icons.science_outlined},
+      {'name': 'Hidratante', 'icon': Icons.spa_outlined},
+      {'name': 'Contorno', 'icon': Icons.visibility_outlined},
+      {'name': 'Solar', 'icon': Icons.wb_sunny_outlined},
+    ],
+    'Corporal': [
+      {'name': 'Gel', 'icon': Icons.shower_outlined},
+      {'name': 'Exfoliante', 'icon': Icons.grain},
+      {'name': 'Crema', 'icon': Icons.clean_hands_outlined},
+      {'name': 'Manos', 'icon': Icons.front_hand_outlined},
+      {'name': 'Desodorante', 'icon': Icons.air},
+    ],
+    'Capilar': [
+      {'name': 'Champú', 'icon': Icons.wash_outlined},
+      {'name': 'Acondicionador', 'icon': Icons.water_outlined},
+      {'name': 'Mascarilla', 'icon': Icons.face_retouching_natural},
+      {'name': 'Aceite', 'icon': Icons.liquor_outlined},
+    ],
+    'Maquillaje': [
+      {'name': 'Base', 'icon': Icons.brush_outlined},
+      {'name': 'Corrector', 'icon': Icons.edit_outlined},
+      {'name': 'Ojos', 'icon': Icons.remove_red_eye_outlined},
+      {'name': 'Labios', 'icon': Icons.face_4_outlined},
+    ],
+  };
+
+  // Variable para recordar qué "pelotita" está seleccionada en cada pestaña
+  final Map<String, String> _selectedSubcategories = {};
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    setState(() => _isLoading = true);
-    
-    final name = await _authService.getUserName();
-    final email = await _authService.getUserEmail();
-    
-    if (mounted) {
-      setState(() {
-        _userName = name ?? 'Usuario';
-        _userEmail = email ?? 'usuario@ejemplo.com';
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _refreshData() async {
-    await _loadUserData();
+    // Seleccionar por defecto la primera pelotita de cada categoría
+    _stashData.forEach((key, value) {
+      if (value.isNotEmpty) {
+        _selectedSubcategories[key] = value.first['name'];
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final tabs = _stashData.keys.toList();
 
-    return CustomAppBar(
-      title: 'Mi Perfil',
-      showDrawer: true,
-      showBackButton: false,
-      child: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator(color: theme.colorScheme.primary))
-            : SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 32),
-                    _buildProfileAvatar(theme),
-                    const SizedBox(height: 24),
-                    _buildUserName(theme),
-                    const SizedBox(height: 8),
-                    _buildUserEmail(theme),
-                    const SizedBox(height: 32),
-                    _buildProfileOptions(theme, context),
-                  ],
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _buildProfileAvatar(ThemeData theme) {
-    return CircleAvatar(
-      radius: 60,
-      backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-      child: Icon(Icons.person, size: 70, color: theme.colorScheme.primary),
-    );
-  }
-
-  Widget _buildUserName(ThemeData theme) {
-    return Text(
-      _userName,
-      style: theme.textTheme.headlineSmall?.copyWith(
-        fontWeight: FontWeight.bold,
-        color: theme.colorScheme.primary,
-      ),
-    );
-  }
-
-  Widget _buildUserEmail(ThemeData theme) {
-    return Text(
-      _userEmail,
-      style: theme.textTheme.bodyLarge?.copyWith(
-        color: theme.colorScheme.onSurface.withOpacity(0.6),
-      ),
-    );
-  }
-
-  // Menú de opciones añadido para conectar con tus otras pantallas
-  Widget _buildProfileOptions(ThemeData theme, BuildContext context) {
-    final subtleIcon = theme.colorScheme.onSurface.withOpacity(0.4);
-    final dividerColor = theme.colorScheme.onSurface.withOpacity(0.1);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Divider(color: dividerColor),
-          ListTile(
-            leading: Icon(Icons.edit, color: theme.colorScheme.primary),
-            title: const Text('Editar Perfil'),
-            trailing: Icon(Icons.chevron_right, color: subtleIcon),
-            onTap: () {
-              // Navega a la pantalla de edición y refresca al volver
-              // Asegúrate de que la ruta '/edit' sea correcta según tu enrutamiento
-              Navigator.pushNamed(context, '/edit').then((_) => _refreshData());
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.settings, color: theme.colorScheme.primary),
-            title: const Text('Configuración'),
-            trailing: Icon(Icons.chevron_right, color: subtleIcon),
-            onTap: () {
-              // Asegúrate de que la ruta '/settings' coincida con tu main.dart
-              Navigator.pushNamed(context, '/settings');
-            },
-          ),
-          Divider(color: dividerColor),
-          ListTile(
-            leading: Icon(Icons.logout, color: theme.colorScheme.error),
-            title: Text(
-              'Cerrar Sesión', 
-              style: TextStyle(color: theme.colorScheme.error, fontWeight: FontWeight.w600)
-            ),
-            onTap: () async {
-              await _authService.logout();
-              if (context.mounted) {
-                // Vuelve a la pantalla de login (ajusta la ruta '/' si es distinta)
-                Navigator.pushReplacementNamed(context, '/');
-              }
-            },
+    return DefaultTabController(
+      length: tabs.length,
+      child: CustomAppBar(
+        title: 'Mi Tocador', // O l10n.myVanity
+        showDrawer: true,
+        showBackButton: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+            tooltip: 'Configuración',
           ),
         ],
+        child: Column(
+          children: [
+            // 1. BARRA DE PESTAÑAS (Categorías Principales)
+            Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                border: Border(
+                  bottom: BorderSide(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: TabBar(
+                isScrollable: true, // Permite deslizar si hay muchas pestañas
+                indicatorColor: theme.colorScheme.primary,
+                labelColor: theme.colorScheme.primary,
+                unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                labelStyle: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                tabs: tabs.map((tab) => Tab(text: tab)).toList(),
+              ),
+            ),
+            
+            // 2. CONTENIDO DE CADA PESTAÑA
+            Expanded(
+              child: TabBarView(
+                children: tabs.map((tab) {
+                  return _buildTabContent(tab, theme);
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildTabContent(String categoryName, ThemeData theme) {
+    final subcategories = _stashData[categoryName] ?? [];
+    final selectedSub = _selectedSubcategories[categoryName];
+
+    return Column(
+      children: [
+        // SCROLL HORIZONTAL DE "PELOTITAS"
+        Container(
+          height: 110,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: subcategories.length,
+            itemBuilder: (context, index) {
+              final sub = subcategories[index];
+              final isSelected = sub['name'] == selectedSub;
+              
+              return Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedSubcategories[categoryName] = sub['name'];
+                    });
+                  },
+                  child: Column(
+                    children: [
+                      // La Pelotita
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isSelected 
+                              ? theme.colorScheme.primary 
+                              : theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                          border: Border.all(
+                            color: isSelected 
+                                ? theme.colorScheme.primary 
+                                : theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                            width: 2,
+                          ),
+                        ),
+                        // NOTA: Aquí es donde podrás cambiar Icon() por Image.asset() o Image.network()
+                        child: Icon(
+                          sub['icon'] as IconData,
+                          size: 28,
+                          color: isSelected 
+                              ? theme.colorScheme.onPrimary 
+                              : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      // El Nombre debajo de la pelotita
+                      Text(
+                        sub['name'] as String,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          color: isSelected 
+                              ? theme.colorScheme.primary 
+                              : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        
+        Divider(height: 1, color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+        
+        // ZONA DE PRODUCTOS (Dependerá de la pelotita seleccionada)
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  subcategories.firstWhere((s) => s['name'] == selectedSub)['icon'] as IconData,
+                  size: 64,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Tus productos de $selectedSub',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Aún no has categorizado ningún producto aquí',
+                  style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -169,8 +169,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildExpiringSoonProducts() {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
-    final borderColor = theme.colorScheme.onSurface.withOpacity(0.1);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    final borderColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
     final now = DateTime.now();
     final expiringSoon = _products.where((product) {
@@ -258,18 +258,18 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     
-    final subtleBg = theme.colorScheme.onSurface.withOpacity(0.05);
-    final subtleIcon = theme.colorScheme.onSurface.withOpacity(0.4);
-    final subtitleColor = theme.colorScheme.onSurface.withOpacity(0.6);
-    final borderColor = theme.colorScheme.onSurface.withOpacity(0.1);
+    final subtleBg = theme.colorScheme.onSurface.withValues(alpha: 0.05);
+    final subtleIcon = theme.colorScheme.onSurface.withValues(alpha: 0.4);
+    final subtitleColor = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    final borderColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
     final daysUntilExpiration = product.expirationDate!.difference(DateTime.now()).inDays;
     final isDanger = daysUntilExpiration <= 7;
 
     // Colores dinámicos para la etiqueta de caducidad
     final badgeBgColor = isDanger
-        ? theme.colorScheme.error.withOpacity(0.15)
-        : Colors.orange.withOpacity(0.15);
+        ? theme.colorScheme.error.withValues(alpha: 0.15)
+        : Colors.orange.withValues(alpha: 0.15);
         
     final badgeTextColor = isDanger
         ? (isDarkMode ? Colors.red[300] : theme.colorScheme.error)
@@ -380,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final borderColor = theme.colorScheme.onSurface.withOpacity(0.1);
+    final borderColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
     return Card(
       elevation: isDarkMode ? 0 : 2,
@@ -405,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 subtitle,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.5)
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5)
                 ),
                 textAlign: TextAlign.center,
               ),

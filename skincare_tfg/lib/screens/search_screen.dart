@@ -21,16 +21,16 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _onSearch(String query) async {
     if (query.trim().length < 2) {
-      setState(() { 
-        _results = []; 
-        _hasSearched = false; 
+      setState(() {
+        _results = [];
+        _hasSearched = false;
       });
       return;
     }
 
-    setState(() { 
-      _isLoading = true; 
-      _errorMessage = null; 
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
     });
 
     try {
@@ -50,10 +50,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _clearSearch() {
     _searchController.clear();
-    setState(() { 
-      _results = []; 
-      _hasSearched = false; 
-      _errorMessage = null; 
+    setState(() {
+      _results = [];
+      _hasSearched = false;
+      _errorMessage = null;
     });
   }
 
@@ -61,10 +61,8 @@ class _SearchScreenState extends State<SearchScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductScreen(
-          product: product,
-          isFromSearch: true,
-        ),
+        builder: (context) =>
+            ProductScreen(product: product, isFromSearch: true),
       ),
     );
   }
@@ -78,8 +76,8 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final searchBgColor = theme.colorScheme.onSurface.withOpacity(0.05);
-    final subtleIcon = theme.colorScheme.onSurface.withOpacity(0.6);
+    final searchBgColor = theme.colorScheme.onSurface.withValues(alpha: 0.05);
+    final subtleIcon = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return CustomAppBar(
       title: 'Buscar productos',
@@ -97,7 +95,9 @@ class _SearchScreenState extends State<SearchScreen> {
               style: theme.textTheme.bodyMedium,
               decoration: InputDecoration(
                 hintText: 'Buscar por nombre o marca...',
-                hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.4)),
+                hintStyle: TextStyle(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                ),
                 prefixIcon: Icon(Icons.search, color: subtleIcon),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -111,16 +111,17 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 filled: true,
                 fillColor: searchBgColor, // Fondo dinámico
-                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 0,
+                  horizontal: 20,
+                ),
               ),
               onChanged: (v) => setState(() {}),
             ),
           ),
 
           // Contenido principal
-          Expanded(
-            child: _buildBody(),
-          ),
+          Expanded(child: _buildBody()),
         ],
       ),
     );
@@ -128,8 +129,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildBody() {
     final theme = Theme.of(context);
-    final subtleText = theme.colorScheme.onSurface.withOpacity(0.6);
-    final subtleIcon = theme.colorScheme.onSurface.withOpacity(0.4);
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    final subtleIcon = theme.colorScheme.onSurface.withValues(alpha: 0.4);
 
     if (_isLoading) {
       return Center(
@@ -166,10 +167,15 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             Icon(Icons.search_off, size: 48, color: subtleIcon),
             const SizedBox(height: 12),
-            Text('No se encontraron productos', style: TextStyle(color: subtleText)),
+            Text(
+              'No se encontraron productos',
+              style: TextStyle(color: subtleText),
+            ),
             const SizedBox(height: 8),
-            Text('Prueba con otro término de búsqueda',
-              style: TextStyle(fontSize: 12, color: subtleText)),
+            Text(
+              'Prueba con otro término de búsqueda',
+              style: TextStyle(fontSize: 12, color: subtleText),
+            ),
           ],
         ),
       );
@@ -200,8 +206,10 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: _results.length,
       separatorBuilder: (_, __) => Divider(
-        height: 1, 
-        color: theme.colorScheme.onSurface.withOpacity(0.1) // Divisor adaptativo
+        height: 1,
+        color: theme.colorScheme.onSurface.withValues(
+          alpha: 0.1,
+        ), // Divisor adaptativo
       ),
       itemBuilder: (context, index) => _ProductTile(
         product: _results[index],
@@ -215,15 +223,12 @@ class _ProductTile extends StatelessWidget {
   final BeautyProduct product;
   final VoidCallback onTap;
 
-  const _ProductTile({
-    required this.product,
-    required this.onTap,
-  });
+  const _ProductTile({required this.product, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final subtleIcon = theme.colorScheme.onSurface.withOpacity(0.4);
+    final subtleIcon = theme.colorScheme.onSurface.withValues(alpha: 0.4);
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -235,7 +240,8 @@ class _ProductTile extends StatelessWidget {
                 width: 56,
                 height: 56,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _PlaceholderImage(),
+                errorBuilder: (context, error, stackTrace) =>
+                    _PlaceholderImage(),
               )
             : _PlaceholderImage(),
       ),
@@ -243,19 +249,26 @@ class _ProductTile extends StatelessWidget {
         product.name,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
-        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
       subtitle: product.brand != null && product.brand!.isNotEmpty
           ? Text(
               product.brand!,
               style: TextStyle(
                 fontSize: 12,
-                color: theme.colorScheme.primary, // Resalta la marca con tu color ciruela/rosa
+                color: theme
+                    .colorScheme
+                    .primary, // Resalta la marca con tu color ciruela/rosa
                 fontWeight: FontWeight.w500,
               ),
             )
           : null,
-      trailing: Icon(Icons.chevron_right, color: subtleIcon), // Adiós Colors.grey
+      trailing: Icon(
+        Icons.chevron_right,
+        color: subtleIcon,
+      ), // Adiós Colors.grey
       onTap: onTap,
     );
   }
@@ -269,12 +282,14 @@ class _PlaceholderImage extends StatelessWidget {
       width: 56,
       height: 56,
       decoration: BoxDecoration(
-        color: theme.colorScheme.onSurface.withOpacity(0.05), // Fondo dinámico
+        color: theme.colorScheme.onSurface.withValues(
+          alpha: 0.05,
+        ), // Fondo dinámico
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(
-        Icons.spa_outlined, 
-        color: theme.colorScheme.onSurface.withOpacity(0.4)
+        Icons.spa_outlined,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
       ),
     );
   }

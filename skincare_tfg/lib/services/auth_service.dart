@@ -17,6 +17,8 @@ class AuthService {
     await prefs.setString(AppConstants.prefUserEmail, userData['email'] ?? '');
     await prefs.setString(AppConstants.prefUserName, userData['name'] ?? '');
     await prefs.setString(AppConstants.prefUserId, userData['_id'] ?? '');
+    await prefs.setString(AppConstants.prefUserPhone, userData['phone'] ?? '');
+    await prefs.setString(AppConstants.prefUserBD, userData['birthDate'] ?? '');
     await prefs.setBool(AppConstants.prefIsLoggedIn, true);
     
     print('✅ Sesión guardada - Email: ${userData['email']}, Name: ${userData['name']}');
@@ -46,6 +48,19 @@ class AuthService {
   Future<String?> getUserId() async {
     final prefs = await _prefs;
     return prefs.getString(AppConstants.prefUserId);
+  }
+
+  
+  // Obtener teléfono
+  Future<String?> getUserPhone() async {
+    final prefs = await _prefs;
+    return prefs.getString(AppConstants.prefUserPhone);
+  }
+
+  // Obtener fecha de nacimiento
+  Future<String?> getUserBirthDate() async {
+    final prefs = await _prefs;
+    return prefs.getString(AppConstants.prefUserBD);
   }
   
   // Verificar si está autenticado
@@ -202,11 +217,11 @@ Future<Map<String, dynamic>?> login(String email, String password) async {
           await prefs.setString(AppConstants.prefUserName, updatedUser['name']);
         }
         if (updatedUser['phone'] != null) {
-          await prefs.setString('user_phone', updatedUser['phone']);
+          await prefs.setString(AppConstants.prefUserPhone, updatedUser['phone']);
         }
         if (updatedUser['birthDate'] != null) {
           // Guardar en formato ISO para consistencia
-          await prefs.setString('user_birth_date', updatedUser['birthDate']);
+          await prefs.setString(AppConstants.prefUserBD, updatedUser['birthDate']);
         }
         
         print('✅ Usuario actualizado correctamente');
@@ -222,18 +237,6 @@ Future<Map<String, dynamic>?> login(String email, String password) async {
   }
 }
 
-  // Obtener teléfono
-  Future<String?> getUserPhone() async {
-    final prefs = await _prefs;
-    return prefs.getString('user_phone');
-  }
-
-  // Obtener fecha de nacimiento
-  Future<String?> getUserBirthDate() async {
-    final prefs = await _prefs;
-    return prefs.getString('user_birth_date');
-  }
-
   // Cerrar sesión
   Future<void> logout() async {
     final prefs = await _prefs;
@@ -241,6 +244,8 @@ Future<Map<String, dynamic>?> login(String email, String password) async {
     await prefs.remove(AppConstants.prefUserEmail);
     await prefs.remove(AppConstants.prefUserName);
     await prefs.remove(AppConstants.prefUserId);
+    await prefs.remove(AppConstants.prefUserPhone);
+    await prefs.remove(AppConstants.prefUserBD);
     await prefs.setBool(AppConstants.prefIsLoggedIn, false);
     print('👋 Sesión cerrada');
   }

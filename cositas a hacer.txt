@@ -7,18 +7,12 @@ tema delete arreglarlo para hacerlo con token
 implementar en flutter tema de eliminar cuenta, con confirmacion
 añadir tema de paginacion de productos
 
-Crear los sub apartados de los productos -> tengo, quiero, eliminado
-dentro de los que tenga -> abierto y cerrado
-abiertos
+categorizar listas de abierto/cerrado -> y como verlo?
+poder cambiar de lista a un producto desde el mismo producto, MISMO PRODUCTO
 
-en todos productos estarán los apartados, que son tengo, abiertos, deseados...
-
-poder cambiar de lista a un producto desde el mismo producto
-tema de añadir un producto manualmente -> puede hacerlo a raíz de escanear o manual
 añadir imagen manualmente si quiere (importar y o link?)
 añadir producto desde el scaneo si no existe
-modificar apartado de perfil con ver mis productos?
-DONDE BOTON DE ANADIR PRODUCTO NUEVO
+
 
 HECHO
 comprobar el funcionamiento de la camara
@@ -29,3 +23,8 @@ editar, abrir y cerrar producto, fechas de caducidad
 poder cambiar de lista a un producto
 VER TODOS LOS PRODUCTOS
 principal, en orden de los productos abiertos próximos a su caducidad
+pintar la info de telefono y fecha en perfil, se ven en bbdd
+DONDE BOTON DE ANADIR PRODUCTO NUEVO
+tema de añadir un producto manualmente -> puede hacerlo a raíz de escanear o manual
+Crear los sub apartados de los productos -> tengo, quiero, eliminado
+modificar apartado de perfil con ver mis productos?

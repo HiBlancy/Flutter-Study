@@ -129,9 +129,9 @@ class CustomButton extends StatelessWidget {
     }
     
     // Ajustar opacidad si está deshabilitado para que se vea bien en cualquier fondo
-    final bgColor = isEnabled ? defaultBgColor : defaultBgColor.withOpacity(0.3);
-    final txtColor = isEnabled ? defaultTextColor : defaultTextColor.withOpacity(0.5);
-    final brdColor = isEnabled ? defaultBorderColor : defaultBorderColor.withOpacity(0.3);
+    final bgColor = isEnabled ? defaultBgColor : defaultBgColor.withValues(alpha: 0.3);
+    final txtColor = isEnabled ? defaultTextColor : defaultTextColor.withValues(alpha: 0.5);
+    final brdColor = isEnabled ? defaultBorderColor : defaultBorderColor.withValues(alpha: 0.3);
     
     return ElevatedButton.styleFrom(
       backgroundColor: bgColor,

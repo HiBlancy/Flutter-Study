@@ -34,7 +34,7 @@ class CustomTextField extends StatelessWidget {
     // Usamos el color 'onSurface' (el color del texto principal) pero con opacidad
     // para crear los iconos y labels. Esto asegura que se vea bien en ambos modos
     // sin tener que usar isDarkMode constantemente.
-    final subtleColor = theme.colorScheme.onSurface.withOpacity(0.6);
+    final subtleColor = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return TextFormField(
       controller: controller,
@@ -47,7 +47,7 @@ class CustomTextField extends StatelessWidget {
         labelText: label,
         labelStyle: theme.textTheme.bodySmall?.copyWith(color: subtleColor),
         hintText: hint,
-        hintStyle: theme.textTheme.bodySmall?.copyWith(color: subtleColor.withOpacity(0.4)),
+        hintStyle: theme.textTheme.bodySmall?.copyWith(color: subtleColor.withValues(alpha: 0.4)),
         
         prefixIcon: Icon(
           prefixIcon,

@@ -145,7 +145,7 @@ class CustomAppBar extends StatelessWidget {
               Text(
                 userEmail,
                 style: TextStyle(
-                  color: theme.colorScheme.onPrimary.withOpacity(0.7),
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
                   fontSize: 12,
                 ),
               ),

@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
         content: Text(
           customMessage ?? 'Usuario o contraseña incorrectos',
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.7)
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7)
           )
         ),
         actions: [
@@ -93,9 +93,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return WillPopScope(
-      onWillPop: () async {
-        final confirm = await showDialog<bool>(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
             backgroundColor: theme.colorScheme.surface,
@@ -104,13 +107,13 @@ class _LoginScreenState extends State<LoginScreen> {
             content: Text(
               '¿Quieres salir de la aplicación?',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7)
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7)
               )
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: Text('Cancelar', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6))),
+                child: Text('Cancelar', style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
               ),
               TextButton(
                 onPressed: () => SystemNavigator.pop(),
@@ -119,7 +122,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         );
-        return confirm ?? false;
       },
       child: Scaffold(
         body: SafeArea(

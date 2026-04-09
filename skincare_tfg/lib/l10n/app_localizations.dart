@@ -110,6 +110,60 @@ abstract class AppLocalizations {
   /// **'¡Hola {name}!'**
   String helloUser(String name);
 
+  /// No description provided for @login.
+  ///
+  /// In es, this message translates to:
+  /// **'Iniciar Sesión'**
+  String get login;
+
+  /// No description provided for @createAcount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get createAcount;
+
+  /// No description provided for @email.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico'**
+  String get email;
+
+  /// No description provided for @userEmailExample.
+  ///
+  /// In es, this message translates to:
+  /// **'usuario@ejemplo.com'**
+  String get userEmailExample;
+
+  /// No description provided for @enterEmailAddress.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingrese su correo'**
+  String get enterEmailAddress;
+
+  /// No description provided for @invalidAddress.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo inválido'**
+  String get invalidAddress;
+
+  /// No description provided for @password.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get password;
+
+  /// No description provided for @enterPass.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingrese su contraseña'**
+  String get enterPass;
+
+  /// No description provided for @pass6Char.
+  ///
+  /// In es, this message translates to:
+  /// **'Mínimo 6 caracteres'**
+  String get pass6Char;
+
   /// No description provided for @myProducts.
   ///
   /// In es, this message translates to:

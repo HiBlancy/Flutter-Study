@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
             AppConstants.routeRegister: (context) => const RegisterScreen(),
             AppConstants.routeLogin: (context) => const LoginScreen(),
             AppConstants.routeHome: (context) => const BottomNavBar(),
-            AppConstants.routeProfile: (context) => const BottomNavBar(initialIndex: 3),
+            AppConstants.routeProfile: (context) => const BottomNavBar(initialIndex: 4),
             AppConstants.routeSettings: (context) => const SettingsScreen(),
             AppConstants.routeEdit: (context) => const EditScreen(),
             AppConstants.routeAbout: (context) => const AboutScreen(),

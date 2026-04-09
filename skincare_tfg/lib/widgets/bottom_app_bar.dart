@@ -1,3 +1,4 @@
+import 'package:dueglow/screens/add_product_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 import '../screens/search_screen.dart';
@@ -33,6 +34,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     _screens = const [
       HomeScreen(),
       SearchScreen(),
+      AddProductScreen(),
       ScanScreen(),
       ProfileScreen(),
     ];
@@ -49,8 +51,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     final theme = Theme.of(context);
     
     // Generamos los colores dinámicos basados en la opacidad del texto principal
-    final unselectedColor = theme.colorScheme.onSurface.withOpacity(0.5);
-    final borderColor = theme.colorScheme.onSurface.withOpacity(0.1);
+    final unselectedColor = theme.colorScheme.onSurface.withValues(alpha: 0.5);
+    final borderColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
     final defaultItems = const [
       BottomNavigationBarItem(
@@ -62,6 +64,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
         icon: Icon(Icons.search),
         activeIcon: Icon(Icons.search),
         label: 'Búsqueda',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(Icons.add),
+        activeIcon: Icon(Icons.add),
+        label: 'Nuevo',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.camera_alt_outlined),
