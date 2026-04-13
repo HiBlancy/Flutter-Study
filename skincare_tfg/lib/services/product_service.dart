@@ -20,7 +20,7 @@ class ProductService {
     final queryParams = {
       'page': page.toString(),
       'limit': limit.toString(),
-      if (listType != null) 'listType': listType,
+      'listType': ?listType,
     };
     
     final uri = Uri.parse(ApiConfig.getProductsUrl())

@@ -1,7 +1,8 @@
-// lib/widgets/edit_product_dialog.dart (adaptado)
+// lib/widgets/edit_product_dialog.dart
 
 import 'package:flutter/material.dart';
 import '../models/beauty_product.dart';
+import '../models/product_list_type.dart';
 import 'custom_button.dart';
 import 'custom_text_field.dart';
 
@@ -25,6 +26,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
   DateTime? _expirationDate;
   DateTime? _openedDate;
   late List<String> _categories;
+  late ProductListType _selectedListType;
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
     _expirationDate = p.expirationDate;
     _openedDate = p.openedDate;
     _categories = List.from(p.categories ?? []);
+    _selectedListType = ProductListType.fromNullable(p.listType);
   }
 
   @override
@@ -65,7 +68,6 @@ class _EditProductDialogState extends State<EditProductDialog> {
       lastDate: lastDate,
     );
     if (picked != null && mounted) {
-      // Convertimos a UTC a las 12:00 antes de guardar el estado
       final safeDate = DateTime.utc(picked.year, picked.month, picked.day, 12);
       setState(() => onDateSelected(safeDate));
     }
@@ -83,7 +85,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
   void _saveProduct() {
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('El nombre es obligatorio'))
+        const SnackBar(content: Text('El nombre es obligatorio')),
       );
       return;
     }
@@ -94,17 +96,23 @@ class _EditProductDialogState extends State<EditProductDialog> {
       id: widget.product.id,
       barcode: widget.product.barcode,
       name: _nameController.text.trim(),
-      brand: _brandController.text.trim().isEmpty ? null : _brandController.text.trim(),
+      brand: _brandController.text.trim().isEmpty
+          ? null
+          : _brandController.text.trim(),
       imageUrl: widget.product.imageUrl,
       categories: _categories.isEmpty ? null : _categories,
-      notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+      notes: _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
       rating: _rating,
-      listType: widget.product.listType,
+      listType: _selectedListType.value,
       expirationDate: _expirationDate,
-      periodAfterOpening: _periodAfterOpeningController.text.trim().isEmpty ? null : _periodAfterOpeningController.text.trim(),
-      openedDate: _openedDate, 
+      periodAfterOpening: _periodAfterOpeningController.text.trim().isEmpty
+          ? null
+          : _periodAfterOpeningController.text.trim(),
+      openedDate: _openedDate,
       addedAt: widget.product.addedAt,
-      isOpened: hasOpenedDate, 
+      isOpened: hasOpenedDate,
     );
 
     Navigator.pop(context, updatedProduct);
@@ -112,13 +120,12 @@ class _EditProductDialogState extends State<EditProductDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // Definimos colores sutiles reutilizables basados en el tema actual
     final theme = Theme.of(context);
     final subtleBorder = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      backgroundColor: theme.colorScheme.surface, // Fondo adaptativo
+      backgroundColor: theme.colorScheme.surface,
       child: Container(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.9,
@@ -126,21 +133,31 @@ class _EditProductDialogState extends State<EditProductDialog> {
         ),
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(theme),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Selector de lista
+                    _buildListSelector(theme, subtleBorder),
+                    const SizedBox(height: 20),
+                    
+                    // Nombre
                     CustomTextField(
                       controller: _nameController,
                       label: 'Nombre del producto *',
                       prefixIcon: Icons.spa,
                       hint: 'Ej: Crema hidratante facial',
-                      validator: (v) => v?.trim().isEmpty == true ? 'El nombre es obligatorio' : null,
+                      validator: (v) =>
+                          v?.trim().isEmpty == true
+                              ? 'El nombre es obligatorio'
+                              : null,
                     ),
                     const SizedBox(height: 16),
+                    
+                    // Marca
                     CustomTextField(
                       controller: _brandController,
                       label: 'Marca',
@@ -148,8 +165,12 @@ class _EditProductDialogState extends State<EditProductDialog> {
                       hint: 'Ej: L\'Oréal, Nivea, Garnier',
                     ),
                     const SizedBox(height: 16),
+                    
+                    // Calificación
                     _buildRatingSection(subtleBorder),
                     const SizedBox(height: 16),
+                    
+                    // Fecha de caducidad
                     _buildDateSelector(
                       icon: Icons.warning_amber,
                       iconColor: Colors.orange,
@@ -161,12 +182,15 @@ class _EditProductDialogState extends State<EditProductDialog> {
                       onTap: () => _selectDate(
                         initialDate: _expirationDate,
                         firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                        lastDate:
+                            DateTime.now().add(const Duration(days: 365 * 5)),
                         onDateSelected: (date) => _expirationDate = date,
                       ),
                       onClear: () => setState(() => _expirationDate = null),
                     ),
                     const SizedBox(height: 16),
+                    
+                    // Duración después de abrir
                     CustomTextField(
                       controller: _periodAfterOpeningController,
                       label: 'Duración después de abrir',
@@ -174,8 +198,12 @@ class _EditProductDialogState extends State<EditProductDialog> {
                       hint: 'Ej: 6 meses, 12M',
                     ),
                     const SizedBox(height: 16),
+                    
+                    // Categorías
                     _buildCategoriesSection(subtleBorder),
                     const SizedBox(height: 16),
+                    
+                    // Notas
                     CustomTextField(
                       controller: _notesController,
                       label: 'Notas adicionales',
@@ -194,26 +222,29 @@ class _EditProductDialogState extends State<EditProductDialog> {
     );
   }
 
-  // --- MÉTODOS DE CONSTRUCCIÓN DE UI ---
+  Widget _buildHeader(ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
 
-  Widget _buildHeader() {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    
-    // En claro usamos el primary (ciruela oscuro). En oscuro usamos un gris oscuro tintado con texto rosa.
-    final bgColor = isDarkMode ? theme.colorScheme.surface : theme.colorScheme.primary;
-    final fgColor = isDarkMode ? theme.colorScheme.primary : theme.colorScheme.onPrimary;
+    final bgColor = isDark ? theme.colorScheme.surface : theme.colorScheme.primary;
+    final fgColor =
+        isDark ? Color(0xfff4add8) : theme.colorScheme.onPrimary;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        border: isDarkMode ? Border(bottom: BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.1))) : null,
+        border: isDark
+            ? Border(
+                bottom: BorderSide(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                ),
+              )
+            : null,
       ),
       child: Row(
         children: [
-          Icon(Icons.edit, color: fgColor),
+          Icon(Icons.edit, color: fgColor, size: 24),
           const SizedBox(width: 12),
           Text(
             'Editar producto',
@@ -227,6 +258,91 @@ class _EditProductDialogState extends State<EditProductDialog> {
           IconButton(
             icon: Icon(Icons.close, color: fgColor),
             onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListSelector(ThemeData theme, Color borderColor) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(12),
+        color: _selectedListType.color.withValues(alpha: 0.08),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Lista',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: ProductListType.values.map((type) {
+                final isSelected = _selectedListType == type;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () => setState(() => _selectedListType = type),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? type.color
+                            : type.color.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: type.color,
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            type.icon,
+                            color: isSelected ? Colors.white : type.color,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            type.label,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : type.color,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          ),
+                          if (isSelected) ...[
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         ],
       ),
@@ -249,7 +365,10 @@ class _EditProductDialogState extends State<EditProductDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Calificación', style: TextStyle(fontSize: 12, color: subtleText)),
+              Text(
+                'Calificación',
+                style: TextStyle(fontSize: 12, color: subtleText),
+              ),
               if (_rating != null)
                 TextButton(
                   onPressed: () => setState(() => _rating = null),
@@ -258,7 +377,10 @@ class _EditProductDialogState extends State<EditProductDialog> {
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: Text('Limpiar', style: TextStyle(fontSize: 11, color: theme.colorScheme.error)),
+                  child: Text(
+                    'Limpiar',
+                    style: TextStyle(fontSize: 11, color: theme.colorScheme.error),
+                  ),
                 ),
             ],
           ),
@@ -317,7 +439,9 @@ class _EditProductDialogState extends State<EditProductDialog> {
               child: Text(
                 text,
                 style: TextStyle(
-                  color: isActive ? theme.colorScheme.onSurface : subtleText,
+                  color: isActive
+                      ? theme.colorScheme.onSurface
+                      : subtleText,
                 ),
               ),
             ),
@@ -353,7 +477,10 @@ class _EditProductDialogState extends State<EditProductDialog> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Categorías', style: TextStyle(fontSize: 12, color: subtleText)),
+              Text(
+                'Categorías',
+                style: TextStyle(fontSize: 12, color: subtleText),
+              ),
               if (_categories.isNotEmpty)
                 TextButton(
                   onPressed: () => setState(() => _categories.clear()),
@@ -362,7 +489,11 @@ class _EditProductDialogState extends State<EditProductDialog> {
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: Text('Eliminar todas', style: TextStyle(fontSize: 11, color: theme.colorScheme.error)),
+                  child: Text(
+                    'Eliminar todas',
+                    style:
+                        TextStyle(fontSize: 11, color: theme.colorScheme.error),
+                  ),
                 ),
             ],
           ),
@@ -376,7 +507,8 @@ class _EditProductDialogState extends State<EditProductDialog> {
                     label: Text(cat, style: theme.textTheme.bodySmall),
                     backgroundColor: chipBg,
                     side: BorderSide.none,
-                    deleteIcon: Icon(Icons.close, size: 18, color: theme.colorScheme.error),
+                    deleteIcon:
+                        Icon(Icons.close, size: 18, color: theme.colorScheme.error),
                     onDeleted: () => setState(() => _categories.remove(cat)),
                   ),
                 )

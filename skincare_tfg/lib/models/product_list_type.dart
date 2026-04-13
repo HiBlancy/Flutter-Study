@@ -13,10 +13,21 @@ enum ProductListType {
 
   const ProductListType(this.value, this.label, this.icon, this.color);
 
+  /// Convierte un String a ProductListType
+  /// Si es null o no existe, devuelve 'have'
   static ProductListType fromValue(String value) {
-    return values.firstWhere(
-      (type) => type.value == value,
-      orElse: () => have,
-    );
+    try {
+      return values.firstWhere((type) => type.value == value);
+    } catch (e) {
+      return have;
+    }
+  }
+
+  /// Versión que acepta explícitamente nullable
+  static ProductListType fromNullable(String? value) {
+    if (value == null || value.isEmpty) {
+      return have;
+    }
+    return fromValue(value);
   }
 }

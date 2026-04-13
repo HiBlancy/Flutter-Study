@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/main_toolbar.dart';
+import '../widgets/custom_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -54,6 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final tabs = _stashData.keys.toList();
 
     return DefaultTabController(
@@ -64,23 +66,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         showBackButton: false,
         child: Column(
           children: [
-            // 1. BARRA DE PESTAÑAS (Centrada y limpia)
-            Container(
-              color: theme.colorScheme.surface,
-              child: TabBar(
-                isScrollable: true,
-                indicatorColor: theme.colorScheme.primary,
-                indicatorSize: TabBarIndicatorSize.label,
-                labelColor: theme.colorScheme.primary,
-                unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                labelStyle: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                tabs: tabs.map((tab) => Tab(text: tab)).toList(),
-              ),
-            ),
+            // Pestaña mejorada
+            _buildTabBar(theme, tabs, isDark),
             
             Expanded(
               child: TabBarView(
-                children: tabs.map((tab) => _buildTabContent(tab, theme)).toList(),
+                children: tabs.map((tab) => _buildTabContent(tab, theme, isDark)).toList(),
               ),
             ),
           ],
@@ -89,128 +80,273 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTabContent(String categoryName, ThemeData theme) {
+  Widget _buildTabBar(ThemeData theme, List<String> tabs, bool isDark) {
+    return Container(
+      color: theme.colorScheme.surface,
+      child: Column(
+        children: [
+          TabBar(
+            isScrollable: true,
+            indicatorColor: theme.colorScheme.primary,
+            indicatorSize: TabBarIndicatorSize.label,
+            indicatorWeight: 3,
+            labelColor: theme.colorScheme.primary,
+            unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            labelStyle: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+            unselectedLabelStyle: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            tabs: tabs.map((tab) => Tab(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(tab),
+              ),
+            )).toList(),
+          ),
+          Divider(
+            height: 1,
+            color: isDark
+                ? theme.colorScheme.outline.withValues(alpha: 0.1)
+                : theme.colorScheme.outline.withValues(alpha: 0.08),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabContent(String categoryName, ThemeData theme, bool isDark) {
     final subcategories = _stashData[categoryName] ?? [];
     final selectedSub = _selectedSubcategories[categoryName];
 
-    return Column(
-      children: [
-        // 2. SCROLL DE PELOTITAS (Con el estilo suave de la Home)
-        Container(
-          height: 120,
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: subcategories.length,
-            itemBuilder: (context, index) {
-              final sub = subcategories[index];
-              final isSelected = sub['name'] == selectedSub;
-              
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedSubcategories[categoryName] = sub['name']),
-                  child: Column(
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        width: 54,
-                        height: 54,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          // Si está seleccionado, usamos el primaryContainer suave
-                          color: isSelected 
-                              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.6)
-                              : theme.colorScheme.surfaceContainerLow,
-                          border: Border.all(
-                            color: isSelected 
-                                ? theme.colorScheme.primary 
-                                : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                            width: 2,
-                          ),
-                        ),
-                        child: Icon(
-                          sub['icon'] as IconData,
-                          size: 26,
-                          color: isSelected 
-                              ? theme.colorScheme.primary 
-                              : theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        sub['name'] as String,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        
-        // 3. ZONA CENTRAL (Estructura de tarjeta suave y centrada)
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.all(24),
-            padding: const EdgeInsets.all(32),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              // Usamos el fondo suave que nos gustó en la Home
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Selector de subcategorías
+          _buildSubcategorySelector(categoryName, subcategories, selectedSub, theme, isDark),
+
+          // Zona central - Mostrará los productos
+          _buildEmptyState(selectedSub, subcategories, theme, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubcategorySelector(
+    String categoryName,
+    List<Map<String, dynamic>> subcategories,
+    String? selectedSub,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    return Container(
+      height: 130,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: subcategories.length,
+        itemBuilder: (context, index) {
+          final sub = subcategories[index];
+          final isSelected = sub['name'] == selectedSub;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: GestureDetector(
+              onTap: () {
+                setState(() => _selectedSubcategories[categoryName] = sub['name']);
+              },
+              child: _buildSubcategoryCard(
+                sub,
+                isSelected,
+                theme,
+                isDark,
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icono grande centrado con opacidad
-                Icon(
-                  subcategories.firstWhere((s) => s['name'] == selectedSub)['icon'] as IconData,
-                  size: 80,
-                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Tus productos de $selectedSub',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Aún no has categorizado ningún producto en esta sección.',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                // Botón centrado para invitar a la acción
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.add, size: 20),
-                  label: const Text('Añadir ahora'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  ),
-                ),
-              ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSubcategoryCard(
+    Map<String, dynamic> sub,
+    bool isSelected,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Círculo animado
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isSelected
+                ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                : isDark
+                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                    : theme.colorScheme.primary.withValues(alpha: 0.05),
+            border: Border.all(
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : isDark
+                      ? theme.colorScheme.outline.withValues(alpha: 0.2)
+                      : theme.colorScheme.outline.withValues(alpha: 0.15),
+              width: isSelected ? 2.5 : 1.5,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Icon(
+            sub['icon'] as IconData,
+            size: 28,
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+        ),
+        const SizedBox(height: 10),
+        // Etiqueta con ellipsis si es muy largo
+        SizedBox(
+          width: 80,
+          child: Text(
+            sub['name'] as String,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyState(
+    String? selectedSub,
+    List<Map<String, dynamic>> subcategories,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    if (selectedSub == null || subcategories.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final selectedItem = subcategories.firstWhere(
+      (s) => s['name'] == selectedSub,
+      orElse: () => subcategories.first,
+    );
+
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(40),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: isDark
+            ? theme.colorScheme.primary.withValues(alpha: 0.08)
+            : theme.colorScheme.primary.withValues(alpha: 0.06),
+        border: Border.all(
+          color: isDark
+              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+              : theme.colorScheme.primary.withValues(alpha: 0.12),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Icono grande con fondo circular
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: theme.colorScheme.primary.withValues(alpha: 0.15),
+            ),
+            child: Icon(
+              selectedItem['icon'] as IconData,
+              size: 64,
+              color: theme.colorScheme.primary.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          // Título
+          Text(
+            'Tus productos de $selectedSub',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Descripción
+          Text(
+            'Aún no has categorizado ningún producto en esta sección.\n'
+            'Agrega productos desde la búsqueda o tu lista.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // Botón de acción
+          SizedBox(
+            width: double.infinity,
+            child: CustomButton(
+              text: 'Agregar producto',
+              onPressed: () {
+                // TODO: Navegar a búsqueda o agregar producto
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        Icon(Icons.info, color: theme.colorScheme.onPrimary),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Funcionalidad en desarrollo',
+                            style: TextStyle(color: theme.colorScheme.onPrimary),
+                          ),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: theme.colorScheme.primary,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              },
+              type: ButtonType.primary,
+              size: ButtonSize.full,
+              icon: Icons.add,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

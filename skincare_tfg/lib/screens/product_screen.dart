@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/main_toolbar.dart';
 import '../models/beauty_product.dart';
+import '../models/product_list_type.dart';
 import '../services/product_service.dart';
 import '../widgets/edit_product_dialog.dart';
 import '../widgets/custom_button.dart';
@@ -24,7 +24,6 @@ class _ProductScreenState extends State<ProductScreen> {
   final ProductService _productService = ProductService();
   late BeautyProduct _currentProduct;
 
-  // Estados de carga
   final Map<String, bool> _loadingStates = {
     'adding': false,
     'editing': false,
@@ -33,6 +32,7 @@ class _ProductScreenState extends State<ProductScreen> {
     'closing': false,
     'calculating': false,
     'finishing': false,
+    'changingList': false,
   };
 
   @override
@@ -40,8 +40,6 @@ class _ProductScreenState extends State<ProductScreen> {
     super.initState();
     _currentProduct = widget.product;
   }
-
-  // --- HELPERS ---
 
   void _setLoading(String key, bool value) {
     if (mounted) {
@@ -65,17 +63,38 @@ class _ProductScreenState extends State<ProductScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message, style: const TextStyle(color: Colors.white)),
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: theme.colorScheme.onPrimary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  message,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
           backgroundColor: theme.colorScheme.primary,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(16),
         ),
       );
     }
   }
 
-  Future<bool> _confirmAction(String title, String content, {bool isDanger = false}) async {
+  Future<bool> _confirmAction(
+    String title,
+    String content, {
+    bool isDanger = false,
+  }) async {
     return await WarningDialog.show(
       context: context,
       title: title,
@@ -104,10 +123,118 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
-  // --- ACCIONES PRINCIPALES ---
+  // --- CAMBIAR DE LISTA ---
+
+  Future<void> _changeProductList() async {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final currentListType = ProductListType.fromNullable(
+      _currentProduct.listType,
+    );
+    final newListType = await showDialog<ProductListType>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: isDark
+              ? BorderSide(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                )
+              : BorderSide.none,
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.swap_horiz, color: theme.colorScheme.primary),
+            const SizedBox(width: 12),
+            Text(
+              'Cambiar a otra lista',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: ProductListType.values.map((type) {
+              final isCurrentType = currentListType == type;
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  border: isCurrentType
+                      ? Border.all(color: type.color, width: 2)
+                      : Border.all(
+                          color: isDark
+                              ? type.color.withValues(alpha: 0.2)
+                              : type.color.withValues(alpha: 0.15),
+                        ),
+                  borderRadius: BorderRadius.circular(12),
+                  color: isCurrentType
+                      ? type.color.withValues(alpha: 0.15)
+                      : Colors.transparent,
+                ),
+                child: ListTile(
+                  leading: Icon(type.icon, color: type.color, size: 24),
+                  title: Text(
+                    type.label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: isCurrentType
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+                      color: isCurrentType
+                          ? type.color
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  trailing: isCurrentType
+                      ? Icon(Icons.check_circle, color: type.color, size: 24)
+                      : null,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  onTap: () => Navigator.pop(context, type),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (newListType != null && newListType != currentListType) {
+      await _executeAction(
+        action: () => _productService.updateProduct(_currentProduct.id!, {
+          'listType': newListType.value,
+        }),
+        successMessage: '✓ Producto movido a "${newListType.label}"',
+        loadingKey: 'changingList',
+      );
+    }
+  }
+
+  // --- ACCIONES PRINCIPALES (simplificadas) ---
 
   Future<void> _addToMyProducts() async {
-    if (!await _confirmAction('Agregar producto', '¿Quieres agregar "${_currentProduct.name}" a tu lista de productos?')) return;
+    if (!await _confirmAction(
+      'Agregar producto',
+      '¿Quieres agregar "${_currentProduct.name}" a tu lista de productos?',
+    )) {
+      return;
+    }
 
     await _executeAction(
       action: () => _productService.addProductToHave(_currentProduct),
@@ -135,10 +262,12 @@ class _ProductScreenState extends State<ProductScreen> {
         'periodAfterOpening': editedProduct.periodAfterOpening,
         'expirationDate': editedProduct.expirationDate?.toIso8601String(),
         'openedDate': editedProduct.openedDate?.toIso8601String(),
+        'listType': editedProduct.listType,
       };
 
       await _executeAction(
-        action: () => _productService.updateProduct(_currentProduct.id!, updatedData),
+        action: () =>
+            _productService.updateProduct(_currentProduct.id!, updatedData),
         successMessage: '✓ Producto actualizado correctamente',
         loadingKey: 'editing',
       );
@@ -146,7 +275,13 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Future<void> _deleteProduct() async {
-    if (!await _confirmAction('Eliminar producto', '¿Estás seguro de que quieres eliminar "${_currentProduct.name}" de tu lista?', isDanger: true)) return;
+    if (!await _confirmAction(
+      'Eliminar producto',
+      '¿Estás seguro de que quieres eliminar "${_currentProduct.name}" de tu lista?',
+      isDanger: true,
+    )) {
+      return;
+    }
 
     _setLoading('deleting', true);
     final deleted = await _productService.deleteProduct(_currentProduct.id!);
@@ -166,25 +301,39 @@ class _ProductScreenState extends State<ProductScreen> {
 
   Future<void> _markAsOpened() async {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     final selectedOption = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Abrir producto', style: theme.textTheme.titleLarge),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: isDark
+              ? BorderSide(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                )
+              : BorderSide.none,
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.open_in_new, color: theme.colorScheme.primary),
+            const SizedBox(width: 12),
+            Text('Abrir producto', style: theme.textTheme.titleLarge),
+          ],
+        ),
         contentPadding: const EdgeInsets.only(top: 16, bottom: 8),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: Icon(Icons.today, color: theme.colorScheme.primary),
-              title: const Text('Hoy'),
+            _DialogListTile(
+              icon: Icons.today,
+              title: 'Hoy',
               onTap: () => Navigator.pop(context, 'hoy'),
             ),
-            ListTile(
-              leading: Icon(Icons.calendar_month, color: theme.colorScheme.primary),
-              title: const Text('Otra fecha...'),
+            _DialogListTile(
+              icon: Icons.calendar_month,
+              title: 'Otra fecha...',
               onTap: () => Navigator.pop(context, 'otra'),
             ),
           ],
@@ -192,11 +341,17 @@ class _ProductScreenState extends State<ProductScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar', style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6))),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
           ),
         ],
       ),
     );
+
     if (selectedOption == null) return;
 
     DateTime? finalDate;
@@ -211,247 +366,263 @@ class _ProductScreenState extends State<ProductScreen> {
         lastDate: DateTime.now(),
         builder: (context, child) {
           return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: theme.colorScheme,
-            ),
+            data: Theme.of(context).copyWith(colorScheme: theme.colorScheme),
             child: child!,
           );
         },
       );
 
       if (pickedDate == null) return;
-      finalDate = DateTime.utc(pickedDate.year, pickedDate.month, pickedDate.day, 12, 0, 0);
+      finalDate = DateTime.utc(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        12,
+        0,
+        0,
+      );
     }
 
     await _executeAction(
-      action: () => _productService.markAsOpened(_currentProduct.id!, openedDate: finalDate),
+      action: () => _productService.markAsOpened(
+        _currentProduct.id!,
+        openedDate: finalDate,
+      ),
       successMessage: '✓ Producto marcado como abierto',
       loadingKey: 'opening',
     );
   }
 
   Future<void> _markAsClosed() async {
-    final hasPAO = _currentProduct.periodAfterOpening?.isNotEmpty == true;
-
-    final expirationMessage = hasPAO
-        ? '• Se eliminará la fecha de caducidad calculada\n'
-        : '• Se conservará tu fecha de caducidad fija\n';
-
-    if (!await _confirmAction(
-      'Cerrar producto',
-      '¿Estás seguro de que quieres cerrar "${_currentProduct.name}"?\n\n'
-      'Al cerrar el producto:\n'
-      '• Se eliminará la fecha de apertura\n'
-      '$expirationMessage'
-      '• Se conservará la duración después de abrir (ej: "6M")\n\n'
-      'Podrás volver a abrirlo más tarde si fue un error.',
-      isDanger: true,
-    )) {
-      return;
-    }
-
     await _executeAction(
-      action: () {
-        final updatedData = <String, dynamic>{
-          'openedDate': null,
-          'isOpened': false,
-        };
-
-        if (hasPAO) {
-          updatedData['expirationDate'] = null;
-        }
-
-        return _productService.updateProduct(_currentProduct.id!, updatedData);
-      },
-      successMessage: '✓ Producto cerrado correctamente',
+      action: () => _productService.markAsClosed(_currentProduct.id!),
+      successMessage: '✓ Producto marcado como cerrado',
       loadingKey: 'closing',
     );
   }
 
-  Future<void> _calculateExpiration() => _executeAction(
-        action: () => _productService.calculateExpiration(_currentProduct.id!),
-        successMessage: '✓ Fecha de caducidad calculada',
-        loadingKey: 'calculating',
-      );
-
-  // --- UI ---
-
-  @override
-  Widget build(BuildContext context) {
-    final isProductSaved = _currentProduct.id != null;
-    final showAddButton = widget.isFromSearch && !isProductSaved;
-    final theme = Theme.of(context);
-
-    return CustomAppBar(
-      title: _currentProduct.name,
-      showDrawer: false,
-      showBackButton: true,
-      actions: _buildAppBarActions(isProductSaved, showAddButton),
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildProductImage(),
-                  const SizedBox(height: 24),
-                  _buildProductHeader(theme),
-                  const SizedBox(height: 24),
-                  if (isProductSaved) _buildProductDetails(theme),
-                  if (_currentProduct.categories?.isNotEmpty == true) ...[
-                    const SizedBox(height: 16),
-                    _buildCategories(theme),
-                  ],
-                  const SizedBox(height: 24),
-                  // Todos los botones excepto eliminar
-                  _buildScrollableButtons(isProductSaved, showAddButton),
-                ],
-              ),
-            ),
-          ),
-          // Solo el botón de eliminar fijo abajo (si aplica)
-          if (isProductSaved)
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surface,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: CustomButton(
-                text: 'Eliminar producto',
-                onPressed: _isLoading('deleting') ? () {} : _deleteProduct,
-                type: ButtonType.danger,
-                size: ButtonSize.full,
-                icon: Icons.delete,
-                isLoading: _isLoading('deleting'),
-                isEnabled: !_isLoading('deleting'),
-              ),
-            ),
-        ],
-      ),
+  Future<void> _calculateExpiration() async {
+    await _executeAction(
+      action: () => _productService.calculateExpiration(_currentProduct.id!),
+      successMessage: '✓ Fecha de caducidad calculada',
+      loadingKey: 'calculating',
     );
   }
 
-  List<Widget> _buildAppBarActions(bool isProductSaved, bool showAddButton) {
-    return [
-      if (isProductSaved)
-        IconButton(
-          icon: _isLoading('editing')
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Icon(Icons.edit),
-          onPressed: _isLoading('editing') ? null : _editProduct,
-          tooltip: 'Editar producto',
-        ),
-      if (showAddButton)
-        IconButton(
-          icon: _isLoading('adding')
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Icon(Icons.add),
-          onPressed: _isLoading('adding') ? null : _addToMyProducts,
-          tooltip: 'Agregar a mis productos',
-        ),
-    ];
-  }
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final isProductSaved = _currentProduct.id != null;
+    final showAddButton = widget.isFromSearch || !isProductSaved;
+    final currentListType = isProductSaved
+        ? ProductListType.fromNullable(_currentProduct.listType)
+        : null;
 
-  Widget _buildProductImage() {
-    return Center(
-      child: Container(
-        width: 200,
-        height: 200,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: isDark ? Color(0xff3a1a2f) : theme.colorScheme.primary,
+        foregroundColor: isDark
+            ? Color(0xfff4add8)
+            : theme.colorScheme.onPrimary,
+        title: Text(
+          _currentProduct.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: isDark ? Color(0xfff4add8) : theme.colorScheme.onPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: _currentProduct.imageUrl?.isNotEmpty == true
-              ? Image.network(
-                  _currentProduct.imageUrl!,
-                  width: 160,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => const _PlaceholderImage(),
-                )
-              : const _PlaceholderImage(),
+        actions: [
+          if (isProductSaved)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: _isLoading('editing') ? null : _editProduct,
+              tooltip: 'Editar producto',
+            ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildProductHeader(theme),
+            const SizedBox(height: 24),
+            if (isProductSaved) ...[
+              _buildProductListSection(theme, currentListType),
+              const SizedBox(height: 24),
+            ],
+            _buildProductInfo(theme),
+            const SizedBox(height: 24),
+            if (_currentProduct.categories?.isNotEmpty == true)
+              _buildCategories(theme),
+            const SizedBox(height: 24),
+            _buildScrollableButtons(isProductSaved, showAddButton),
+            const SizedBox(height: 32),
+            if (isProductSaved)
+              SizedBox(
+                width: double.infinity,
+                child: CustomButton(
+                  text: 'Eliminar producto',
+                  onPressed: _isLoading('deleting') ? () {} : _deleteProduct,
+                  type: ButtonType.danger,
+                  size: ButtonSize.full,
+                  icon: Icons.delete_outline,
+                  isLoading: _isLoading('deleting'),
+                  isEnabled: !_isLoading('deleting'),
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildProductHeader(ThemeData theme) {
-    return Column(
+    return Row(
       children: [
-        if (_currentProduct.brand?.isNotEmpty == true)
-          Text(
-            _currentProduct.brand!.toUpperCase(),
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: theme.colorScheme.primary,
-              letterSpacing: 1.5,
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
+              width: 1,
             ),
-            textAlign: TextAlign.center,
           ),
-        const SizedBox(height: 8),
-        Text(
-          _currentProduct.name.isNotEmpty ? _currentProduct.name : 'Sin nombre',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
+          child:
+              _currentProduct.imageUrl != null &&
+                  _currentProduct.imageUrl!.isNotEmpty
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    _currentProduct.imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const _PlaceholderImage(),
+                  ),
+                )
+              : const _PlaceholderImage(),
         ),
-        if (_currentProduct.rating != null) ...[
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ...List.generate(
-                5,
-                (index) => Icon(
-                  index < _currentProduct.rating! ? Icons.star : Icons.star_border,
-                  color: Colors.amber,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 8),
               Text(
-                '${_currentProduct.rating}/5',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                _currentProduct.name,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
+              const SizedBox(height: 8),
+              if (_currentProduct.brand?.isNotEmpty == true)
+                Text(
+                  _currentProduct.brand!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              if (_currentProduct.rating != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    ...List.generate(
+                      5,
+                      (index) => Icon(
+                        index < _currentProduct.rating!
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: Colors.amber,
+                        size: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_currentProduct.rating}/5',
+                      style: theme.textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
-        ],
+        ),
       ],
     );
   }
 
-  Widget _buildProductDetails(ThemeData theme) {
-    final isReallyOpened = _currentProduct.isOpened == true && _currentProduct.openedDate != null;
-    final hasExpirationInfo = (_currentProduct.periodAfterOpening?.isNotEmpty == true) || (_currentProduct.expirationDate != null);
-    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+  Widget _buildProductListSection(
+    ThemeData theme,
+    ProductListType? currentListType,
+  ) {
+    if (currentListType == null) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(14),
+        color: currentListType.color.withValues(alpha: 0.1),
+        border: Border.all(
+          color: currentListType.color.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(currentListType.icon, color: currentListType.color, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Lista actual',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  currentListType.label,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: currentListType.color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.edit, color: currentListType.color),
+            onPressed: _isLoading('changingList') ? null : _changeProductList,
+            tooltip: 'Cambiar lista',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductInfo(ThemeData theme) {
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    final isReallyOpened =
+        _currentProduct.isOpened == true && _currentProduct.openedDate != null;
+    final hasExpirationInfo =
+        _currentProduct.expirationDate != null ||
+        (_currentProduct.periodAfterOpening?.isNotEmpty == true);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
@@ -460,27 +631,49 @@ class _ProductScreenState extends State<ProductScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_currentProduct.addedAt != null) ...[
-            _InfoRow(icon: Icons.calendar_today, label: 'Agregado', value: _formatDate(_currentProduct.addedAt!)),
+            _InfoRow(
+              icon: Icons.calendar_today,
+              label: 'Agregado',
+              value: _formatDate(_currentProduct.addedAt!),
+            ),
             const SizedBox(height: 12),
           ],
           if (_currentProduct.expirationDate != null) ...[
-            _InfoRow(icon: Icons.warning_amber, label: 'Caducidad', value: _formatDate(_currentProduct.expirationDate!)),
+            _InfoRow(
+              icon: Icons.warning_amber,
+              label: 'Caducidad',
+              value: _formatDate(_currentProduct.expirationDate!),
+            ),
             const SizedBox(height: 12),
           ],
           if (isReallyOpened && _currentProduct.openedDate != null) ...[
-            _InfoRow(icon: Icons.open_in_new, label: 'Abierto el', value: _formatDate(_currentProduct.openedDate!)),
+            _InfoRow(
+              icon: Icons.open_in_new,
+              label: 'Abierto el',
+              value: _formatDate(_currentProduct.openedDate!),
+            ),
             const SizedBox(height: 12),
           ],
-          if (isReallyOpened && _currentProduct.periodAfterOpening?.isNotEmpty == true) ...[
-            _InfoRow(icon: Icons.timer, label: 'Duración después de abrir', value: _currentProduct.periodAfterOpening!),
+          if (isReallyOpened &&
+              _currentProduct.periodAfterOpening?.isNotEmpty == true) ...[
+            _InfoRow(
+              icon: Icons.timer,
+              label: 'Duración después de abrir',
+              value: _currentProduct.periodAfterOpening!,
+            ),
             const SizedBox(height: 12),
           ],
-          if (isReallyOpened && !hasExpirationInfo) _buildExpirationWarning(theme),
+          if (isReallyOpened && !hasExpirationInfo)
+            _buildExpirationWarning(theme),
           if (_currentProduct.notes?.isNotEmpty == true) ...[
             const Divider(height: 24),
             Text(
               'Notas',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: subtleText),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: subtleText,
+              ),
             ),
             const SizedBox(height: 8),
             Text(_currentProduct.notes!, style: theme.textTheme.bodyMedium),
@@ -514,12 +707,19 @@ class _ProductScreenState extends State<ProductScreen> {
               children: [
                 Text(
                   '⚠️ Sin información de caducidad',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: warningColor),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: warningColor,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Edita el producto para añadir su duración después de abierto (ej: "6M") o una fecha de caducidad.',
-                  style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
                 ),
               ],
             ),
@@ -538,28 +738,38 @@ class _ProductScreenState extends State<ProductScreen> {
       children: [
         Text(
           'Categorías',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: subtleText),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: subtleText,
+          ),
         ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: _currentProduct.categories!.take(6).map((cat) => Chip(
-                label: Text(cat, style: theme.textTheme.bodySmall),
-                backgroundColor: chipBg,
-                side: BorderSide.none,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              )).toList(),
+          children: _currentProduct.categories!
+              .take(6)
+              .map(
+                (cat) => Chip(
+                  label: Text(cat, style: theme.textTheme.bodySmall),
+                  backgroundColor: chipBg,
+                  side: BorderSide.none,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              )
+              .toList(),
         ),
       ],
     );
   }
 
-  // Nuevo método: botones que van dentro del scroll (todos excepto eliminar)
   Widget _buildScrollableButtons(bool isProductSaved, bool showAddButton) {
-    final isReallyOpened = _currentProduct.isOpened == true && _currentProduct.openedDate != null;
-    final canCalculateExpiration = isReallyOpened &&
+    final isReallyOpened =
+        _currentProduct.isOpened == true && _currentProduct.openedDate != null;
+    final canCalculateExpiration =
+        isReallyOpened &&
         _currentProduct.periodAfterOpening?.isNotEmpty == true &&
         _currentProduct.expirationDate == null;
 
@@ -639,7 +849,11 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -652,7 +866,14 @@ class _InfoRow extends StatelessWidget {
         Icon(icon, size: 18, color: subtleIcon),
         const SizedBox(width: 8),
         Text('$label: ', style: TextStyle(fontSize: 13, color: subtleText)),
-        Expanded(child: Text(value, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600))),
+        Expanded(
+          child: Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -665,17 +886,37 @@ class _PlaceholderImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      height: 160,
-      width: 200,
       decoration: BoxDecoration(
         color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Icon(
         Icons.spa_outlined,
-        size: 72,
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+        size: 48,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
       ),
+    );
+  }
+}
+
+class _DialogListTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _DialogListTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: Icon(icon, color: theme.colorScheme.primary),
+      title: Text(title, style: theme.textTheme.bodyMedium),
+      onTap: onTap,
     );
   }
 }
