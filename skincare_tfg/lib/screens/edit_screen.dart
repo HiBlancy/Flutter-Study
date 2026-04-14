@@ -223,32 +223,48 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   Future<void> _deleteImage() async {
-    setState(() => _isUploadingImage = true);
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Eliminar foto'),
+      content: const Text('¿Estás seguro de que quieres eliminar tu foto de perfil?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancelar'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          style: TextButton.styleFrom(foregroundColor: Colors.red),
+          child: const Text('Eliminar'),
+        ),
+      ],
+    ),
+  );
 
-    try {
-      final updatedUser = await _authService.deleteUserImage(
-        widget.product.id!,
-      );
+  if (confirm != true) return;
 
-      if (updatedUser != null && mounted) {
-        setState(() {
-          _currentImageUrl = null;
-          _selectedImageFile = null;
-        });
-        _showSnackBar('Imagen eliminada correctamente');
-        
-        // Notificar al padre que el producto cambió
-        widget.onProductUpdated(updatedProduct);
-      } else {
-        _showSnackBar('Error al eliminar la imagen', isError: true);
-      }
-    } catch (e) {
-      print('❌ Error eliminando imagen: $e');
-      _showSnackBar('Error al eliminar la imagen', isError: true);
-    } finally {
-      if (mounted) setState(() => _isUploadingImage = false);
+  setState(() => _isUploadingImage = true);
+
+  try {
+    final updatedUser = await _authService.deleteProfileImage();
+    
+    if (updatedUser != null && mounted) {
+      setState(() {
+        _currentProfileImageUrl = null;
+        _selectedImage = null;
+      });
+      _showCustomSnackBar('Foto de perfil eliminada correctamente');
+    } else {
+      _showCustomSnackBar('Error al eliminar la foto', isError: true);
     }
+  } catch (e) {
+    print('❌ Error eliminando imagen: $e');
+    _showCustomSnackBar('Error al eliminar la foto', isError: true);
+  } finally {
+    if (mounted) setState(() => _isUploadingImage = false);
   }
+}
 
   Future<void> _saveChanges() async {
     if (!_formKey.currentState!.validate()) return;

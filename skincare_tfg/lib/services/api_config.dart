@@ -20,6 +20,7 @@ class ApiConfig {
   static String getLoginUrl() => '$baseUrl/users/login';
   static String getProfileUrl() => '$baseUrl/users/me';
   static String getUploadProfileImageUrl() => '$baseUrl/users/me/upload-image';
+  static String getDeleteProfileImageUrl() => '$baseUrl/users/me/image';
 
   //PRODUCTS
   static String getProductsUrl() => '$baseUrl/products';

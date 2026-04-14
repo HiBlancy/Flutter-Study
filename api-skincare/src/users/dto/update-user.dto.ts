@@ -24,13 +24,13 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  phone?: string;
+  phone?: string | null;
 
   @IsOptional()
   @IsDateString()
-  birthDate?: Date;
+  birthDate?: Date | null;
 
   @IsOptional()
   @IsString()
-  profileImage?: string;
+  profileImage?: string | null;
 }

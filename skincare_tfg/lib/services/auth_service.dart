@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import 'api_config.dart';
@@ -266,80 +267,103 @@ class AuthService {
 
   // 🆕 SUBIR IMAGEN DE PERFIL (multipart/form-data)
   Future<Map<String, dynamic>?> uploadProfileImage(File imageFile) async {
-    final token = await getToken();
-    if (token == null) {return null;}
+  final token = await getToken();
+  if (token == null) return null;
 
-    try {
-      final url = Uri.parse(ApiConfig.getUploadProfileImageUrl());
-
-      // Crear request multipart
-      final request = http.MultipartRequest('PATCH', url)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..files.add(
-          await http.MultipartFile.fromPath(
-            'profileImage', // El nombre del campo esperado por el backend
-            imageFile.path,
-          ),
-        );
-
-      print('📤 Subiendo imagen de perfil...');
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == true && data['data'] != null) {
-          final updatedUser = data['data'];
-
-          // Actualizar la imagen en SharedPreferences
-          final prefs = await _prefs;
-          if (updatedUser['profileImage'] != null) {
-            await prefs.setString(
-              AppConstants.prefUserProfileImage,
-              updatedUser['profileImage'],
-            );
-          }
-
-          print('✅ Imagen de perfil actualizada correctamente');
-          return updatedUser;
-        }
-      } else {
-        print('❌ Error al subir imagen: ${response.statusCode}');
-        print('❌ Response: ${response.body}');
-      }
-
-      return null;
-    } catch (e) {
-      print('❌ Error al subir imagen: $e');
-      return null;
-    }
-  }
-
-  Future<void> deleteUserImage(String userId) async {
-    try {
-      final token = await getToken();
-      if (token == null) return null; 
-
-      final response = await http.delete(
-        Uri.parse(ApiConfig.getProfileUrl()),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+  try {
+    final url = Uri.parse(ApiConfig.getUploadProfileImageUrl());
+    
+    // Leer los bytes del archivo
+    final bytes = await imageFile.readAsBytes();
+    
+    // Determinar el MIME type real (puedes usar el package 'mime' o adivinarlo por extensión)
+    String mimeType = _getMimeType(imageFile.path);
+    
+    final request = http.MultipartRequest('PATCH', url)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..files.add(
+        http.MultipartFile.fromBytes(
+          'profileImage',
+          bytes,
+          filename: 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg',
+          contentType: MediaType('image', 'jpeg'), // Forzamos JPEG
+        ),
       );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == true && data['data'] != null) {
-          return BeautyProduct.fromBackend(data['data']);
+    print('📤 Subiendo imagen de perfil (MIME: $mimeType)');
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true && data['data'] != null) {
+        final updatedUser = data['data'];
+        final prefs = await _prefs;
+        if (updatedUser['profileImage'] != null) {
+          await prefs.setString(AppConstants.prefUserProfileImage, updatedUser['profileImage']);
         }
+        print('✅ Imagen de perfil actualizada correctamente');
+        return updatedUser;
       }
-      return null;
-    } catch (e) {
-      print('❌ Error eliminando imagen: $e');
-      return null;
+    } else {
+      print('❌ Error al subir imagen: ${response.statusCode}');
+      print('❌ Response: ${response.body}');
     }
+    return null;
+  } catch (e) {
+    print('❌ Error al subir imagen: $e');
+    return null;
   }
+}
+
+// Helper para obtener MIME type (puedes usar el paquete 'mime' o este simple)
+String _getMimeType(String path) {
+  final ext = path.split('.').last.toLowerCase();
+  switch (ext) {
+    case 'jpg': case 'jpeg': return 'image/jpeg';
+    case 'png': return 'image/png';
+    case 'webp': return 'image/webp';
+    case 'heic': return 'image/heic';
+    default: return 'application/octet-stream';
+  }
+}
+
+  Future<Map<String, dynamic>?> deleteProfileImage() async {
+  final token = await getToken();
+  if (token == null) return null;
+
+  try {
+    final response = await http.delete(
+      Uri.parse(ApiConfig.getDeleteProfileImageUrl()),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true && data['data'] != null) {
+        final updatedUser = data['data'];
+        
+        // Limpiar la URL de la imagen de los datos locales
+        final prefs = await _prefs;
+        await prefs.remove(AppConstants.prefUserProfileImage);
+        
+        print('✅ Imagen de perfil eliminada correctamente');
+        return updatedUser;
+      }
+    } else if (response.statusCode == 404) {
+      print('⚠️ Endpoint para eliminar imagen no encontrado. Asegúrate de que el backend esté actualizado.');
+    }
+    
+    print('❌ Error al eliminar imagen: ${response.statusCode}');
+    return null;
+  } catch (e) {
+    print('❌ Error al eliminar imagen: $e');
+    return null;
+  }
+}
 
   // Cerrar sesión
   Future<void> logout() async {

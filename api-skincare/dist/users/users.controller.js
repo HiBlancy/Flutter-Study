@@ -146,6 +146,33 @@ let UsersController = class UsersController {
             });
         }
     }
+    async deleteProfileImage(req) {
+        try {
+            const userId = req.user._id;
+            const user = await this.usersService.findById(userId);
+            if (!user) {
+                throw new common_1.NotFoundException('Usuario no encontrado');
+            }
+            if (!user.profileImage) {
+                throw new common_1.BadRequestException('No hay imagen de perfil para eliminar');
+            }
+            const publicId = this.cloudinaryService.extractPublicIdFromUrl(user.profileImage);
+            if (publicId) {
+                await this.cloudinaryService.deleteImage(publicId);
+                console.log(`🗑️ Imagen de perfil eliminada de Cloudinary: ${publicId}`);
+            }
+            const updatedUser = await this.usersService.update(userId, { profileImage: null });
+            return this.successResponse('Imagen de perfil eliminada exitosamente', updatedUser);
+        }
+        catch (error) {
+            console.error('❌ Error al eliminar imagen de perfil:', error);
+            if (error instanceof common_1.BadRequestException)
+                throw error;
+            if (error instanceof common_1.NotFoundException)
+                throw error;
+            throw new common_1.BadRequestException(error.message || 'Error al eliminar la imagen');
+        }
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -215,6 +242,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "deleteWithoutAuth", null);
+__decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    (0, common_1.Delete)('me/image'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "deleteProfileImage", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService,

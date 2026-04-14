@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import '../models/beauty_product.dart';
 import 'auth_service.dart';
 import 'api_config.dart';
@@ -288,44 +289,43 @@ class ProductService {
   }
 
   // 🆕 Subir imagen de producto
-  Future<BeautyProduct?> uploadProductImage(
-    String productId,
-    File imageFile,
-  ) async {
-    try {
-      final token = await _authService.getToken();
-      if (token == null) return null;
+  Future<BeautyProduct?> uploadProductImage(String productId, File imageFile) async {
+  try {
+    final token = await _authService.getToken();
+    if (token == null) return null;
 
-      final request = http.MultipartRequest(
-        'POST',
-        Uri.parse('${ApiConfig.getProductsUrl()}/$productId/upload-image'),
-      );
+    final bytes = await imageFile.readAsBytes();
+    
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${ApiConfig.getProductsUrl()}/$productId/upload-image'),
+    );
+    request.headers['Authorization'] = 'Bearer $token';
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'productImage',
+        bytes,
+        filename: 'product_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        contentType: MediaType('image', 'jpeg'),
+      ),
+    );
 
-      request.headers['Authorization'] = 'Bearer $token';
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'productImage', // El nombre del campo esperado por el backend
-          imageFile.path,
-        ),
-      );
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
 
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == true && data['data'] != null) {
-          return BeautyProduct.fromBackend(data['data']);
-        }
+     if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true && data['data'] != null) {
+        return BeautyProduct.fromBackend(data['data']);
       }
-
-      print('❌ Error subiendo imagen: ${response.body}');
-      return null;
-    } catch (e) {
-      print('❌ Error en uploadProductImage: $e');
-      return null;
     }
+    print('❌ Error subiendo imagen: ${response.statusCode} - ${response.body}');
+    return null;
+  } catch (e) {
+    print('❌ Error en uploadProductImage: $e');
+    return null;
   }
+}
 
   // 🆕 Eliminar imagen de producto
   Future<BeautyProduct?> deleteProductImage(String productId) async {

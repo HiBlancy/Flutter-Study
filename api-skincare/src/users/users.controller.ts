@@ -225,6 +225,37 @@ export class UsersController {
     }
   }
 
-  @Delete(':id')
-  async deleteProdileImage(@Param('id') )
+  @UseGuards(AuthGuard)
+  @Delete('me/image')
+  async deleteProfileImage(@Req() req) {
+    try {
+      const userId = req.user._id;
+      const user = await this.usersService.findById(userId);
+
+      if (!user) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      if (!user.profileImage) {
+        throw new BadRequestException('No hay imagen de perfil para eliminar');
+      }
+
+      // Extraer el publicId de la URL de Cloudinary
+      const publicId = this.cloudinaryService.extractPublicIdFromUrl(user.profileImage);
+      if (publicId) {
+        await this.cloudinaryService.deleteImage(publicId);
+        console.log(`🗑️ Imagen de perfil eliminada de Cloudinary: ${publicId}`);
+      }
+
+      // Actualizar el usuario, poniendo profileImage como null
+      const updatedUser = await this.usersService.update(userId, { profileImage: null });
+
+      return this.successResponse('Imagen de perfil eliminada exitosamente', updatedUser);
+    } catch (error) {
+      console.error('❌ Error al eliminar imagen de perfil:', error);
+      if (error instanceof BadRequestException) throw error;
+      if (error instanceof NotFoundException) throw error;
+      throw new BadRequestException(error.message || 'Error al eliminar la imagen');
+    }
+  }
 }

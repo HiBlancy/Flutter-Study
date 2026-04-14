@@ -242,49 +242,63 @@ class _EditProductDialogState extends State<EditProductDialog> {
   setState(() => _isUploadingImage = true);
 
   try {
-    // 1️⃣ Primero, subir la nueva imagen si hay una seleccionada
-    String? finalImageUrl = _currentImageUrl;
-    
+    // 1️⃣ Subir imagen si hay una seleccionada
+    bool imageUploaded = false;
     if (_selectedImageFile != null) {
       final uploadedProduct = await _productService.uploadProductImage(
         widget.product.id!,
         _selectedImageFile!,
       );
       if (uploadedProduct != null) {
-        finalImageUrl = uploadedProduct.imageUrl;
-        // Notificar al padre
+        imageUploaded = true;
         widget.onProductUpdated(uploadedProduct);
+        // Actualizar la URL local para que el PATCH no la toque
+        _currentImageUrl = uploadedProduct.imageUrl;
+
+        print('🔍 uploadedProduct.imageUrl = ${uploadedProduct?.imageUrl}');
+print('🔍 uploadedProduct completo: ${uploadedProduct?.toBackendJson()}');
+      } else {
+        _showSnackBar('Error al subir la imagen', isError: true);
+        return;
       }
     }
 
-    // 2️⃣ Preparar datos actualizados
+
+    // 2️⃣ Preparar datos actualizados (sin incluir imageUrl si ya se subió)
     final hasOpenedDate = _openedDate != null;
 
     final updatedProductData = {
       'name': _nameController.text.trim(),
       'brand': _brandController.text.trim().isEmpty ? null : _brandController.text.trim(),
-      'imageUrl': finalImageUrl,
       'categories': _categories.isEmpty ? null : _categories,
       'notes': _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       'rating': _rating,
       'listType': _selectedListType.value,
       'expirationDate': _expirationDate?.toIso8601String(),
-      'periodAfterOpening': _periodAfterOpeningController.text.trim().isEmpty 
-          ? null 
-          : _periodAfterOpeningController.text.trim(),
+      'periodAfterOpening': _periodAfterOpeningController.text.trim().isEmpty ? null : _periodAfterOpeningController.text.trim(),
       'openedDate': _openedDate?.toIso8601String(),
       'isOpened': hasOpenedDate,
     };
 
-    // 3️⃣ Actualizar el producto en el backend
+    // Si no se subió imagen nueva, y quieres mantener la existente, NO envíes el campo imageUrl
+    // (el backend no lo modificará). Si quieres borrarla, tendrías que enviar explícitamente null.
+    // En este caso, como ya se actualizó la imagen vía upload, omitimos el campo.
+    // Si nunca tuvo imagen y no se subió, no pasa nada.
+
+    // 3️⃣ Actualizar el producto en el backend (solo campos de texto)
     final result = await _productService.updateProduct(
       widget.product.id!,
       updatedProductData,
     );
 
     if (result != null && mounted) {
-      widget.onProductUpdated(result);
-      Navigator.pop(context, result);
+      // Si la imagen se subió, el producto devuelto por updateProduct puede no tener la URL nueva,
+      // por eso usamos el que ya teníamos de uploadProductImage o combinamos.
+      final finalProduct = imageUploaded && _currentImageUrl != null
+          ? result.copyWith(imageUrl: _currentImageUrl)
+          : result;
+      widget.onProductUpdated(finalProduct);
+      Navigator.pop(context, finalProduct);
       _showSnackBar('Producto actualizado correctamente');
     } else {
       _showSnackBar('Error al guardar los cambios', isError: true);
