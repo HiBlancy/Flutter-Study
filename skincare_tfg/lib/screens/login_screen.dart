@@ -172,9 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 32),
                     _buildLoginButton(theme),
                     const SizedBox(height: 16),
-                    _buildRegisterLink(theme),
-                    const SizedBox(height: 40),
                     _buildSocialLogins(theme),
+                    const SizedBox(height: 40),
+                    _buildRegisterLink(theme),
                   ],
                 ),
               ),
@@ -221,6 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
           color: theme.colorScheme.primary,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.2,
+          fontStyle: FontStyle.italic
         ),
       ),
       const SizedBox(height: 8),
@@ -305,11 +306,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginButton(ThemeData theme) {
     return context.primaryButton(
-      'Iniciar Sesión',
+      'INICIAR SESIÓN',
       _login,
       isLoading: _isLoading,
       size: ButtonSize.full,
       icon: Icons.login_outlined,
+      height: 60,
     );
   }
 
@@ -319,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         Text(
           '¿No tienes cuenta? ',
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
@@ -327,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onTap: () => Navigator.pushNamed(context, '/register'),
           child: Text(
             'Crear una',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.underline,

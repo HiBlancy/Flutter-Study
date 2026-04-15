@@ -47,7 +47,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myProducts => 'My products';
 
   @override
-  String get seeAll => 'See all';
+  String get seeAll => 'VIEW ALL';
 
   @override
   String get routines => 'Routines';
@@ -56,7 +56,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categories => 'Categories';
 
   @override
-  String get expiringSoon => 'About to expire';
+  String get expiringSoon => 'Expiring Soon';
 
   @override
   String get days => 'days';

@@ -25,9 +25,7 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // ✅ Usamos el color de fondo definido en tu AppBarTheme (que ya configuramos como primario o surface)
     final backgroundColor = appBarColor ?? theme.appBarTheme.backgroundColor;
-    // ✅ Usamos onPrimary o el color de texto del AppBar para asegurar contraste
     final foregroundColor = theme.appBarTheme.foregroundColor;
 
     return Scaffold(
@@ -35,7 +33,8 @@ class CustomAppBar extends StatelessWidget {
         title: Text(title, style: TextStyle(color: foregroundColor)),
         centerTitle: true,
         backgroundColor: backgroundColor,
-        iconTheme: IconThemeData(color: foregroundColor), // ✅ Flecha y menú dinámicos
+        scrolledUnderElevation: 0,
+        iconTheme: IconThemeData(color: foregroundColor),
         leading: showBackButton
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -60,60 +59,60 @@ class CustomAppBar extends StatelessWidget {
   }
 
   Widget _buildDrawer(BuildContext context) {
-    final theme = Theme.of(context);
-    return Drawer(
-      backgroundColor: theme.colorScheme.surface, // ✅ Fondo del drawer según el tema
-      child: SafeArea(
-        child: Column(
-          children: [
-            _buildDrawerHeader(context),
-            Expanded(
-              child: ListView(
-                children: [
-                  _buildDrawerItem(
-                    context,
-                    Icons.settings,
-                    'Configuración',
-                    AppConstants.routeSettings,
-                  ),
-                  _buildDrawerItem(
-                    context,
-                    Icons.edit,
-                    'Editar Perfil',
-                    AppConstants.routeEdit,
-                  ),
-                  _buildDrawerItem(
-                    context,
-                    Icons.info,
-                    'Acerca de',
-                    AppConstants.routeAbout,
-                  ),
-                  const Divider(),
-                  _buildDrawerItem(
-                    context,
-                    Icons.logout,
-                    'Cerrar sesión',
-                    null,
-                    isLogout: true,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                'Versión ${AppConstants.version}',
-                style: TextStyle(
-                  fontSize: 12, 
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6), // ✅ Texto versión legible
+  final theme = Theme.of(context);
+  return Drawer(
+    backgroundColor: theme.colorScheme.surface,
+    child: SafeArea(
+      child: Column(
+        children: [
+          _buildDrawerHeader(context),
+          Expanded(
+            child: ListView(
+              children: [
+                _buildDrawerItem(
+                  context,
+                  Icons.settings,
+                  'Configuración',
+                  AppConstants.routeSettings,
                 ),
+                _buildDrawerItem(
+                  context,
+                  Icons.edit,
+                  'Editar Perfil',
+                  AppConstants.routeEdit,
+                ),
+                _buildDrawerItem(
+                  context,
+                  Icons.info,
+                  'Acerca de',
+                  AppConstants.routeAbout,
+                ),
+                const Divider(),
+                _buildDrawerItem(
+                  context,
+                  Icons.logout,
+                  'Cerrar sesión',
+                  null,
+                  isLogout: true,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Versión ${AppConstants.version}',
+              style: TextStyle(
+                fontSize: 12, 
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildDrawerHeader(BuildContext context) {
     final theme = Theme.of(context);

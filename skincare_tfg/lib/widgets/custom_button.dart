@@ -3,26 +3,26 @@ import 'package:flutter/material.dart';
 
 /// Tipos de botones disponibles
 enum ButtonType {
-  primary,   // Botón principal (fondo sólido)
+  primary, // Botón principal (fondo sólido)
   secondary, // Botón secundario (borde, sin fondo)
-  danger,    // Botón de peligro (rojo)
-  text,      // Botón de texto (sin bordes)
-  outlined,  // Botón con borde (similar a secondary pero más genérico)
+  danger, // Botón de peligro (rojo)
+  text, // Botón de texto (sin bordes)
+  outlined, // Botón con borde (similar a secondary pero más genérico)
 }
 
 /// Tamaños de botón predefinidos
 enum ButtonSize {
-  small,   // Compacto
-  medium,  // Tamaño estándar
-  large,   // Grande
-  full,    // Ancho completo
+  small, // Compacto
+  medium, // Tamaño estándar
+  large, // Grande
+  full, // Ancho completo
 }
 
 class CustomButton extends StatefulWidget {
   // Propiedades requeridas
   final String text;
   final VoidCallback onPressed;
-  
+
   // Propiedades de estilo
   final ButtonType type;
   final ButtonSize size;
@@ -33,16 +33,16 @@ class CustomButton extends StatefulWidget {
   final double? height;
   final EdgeInsetsGeometry? padding;
   final double borderRadius;
-  
+
   // Propiedades de color personalizado
   final Color? backgroundColor;
   final Color? textColor;
   final Color? borderColor;
   final Color? loadingColor;
-  
+
   // Callbacks adicionales
   final VoidCallback? onLongPress;
-  
+
   const CustomButton({
     super.key,
     required this.text,
@@ -67,7 +67,8 @@ class CustomButton extends StatefulWidget {
   State<CustomButton> createState() => _CustomButtonState();
 }
 
-class _CustomButtonState extends State<CustomButton> with SingleTickerProviderStateMixin {
+class _CustomButtonState extends State<CustomButton>
+    with SingleTickerProviderStateMixin {
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
 
@@ -91,10 +92,14 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
 
   double _getFontSize() {
     switch (widget.size) {
-      case ButtonSize.small: return 12;
-      case ButtonSize.medium: return 16;
-      case ButtonSize.large: return 18;
-      case ButtonSize.full: return 18;
+      case ButtonSize.small:
+        return 12;
+      case ButtonSize.medium:
+        return 16;
+      case ButtonSize.large:
+        return 18;
+      case ButtonSize.full:
+        return 18;
     }
   }
 
@@ -113,12 +118,16 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
 
   double? _getWidth() {
     if (widget.width != null) return widget.width;
-    
+
     switch (widget.size) {
-      case ButtonSize.small: return 100;
-      case ButtonSize.medium: return 150;
-      case ButtonSize.large: return 200;
-      case ButtonSize.full: return double.infinity;
+      case ButtonSize.small:
+        return 100;
+      case ButtonSize.medium:
+        return 150;
+      case ButtonSize.large:
+        return 200;
+      case ButtonSize.full:
+        return double.infinity;
     }
   }
 
@@ -134,24 +143,37 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
   ButtonStyle _getButtonStyle(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Colores por defecto según el tipo
     Color defaultBgColor;
     Color defaultTextColor;
     Color defaultBorderColor;
     Color? defaultHoverColor;
-    
+
+    double _getDefaultHeight() {
+      switch (widget.size) {
+        case ButtonSize.small:
+          return 36;
+        case ButtonSize.medium:
+          return 48;
+        case ButtonSize.large:
+          return 56;
+        case ButtonSize.full:
+          return 56;
+      }
+    }
+
     switch (widget.type) {
       case ButtonType.primary:
         defaultBgColor = widget.backgroundColor ?? theme.colorScheme.primary;
         defaultTextColor = widget.textColor ?? theme.colorScheme.onPrimary;
         defaultBorderColor = widget.borderColor ?? Colors.transparent;
         // Hover: más saturado o más claro según el modo
-        defaultHoverColor = isDark 
+        defaultHoverColor = isDark
             ? theme.colorScheme.primary.withValues(alpha: 0.9)
             : theme.colorScheme.primary.withValues(alpha: 0.85);
         break;
-        
+
       case ButtonType.secondary:
       case ButtonType.outlined:
         defaultBgColor = widget.backgroundColor ?? Colors.transparent;
@@ -161,7 +183,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
             ? theme.colorScheme.primary.withValues(alpha: 0.15)
             : theme.colorScheme.primary.withValues(alpha: 0.1);
         break;
-        
+
       case ButtonType.danger:
         defaultBgColor = widget.backgroundColor ?? theme.colorScheme.error;
         defaultTextColor = widget.textColor ?? theme.colorScheme.onError;
@@ -170,7 +192,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
             ? theme.colorScheme.error.withValues(alpha: 0.9)
             : theme.colorScheme.error.withValues(alpha: 0.85);
         break;
-        
+
       case ButtonType.text:
         defaultBgColor = widget.backgroundColor ?? Colors.transparent;
         defaultTextColor = widget.textColor ?? theme.colorScheme.primary;
@@ -180,27 +202,35 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
             : theme.colorScheme.primary.withValues(alpha: 0.1);
         break;
     }
-    
+
     // Ajustar opacidad si está deshabilitado
-    final bgColor = widget.isEnabled ? defaultBgColor : defaultBgColor.withValues(alpha: 0.3);
-    final txtColor = widget.isEnabled ? defaultTextColor : defaultTextColor.withValues(alpha: 0.5);
-    final brdColor = widget.isEnabled ? defaultBorderColor : defaultBorderColor.withValues(alpha: 0.3);
+    final bgColor = widget.isEnabled
+        ? defaultBgColor
+        : defaultBgColor.withValues(alpha: 0.3);
+    final txtColor = widget.isEnabled
+        ? defaultTextColor
+        : defaultTextColor.withValues(alpha: 0.5);
+    final brdColor = widget.isEnabled
+        ? defaultBorderColor
+        : defaultBorderColor.withValues(alpha: 0.3);
     final hoverColor = widget.isEnabled ? defaultHoverColor : bgColor;
-    
+
     return ElevatedButton.styleFrom(
       backgroundColor: bgColor,
       foregroundColor: txtColor,
       disabledBackgroundColor: bgColor,
       disabledForegroundColor: txtColor,
       elevation: widget.type == ButtonType.text ? 0 : 4,
-      shadowColor: widget.type == ButtonType.text 
-          ? Colors.transparent 
+      shadowColor: widget.type == ButtonType.text
+          ? Colors.transparent
           : theme.colorScheme.shadow.withValues(alpha: 0.3),
       padding: widget.padding ?? _getDefaultPadding(),
-      minimumSize: Size(_getWidth() ?? 0, widget.height ?? 0),
+      minimumSize: Size(_getWidth() ?? 0, widget.height ?? _getDefaultHeight()),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(widget.borderRadius),
-        side: (widget.type == ButtonType.secondary || widget.type == ButtonType.outlined)
+        side:
+            (widget.type == ButtonType.secondary ||
+                widget.type == ButtonType.outlined)
             ? BorderSide(color: brdColor, width: 2)
             : BorderSide.none,
       ),
@@ -233,21 +263,18 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
         child: _buildChild(context),
       ),
     );
-    
+
     if (widget.size == ButtonSize.full || widget.width == double.infinity) {
-      return SizedBox(
-        width: double.infinity,
-        child: button,
-      );
+      return SizedBox(width: double.infinity, child: button);
     }
-    
+
     return button;
   }
 
   Widget _buildChild(BuildContext context) {
     if (widget.isLoading) {
       final theme = Theme.of(context);
-      
+
       // Color del loader dinámico según el tipo de botón
       Color defaultLoaderColor;
       if (widget.type == ButtonType.primary) {
@@ -269,7 +296,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
         ),
       );
     }
-    
+
     if (widget.icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -281,17 +308,20 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
         ],
       );
     }
-    
+
     return Text(widget.text);
   }
 }
 
 // Extensión para facilitar el uso con context
 extension CustomButtonExtension on BuildContext {
-  Widget primaryButton(String text, VoidCallback onPressed, {
+  Widget primaryButton(
+    String text,
+    VoidCallback onPressed, {
     IconData? icon,
     bool isLoading = false,
     ButtonSize size = ButtonSize.medium,
+    double? height,
   }) {
     return CustomButton(
       text: text,
@@ -300,10 +330,13 @@ extension CustomButtonExtension on BuildContext {
       size: size,
       icon: icon,
       isLoading: isLoading,
+      height: height
     );
   }
-  
-  Widget secondaryButton(String text, VoidCallback onPressed, {
+
+  Widget secondaryButton(
+    String text,
+    VoidCallback onPressed, {
     IconData? icon,
     bool isLoading = false,
     ButtonSize size = ButtonSize.medium,
@@ -317,8 +350,10 @@ extension CustomButtonExtension on BuildContext {
       isLoading: isLoading,
     );
   }
-  
-  Widget dangerButton(String text, VoidCallback onPressed, {
+
+  Widget dangerButton(
+    String text,
+    VoidCallback onPressed, {
     IconData? icon,
     bool isLoading = false,
     ButtonSize size = ButtonSize.medium,
@@ -332,8 +367,10 @@ extension CustomButtonExtension on BuildContext {
       isLoading: isLoading,
     );
   }
-  
-  Widget textButton(String text, VoidCallback onPressed, {
+
+  Widget textButton(
+    String text,
+    VoidCallback onPressed, {
     IconData? icon,
     ButtonSize size = ButtonSize.medium,
   }) {

@@ -5,13 +5,13 @@
     
 
     "myProducts": "My products",
-        "seeAll": "See all",
+        "seeAll": "VIEW ALL",
 
     "routines": "Routines",
 
     "categories": "Categories",
 
-    "expiringSoon": "About to expire",
+    "expiringSoon": "Expiring Soon",
         "days": "days",
         "allFine": "All is fine!",
         "noProdExpiring": "No products are about to expire",

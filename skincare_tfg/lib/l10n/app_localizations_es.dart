@@ -47,7 +47,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get myProducts => 'Mis productos';
 
   @override
-  String get seeAll => 'Ver todos';
+  String get seeAll => 'VER TODOS';
 
   @override
   String get routines => 'Rutinas';

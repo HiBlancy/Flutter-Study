@@ -84,9 +84,8 @@ class AppThemes {
       
       // Tipografía: Sora para títulos, Lato para cuerpo
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.sora(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
+        displayLarge: GoogleFonts.crimsonText(
+          fontSize: 48,
           color: colorScheme.onSurface,
         ),
         displaySmall: GoogleFonts.sora(
@@ -105,14 +104,14 @@ class AppThemes {
           color: colorScheme.primary,
         ),
         titleLarge: GoogleFonts.sora(
-          fontSize: 18,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: colorScheme.onSurface,
         ),
-        titleMedium: GoogleFonts.sora(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.onSurface,
+        titleMedium: GoogleFonts.literata(
+          fontSize: 24,
+          fontWeight: FontWeight.w500,
+          color: colorScheme.primary,
         ),
         bodyLarge: GoogleFonts.lato(
           fontSize: 16,
@@ -141,21 +140,22 @@ class AppThemes {
         centerTitle: true,
         // En modo oscuro: AppBar con color (primario), en claro: el primario original
         backgroundColor: colorScheme.brightness == Brightness.light 
-            ? colorScheme.primary 
+            ? Color(0xfffff8f9)
             : Color(0xff3a1a2f), // Gris oscuro con toque púrpura (base del primario oscuro)
         foregroundColor: colorScheme.brightness == Brightness.light 
-            ? colorScheme.onPrimary 
+            ? colorScheme.primary 
             : Color(0xfff4add8), // Texto rosa claro en oscuro
-        titleTextStyle: GoogleFonts.sora(
-          fontSize: 20,
+        titleTextStyle: GoogleFonts.crimsonText(
+          fontSize: 30,
           fontWeight: FontWeight.w600,
+          fontStyle: FontStyle.italic,
           color: colorScheme.brightness == Brightness.light 
-              ? colorScheme.onPrimary 
+              ? colorScheme.primary 
               : Color(0xfff4add8), // Título rosa en oscuro
         ),
         iconTheme: IconThemeData(
           color: colorScheme.brightness == Brightness.light
-              ? colorScheme.onPrimary
+              ? colorScheme.primary
               : Color(0xfff4add8),
         ),
       ),

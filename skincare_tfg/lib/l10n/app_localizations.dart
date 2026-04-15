@@ -173,7 +173,7 @@ abstract class AppLocalizations {
   /// No description provided for @seeAll.
   ///
   /// In es, this message translates to:
-  /// **'Ver todos'**
+  /// **'VER TODOS'**
   String get seeAll;
 
   /// No description provided for @routines.

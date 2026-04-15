@@ -145,27 +145,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: isDark
-            ? Color(0xff3a1a2f)
-            : theme.colorScheme.primary,
+            ? Color(0xff1a1419)
+            : theme.colorScheme.surface,
         foregroundColor: isDark
             ? Color(0xfff4add8)
             : theme.colorScheme.onPrimary,
-        title: Text(
-          'Crear Cuenta',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: isDark
-                ? Color(0xfff4add8)
-                : theme.colorScheme.onPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
             color: isDark
                 ? Color(0xfff4add8)
-                : theme.colorScheme.onPrimary,
+                : theme.colorScheme.primary,
           ),
           onPressed: () => Navigator.pushReplacementNamed(context, '/'),
         ),
@@ -187,9 +177,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _buildTermsCheckbox(theme, isDark),
                   const SizedBox(height: 28),
                   _buildRegisterButton(theme),
-                  const SizedBox(height: 20),
-                  _buildLoginLink(theme),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 30),
+                  _buildSocialLogins(theme),
+                  const SizedBox(height: 28),
+                  _buildLoginLink(theme)
                 ],
               ),
             ),
@@ -200,25 +191,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildHeader(ThemeData theme, bool isDark) => Container(
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      color: isDark
-          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.2)
-          : theme.colorScheme.primaryContainer.withValues(alpha: 0.15),
-      border: Border.all(
-        color: isDark
-            ? theme.colorScheme.primary.withValues(alpha: 0.3)
-            : theme.colorScheme.primary.withValues(alpha: 0.2),
-        width: 2,
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Text(
+        'DueGlow',
+        style: theme.textTheme.displayLarge?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w400,
+          letterSpacing: 1.2,
+          fontStyle: FontStyle.italic,
+          fontSize: 40
+        ),
       ),
-    ),
-    child: Icon(
-      Icons.person_add_outlined,
-      size: 56,
-      color: theme.colorScheme.primary,
-    ),
-  );
+      const SizedBox(height: 24),
+      Text(
+        'Crear Cuenta',
+        style: theme.textTheme.displayLarge?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w400,
+          letterSpacing: 1.2,
+          fontSize: 40
+        ),
+      ),
+      Text(
+        'Empieza a gestionar tus productos',
+        style: TextStyle(
+          fontSize: 16,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+        ),
+      ),
+    ],
+  ),
+);
 
   Widget _buildFormSection(ThemeData theme) => Column(
     children: [
@@ -330,7 +336,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.only(top: 8),
                 child: RichText(
                   text: TextSpan(
-                    style: theme.textTheme.bodySmall?.copyWith(color: textColor),
+                    style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
                     children: [
                       const TextSpan(text: 'Acepto los '),
                       TextSpan(
@@ -363,11 +369,90 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildRegisterButton(ThemeData theme) {
     return context.primaryButton(
-      'Crear Cuenta',
+      'CREAR CUENTA',
       _register,
       isLoading: _isLoading,
       size: ButtonSize.full,
       icon: Icons.person_add,
+      height: 60,
+    );
+  }
+
+   Widget _buildSocialLogins(ThemeData theme) {
+    return Column(
+      children: [
+        // Divisor con texto "O"
+        Row(
+          children: [
+            Expanded(
+              child: Divider(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'O continuar con',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Divider(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+
+        // Botones de Google y Apple
+        Row(
+          children: [
+            // Botón Google
+            Expanded(
+              child: _socialButton(
+                icon: Icons.g_mobiledata, // O puedes usar un FontAwesome/Asset
+                label: 'Google',
+                onPressed: () {}, // No funcional por ahora
+                theme: theme,
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Botón Apple
+            Expanded(
+              child: _socialButton(
+                icon: Icons.apple,
+                label: 'Apple',
+                onPressed: () {}, // No funcional por ahoras
+                theme: theme,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _socialButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+    required ThemeData theme,
+  }) {
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 24),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        side: BorderSide(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        foregroundColor: theme.colorScheme.onSurface,
+      ),
     );
   }
 
@@ -377,7 +462,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: [
         Text(
           '¿Ya tienes una cuenta? ',
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
@@ -385,7 +470,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onTap: () => Navigator.pushReplacementNamed(context, '/'),
           child: Text(
             'Inicia sesión',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.underline,

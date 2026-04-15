@@ -77,40 +77,62 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 24),
-                    
-                    // --- CABECERA CENTRADA ---
-                    Center(
-                      child: Column(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            l10n.helloUser(_userName),
-                            style: theme.textTheme.displaySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
-                              fontFamily: 'Sora',
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _getGreetingPrefix().toUpperCase(),
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    letterSpacing: 2,
+                                    color: isDark
+                                        ? theme.colorScheme.primary.withValues(
+                                            alpha: 0.8,
+                                          )
+                                        : theme.colorScheme.primary.withValues(
+                                            alpha: 0.7,
+                                          ),
+                                    fontFamily: 'Sora',
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                // Texto principal "Your skin's"
+                                Text( //!!!!!!!!!!!!!!!!!!!!
+                                  _getMainGreetingLine1(),
+                                  style: theme.textTheme.displaySmall?.copyWith(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 28,
+                                    color: theme.colorScheme.onSurface,
+                                    fontFamily: 'crimsonText',
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Tu rutina personalizada te espera',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: isDark 
-                                  ? theme.colorScheme.onSurfaceVariant
-                                  : theme.colorScheme.onSurfaceVariant,
+                          SizedBox(
+                            width: 80,
+                            height: 80,
+                            child: Icon(
+                              Icons
+                                  .eco_outlined, // Puedes cambiarlo por Icons.eco, Icons.blur_on, etc.
+                              size: 80,
+                              color: theme.colorScheme.surfaceTint.withValues(
+                                alpha: 0.2,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    
                     const SizedBox(height: 32),
-                    
-                    // --- ACCIONES RÁPIDAS (Con mejor uso de colores en modo oscuro) ---
                     _buildQuickActions(theme, l10n, isDark),
-                    
                     const SizedBox(height: 32),
-                    
-                    // --- SECCIÓN DE CADUCIDAD ---
                     _buildExpiringSoonProducts(isDark),
                   ],
                 ),
@@ -119,22 +141,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildQuickActions(ThemeData theme, AppLocalizations l10n, bool isDark) {
+  String _getGreetingPrefix() {
+    final hour = DateTime.now().hour;
+    final name = _userName;
+
+    if (hour < 12) {
+      return 'BUENOS DÍAS, $name';
+    } else if (hour < 18) {
+      return 'BUENAS TARDES, $name';
+    } else {
+      return 'BUENAS NOCHES, $name';
+    }
+  }
+
+  String _getMainGreetingLine1() {
+    return "texto";
+  }
+
+  Widget _buildQuickActions(
+    ThemeData theme,
+    AppLocalizations l10n,
+    bool isDark,
+  ) {
     // En modo oscuro: usamos colores más saturados y con variación
     // En modo claro: los tonos más suaves que ya tienes
-    
-    final color1 = isDark 
+
+    final color1 = isDark
         ? theme.colorScheme.primaryContainer.withValues(alpha: 0.6)
         : theme.colorScheme.primaryContainer.withValues(alpha: 0.4);
-    
+
     final color2 = isDark
         ? Color(0xffe8d5f2).withValues(alpha: 0.5) // Púrpura suave
         : theme.colorScheme.primaryContainer.withValues(alpha: 0.2);
-    
+
     final color3 = isDark
         ? Color(0xffd9a3c8).withValues(alpha: 0.4) // Rosa más saturada
         : theme.colorScheme.primaryContainer.withValues(alpha: 0.2);
-    
+
     final color4 = isDark
         ? Color(0xffb095a8).withValues(alpha: 0.3) // Rosa neutral suave
         : theme.colorScheme.primaryContainer.withValues(alpha: 0.1);
@@ -151,7 +194,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   l10n.myProducts,
                   l10n.seeAll,
                   color1,
-                  () => Navigator.pushNamed(context, AppConstants.routeMyProducts),
+                  () => Navigator.pushNamed(
+                    context,
+                    AppConstants.routeMyProducts,
+                  ),
                   theme,
                   isDark,
                 ),
@@ -218,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildExpiringSoonProducts(bool isDark) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    
+
     final now = DateTime.now();
     final expiringSoon = _products.where((product) {
       if (product.expirationDate == null) return false;
@@ -226,37 +272,78 @@ class _HomeScreenState extends State<HomeScreen> {
       return days >= 0 && days <= 30;
     }).toList();
 
+    // Limitar a 6 productos
+    final displayProducts = expiringSoon.take(6).toList();
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.expiringSoon,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Solo el título (sin el botón)
+            Text(
+              l10n.expiringSoon,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              TextButton(
-                onPressed: () => Navigator.pushNamed(context, AppConstants.routeMyProducts),
-                child: Text(
-                  l10n.seeAll,
-                  style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Prioriza estos productos antes de que caduquen',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: isDark
+                          ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7)
+                          : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
+                TextButton(
+                  onPressed: () => Navigator.pushNamed(
+                    context,
+                    AppConstants.routeMyProducts,
+                  ),
+                  child: Text(
+                    l10n.seeAll,
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
+      ),
+        const SizedBox(height: 16),
         if (expiringSoon.isEmpty)
           _buildEmptyCard(theme, l10n, isDark)
         else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: expiringSoon.length > 5 ? 5 : expiringSoon.length,
-            itemBuilder: (context, index) => _buildExpiringProductCard(expiringSoon[index], isDark),
+          // GridView vertical en lugar de ListView
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // 2 columnas
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.75, // Proporción vertical más alta
+              ),
+              itemCount: displayProducts.length,
+              itemBuilder: (context, index) =>
+                  _buildExpiringProductCardVertical(
+                    displayProducts[index],
+                    isDark,
+                  ),
+            ),
           ),
       ],
     );
@@ -306,82 +393,115 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildExpiringProductCard(BeautyProduct product, bool isDark) {
-    final theme = Theme.of(context);
-    final days = product.expirationDate!.difference(DateTime.now()).inDays;
-    final isDanger = days <= 7;
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildExpiringProductCardVertical(BeautyProduct product, bool isDark) {
+  final theme = Theme.of(context);
+  final days = product.expirationDate!.difference(DateTime.now()).inDays;
+  final isDanger = days <= 7;
+  final l10n = AppLocalizations.of(context)!;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      elevation: 0,
-      color: isDark
-          ? theme.colorScheme.surfaceContainerHigh
-          : theme.colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isDark
-              ? theme.colorScheme.primary.withValues(alpha: 0.2)
-              : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
+  return Card(
+    elevation: 0,
+    color: isDark
+        ? theme.colorScheme.surfaceContainerHigh
+        : theme.colorScheme.surface,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide(
+        color: isDark
+            ? theme.colorScheme.primary.withValues(alpha: 0.2)
+            : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        onTap: () => _navigateToProduct(product),
-        leading: Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(
-            color: isDark
-                ? theme.colorScheme.surfaceContainerHigh
-                : theme.colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: product.imageUrl != null 
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(12), 
-                  child: Image.network(product.imageUrl!, fit: BoxFit.cover))
-              : Icon(
-                  Icons.face_retouching_natural,
-                  color: isDark
-                      ? theme.colorScheme.primary.withValues(alpha: 0.5)
-                      : theme.colorScheme.outline,
-                ),
-        ),
-        title: Text(
-          product.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          product.brand ?? '',
-          style: theme.textTheme.bodySmall,
-        ),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: isDanger 
-                ? theme.colorScheme.errorContainer 
-                : (isDark
-                    ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
-                    : theme.colorScheme.primaryContainer.withValues(alpha: 0.5)),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            '$days ${l10n.days}',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: isDanger
-                  ? theme.colorScheme.onErrorContainer
-                  : (isDark
-                      ? theme.colorScheme.onPrimaryContainer
-                      : theme.colorScheme.onPrimaryContainer),
+    ),
+    child: InkWell(
+      onTap: () => _navigateToProduct(product),
+      borderRadius: BorderRadius.circular(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                height: 140, // Aumentado de 100 a 160 para hacerla más vertical
+                width: double.infinity,
+                color: isDark
+                    ? theme.colorScheme.surfaceContainerHigh
+                    : theme.colorScheme.surfaceContainerLow,
+                child: product.imageUrl != null
+                    ? Image.network(
+                        product.imageUrl!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      )
+                    : Icon(
+                        Icons.face_retouching_natural,
+                        size: 50, // Icono un poco más grande
+                        color: isDark
+                            ? theme.colorScheme.primary.withValues(alpha: 0.5)
+                            : theme.colorScheme.outline,
+                      ),
+              ),
             ),
           ),
-        ),
+          // Contenido
+          Padding(
+            padding: const EdgeInsets.all(12), // Padding restaurado a 12
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.brand ?? '',
+                  style: theme.textTheme.bodySmall?.copyWith(fontSize: 12), // Fuente ligeramente más grande
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  product.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14, // Fuente ligeramente más grande
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                // Días restantes
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDanger
+                        ? theme.colorScheme.errorContainer
+                        : (isDark
+                            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
+                            : theme.colorScheme.primaryContainer.withValues(alpha: 0.5)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '$days ${l10n.days}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: isDanger
+                          ? theme.colorScheme.onErrorContainer
+                          : (isDark
+                              ? theme.colorScheme.onPrimaryContainer
+                              : theme.colorScheme.onPrimaryContainer),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildActionCard(
     IconData icon,
@@ -424,8 +544,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: isDark
-                      ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8)
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      ? theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.8,
+                        )
+                      : theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                 ),
                 textAlign: TextAlign.center,
               ),
