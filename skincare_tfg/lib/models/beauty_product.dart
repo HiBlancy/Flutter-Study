@@ -42,7 +42,9 @@ class BeautyProduct {
       barcode: json['code']?.toString() ?? '',
       name: json['product_name']?.toString().trim() ?? '',
       brand: json['brands']?.toString().trim(),
-      imageUrl: json['imageUrl']?.toString(),
+      imageUrl: json['image_front_small_url']?.toString() ?? 
+                json['image_front_url']?.toString() ?? 
+                json['image_url']?.toString(),
       categories: rawCategories
           .map((c) => c.toString().replaceAll('en:', '').replaceAll('-', ' '))
           .toList(),
