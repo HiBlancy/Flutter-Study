@@ -40,7 +40,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   void initState() {
     super.initState();
     _selectedListType = widget.initialListType;
-    _refreshProducts(); 
+    _refreshProducts();
 
     // Escuchamos el scroll
     _scrollController.addListener(() {
@@ -100,6 +100,42 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     }
   }
 
+  Widget _buildInfoMessage(ThemeData theme) {
+    if (_selectedListType != ProductListType.used) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, size: 20, color: theme.colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Estos son los productos que has terminado este mes. '
+              'Cuando termine el mes, estos productos se eliminarán automáticamente '
+              'y se almacenarán los datos para el proyecto PAN.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _refreshProducts() async {
     await _loadProducts(reset: true);
   }
@@ -112,14 +148,15 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   }
 
   Future<void> _navigateToProduct(BeautyProduct product) async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ProductScreen(product: product, isFromSearch: false),
-    ),
-  );
-  await _refreshProducts(); // Refrescar al volver
-}
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            ProductScreen(product: product, isFromSearch: false),
+      ),
+    );
+    await _refreshProducts(); // Refrescar al volver
+  }
 
   String _getTitle() {
     if (_selectedListType == null) {
@@ -156,7 +193,6 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -164,7 +200,6 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     return CustomAppBar(
       title: 'Mis Productos',
       showDrawer: true,
-      showBackButton: true,
       child: Column(
         children: [
           // Filter Chips Section
@@ -396,26 +431,31 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       );
     }
 
-    return ListView.builder(
-      controller: _scrollController, // <--- No olvides asignar el controller
-      padding: const EdgeInsets.only(bottom: 24),
-      // Añadimos +1 al conteo si estamos cargando más para mostrar el spinner
-      itemCount: _filteredProducts.length + (_isMoreLoading ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index < _filteredProducts.length) {
-          final product = _filteredProducts[index];
-          return ProductCard(
-            product: product,
-            onTap: () => _navigateToProduct(product),
-          );
-        } else {
-          // Este es el spinner que sale abajo del todo
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 32),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
+    return Column(
+      children: [
+        _buildInfoMessage(theme),
+        Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.only(bottom: 24),
+            itemCount: _filteredProducts.length + (_isMoreLoading ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index < _filteredProducts.length) {
+                final product = _filteredProducts[index];
+                return ProductCard(
+                  product: product,
+                  onTap: () => _navigateToProduct(product),
+                );
+              } else {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }

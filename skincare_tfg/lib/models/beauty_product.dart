@@ -38,8 +38,6 @@ class BeautyProduct {
 
   // Factory para productos desde Open Beauty Facts (API externa)
   factory BeautyProduct.fromOpenBeautyFacts(Map<String, dynamic> json) {
-    final rawCategories = json['categories_tags'] as List<dynamic>? ?? [];
-
     return BeautyProduct(
       barcode: json['code']?.toString() ?? '',
       name: json['product_name']?.toString().trim() ?? '',
@@ -47,9 +45,6 @@ class BeautyProduct {
       imageUrl: json['image_front_small_url']?.toString() ?? 
                 json['image_front_url']?.toString() ?? 
                 json['image_url']?.toString(),
-      categories: rawCategories
-          .map((c) => c.toString().replaceAll('en:', '').replaceAll('-', ' '))
-          .toList(),
       isOpened: false,
     );
   }
