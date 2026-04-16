@@ -431,17 +431,19 @@ class _ProductScreenState extends State<ProductScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: isDark ? Color(0xff3a1a2f) : theme.colorScheme.primary,
+        backgroundColor: isDark ? Color(0xff3a1a2f) : theme.colorScheme.surface,
         foregroundColor: isDark
             ? Color(0xfff4add8)
             : theme.colorScheme.onPrimary,
         title: Text(
-          _currentProduct.name,
+          'DueGlow',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: isDark ? Color(0xfff4add8) : theme.colorScheme.onPrimary,
+          style: theme.textTheme.displaySmall?.copyWith(
+            color: isDark ? Color(0xfff4add8) : theme.colorScheme.primary,
             fontWeight: FontWeight.bold,
+            fontSize: 28,
+            fontStyle: FontStyle.italic
           ),
         ),
         actions: [
@@ -511,7 +513,7 @@ class _ProductScreenState extends State<ProductScreen> {
                   child: Image.network(
                     _currentProduct.imageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const _PlaceholderImage(),
+                    errorBuilder: (_, _, _) => const _PlaceholderImage(),
                   ),
                 )
               : const _PlaceholderImage(),

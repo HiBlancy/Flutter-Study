@@ -88,9 +88,8 @@ class AppThemes {
           fontSize: 48,
           color: colorScheme.onSurface,
         ),
-        displaySmall: GoogleFonts.sora(
+        displaySmall: GoogleFonts.crimsonText(
           fontSize: 24,
-          fontWeight: FontWeight.bold,
           color: colorScheme.onSurface,
         ),
         headlineMedium: GoogleFonts.sora(

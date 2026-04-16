@@ -263,9 +263,8 @@ print('🔍 uploadedProduct completo: ${uploadedProduct?.toBackendJson()}');
       }
     }
 
-
     // 2️⃣ Preparar datos actualizados (sin incluir imageUrl si ya se subió)
-    final hasOpenedDate = _openedDate != null;
+   
 
     final updatedProductData = {
       'name': _nameController.text.trim(),
@@ -277,7 +276,6 @@ print('🔍 uploadedProduct completo: ${uploadedProduct?.toBackendJson()}');
       'expirationDate': _expirationDate?.toIso8601String(),
       'periodAfterOpening': _periodAfterOpeningController.text.trim().isEmpty ? null : _periodAfterOpeningController.text.trim(),
       'openedDate': _openedDate?.toIso8601String(),
-      'isOpened': hasOpenedDate,
     };
 
     // Si no se subió imagen nueva, y quieres mantener la existente, NO envíes el campo imageUrl

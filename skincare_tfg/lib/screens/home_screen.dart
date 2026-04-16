@@ -102,14 +102,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                // Texto principal "Your skin's"
-                                Text( //!!!!!!!!!!!!!!!!!!!!
-                                  _getMainGreetingLine1(),
-                                  style: theme.textTheme.displaySmall?.copyWith(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 28,
-                                    color: theme.colorScheme.onSurface,
-                                    fontFamily: 'crimsonText',
+                                Text( 
+                                  'Que tu piel nunca deje de brillar',
+                                  style: theme.textTheme.displayLarge?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 30,
+                                    color: theme.colorScheme.primary
                                   ),
                                 ),
                               ],
@@ -152,10 +150,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return 'BUENAS NOCHES, $name';
     }
-  }
-
-  String _getMainGreetingLine1() {
-    return "texto";
   }
 
   Widget _buildQuickActions(
@@ -261,21 +255,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildExpiringSoonProducts(bool isDark) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
+ Widget _buildExpiringSoonProducts(bool isDark) {
+  final theme = Theme.of(context);
+  final l10n = AppLocalizations.of(context)!;
 
-    final now = DateTime.now();
-    final expiringSoon = _products.where((product) {
-      if (product.expirationDate == null) return false;
-      final days = product.expirationDate!.difference(now).inDays;
-      return days >= 0 && days <= 30;
-    }).toList();
+  final now = DateTime.now();
+  final expiringSoon = _products.where((product) {
+    if (product.expirationDate == null) return false;
+    final days = product.expirationDate!.difference(now).inDays;
+    return days >= 0 && days <= 30;
+  }).toList();
 
-    // Limitar a 6 productos
-    final displayProducts = expiringSoon.take(6).toList();
+  final displayProducts = expiringSoon.take(6).toList();
 
-    return Column(
+  return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Padding(
@@ -283,7 +276,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Solo el título (sin el botón)
             Text(
               l10n.expiringSoon,
               style: theme.textTheme.titleMedium?.copyWith(
@@ -295,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    'Prioriza estos productos antes de que caduquen',
+                    'Prioriza estos productos antes de que caduquen', // Asegúrate de agregar esta clave en tu archivo .arb
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDark
                           ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7)
@@ -321,33 +313,32 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-        const SizedBox(height: 16),
-        if (expiringSoon.isEmpty)
-          _buildEmptyCard(theme, l10n, isDark)
-        else
-          // GridView vertical en lugar de ListView
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // 2 columnas
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.75, // Proporción vertical más alta
-              ),
-              itemCount: displayProducts.length,
-              itemBuilder: (context, index) =>
-                  _buildExpiringProductCardVertical(
-                    displayProducts[index],
-                    isDark,
-                  ),
+      const SizedBox(height: 16),
+      if (expiringSoon.isEmpty)
+        _buildEmptyCard(theme, l10n, isDark)
+      else
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 220, // Ancho máximo de cada tarjeta (ajústalo según prefieras)
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.75, // Mantén la proporción vertical
             ),
+            itemCount: displayProducts.length,
+            itemBuilder: (context, index) =>
+                _buildExpiringProductCardVertical(
+                  displayProducts[index],
+                  isDark,
+                ),
           ),
-      ],
-    );
-  }
+        ),
+    ],
+  );
+}
 
   Widget _buildEmptyCard(ThemeData theme, AppLocalizations l10n, bool isDark) {
     return Container(
@@ -399,18 +390,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final isDanger = days <= 7;
   final l10n = AppLocalizations.of(context)!;
 
+  final cardColor = isDark
+      ? theme.colorScheme.primaryContainer.withValues(alpha: 0.15)
+      : theme.colorScheme.primaryContainer.withValues(alpha: 0.2);
+
   return Card(
     elevation: 0,
-    color: isDark
-        ? theme.colorScheme.surfaceContainerHigh
-        : theme.colorScheme.surface,
+    color: cardColor,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
-      side: BorderSide(
-        color: isDark
-            ? theme.colorScheme.primary.withValues(alpha: 0.2)
-            : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-      ),
     ),
     child: InkWell(
       onTap: () => _navigateToProduct(product),
@@ -419,11 +407,11 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0), // Reducido padding
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                height: 140, // Aumentado de 100 a 160 para hacerla más vertical
+                height: 100, // Ajusta este valor para controlar la altura de la imagen
                 width: double.infinity,
                 color: isDark
                     ? theme.colorScheme.surfaceContainerHigh
@@ -436,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     : Icon(
                         Icons.face_retouching_natural,
-                        size: 50, // Icono un poco más grande
+                        size: 40,
                         color: isDark
                             ? theme.colorScheme.primary.withValues(alpha: 0.5)
                             : theme.colorScheme.outline,
@@ -444,48 +432,46 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // Contenido
           Padding(
-            padding: const EdgeInsets.all(12), // Padding restaurado a 12
+            padding: const EdgeInsets.all(10), // Padding reducido
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   product.brand ?? '',
-                  style: theme.textTheme.bodySmall?.copyWith(fontSize: 12), // Fuente ligeramente más grande
+                  style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   product.name,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 14, // Fuente ligeramente más grande
+                    fontSize: 13,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 8),
-                // Días restantes
+                const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+                    horizontal: 6,
+                    vertical: 3,
                   ),
                   decoration: BoxDecoration(
                     color: isDanger
                         ? theme.colorScheme.errorContainer
                         : (isDark
-                            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
-                            : theme.colorScheme.primaryContainer.withValues(alpha: 0.5)),
-                    borderRadius: BorderRadius.circular(8),
+                            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.6)
+                            : theme.colorScheme.primaryContainer.withValues(alpha: 0.7)),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     '$days ${l10n.days}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 11,
                       color: isDanger
                           ? theme.colorScheme.onErrorContainer
                           : (isDark
