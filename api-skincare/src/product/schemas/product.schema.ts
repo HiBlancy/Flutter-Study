@@ -25,7 +25,7 @@ export const ProductSchema = new Schema(
       enum: ['wishlist', 'have', 'used'],
       default: 'have',
     },
-    expirationDate: { type: Date, required: false },
+    expirationDate: { type: String, match: /^\d{4}-\d{2}-\d{2}$/ },
     periodAfterOpening: {
       type: String,
       required: false,
@@ -44,5 +44,8 @@ export const ProductSchema = new Schema(
 ProductSchema.index({ userId: 1, barcode: 1, listType: 1 }, { sparse: true });
 ProductSchema.virtual('isExpired').get(function () {
   if (!this.expirationDate) return false;
-  return new Date() > this.expirationDate;
+  const expDate = new Date(this.expirationDate); // convierte "2025-12-25" a Date UTC
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // normalizar a medianoche UTC
+  return today > expDate;
 });

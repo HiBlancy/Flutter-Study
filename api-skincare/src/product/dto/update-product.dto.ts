@@ -11,8 +11,9 @@ import {
   IsIn,
   IsBoolean,
   IsDate,
+  Matches,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -53,13 +54,35 @@ export class UpdateProductDto {
   listType?: string;
 
   @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  expirationDate?: Date | string | null; // ✅ Permitir null (para limpiar)
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    const date = new Date(value);
+    // Normalizar a UTC medianoche
+    return new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
+  })
+  expirationDate?: Date | string; // ✅ Permitir null (para limpiar)
 
   @IsOptional()
+  @Transform(({ value }) => {
+    // Si no hay valor, retornamos undefined
+    if (value === null || value === undefined) return undefined;
+
+    // Convertir a número (si es string numérico o número)
+    const num = typeof value === 'number' ? value : parseInt(value, 10);
+
+    // Si no es un número válido, retornamos el valor original (fallará en @Matches)
+    if (isNaN(num)) return value;
+
+    // Añadimos la 'M' automáticamente
+    return `${num}M`;
+  })
   @IsString()
-  periodAfterOpening?: string | null; // ✅ Permitir null (para limpiar)
+  @Matches(/^\d+M$/, {
+    message: 'El período debe ser un número positivo seguido de M (ej: 12M)',
+  })
+  periodAfterOpening?: string;
 
   @IsOptional()
   @Type(() => Date)

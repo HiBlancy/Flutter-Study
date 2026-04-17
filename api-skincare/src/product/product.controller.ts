@@ -29,10 +29,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @UseGuards(AuthGuard)
 export class ProductController {
   constructor(
-    private readonly productService: ProductService,
-    private readonly cloudinaryService: CloudinaryService,
-    private readonly imageCompressionService: ImageCompressionService,
-  ) { }
+    private readonly productService: ProductService
+  ) {}
 
   private successResponse(message: string, data: any = null) {
     return { status: true, message, data };
@@ -41,7 +39,10 @@ export class ProductController {
   // crear producto
   @Post()
   async create(@Req() req, @Body() createProductDto: CreateProductDto) {
-    const product = await this.productService.create(req.user._id, createProductDto);
+    const product = await this.productService.create(
+      req.user._id,
+      createProductDto,
+    );
     return this.successResponse('Producto añadido exitosamente', product);
   }
 
@@ -50,13 +51,13 @@ export class ProductController {
   async findAll(
     @Req() req,
     @Query() paginationDto: PaginationDto,
-    @Query('listType') listType?: string
+    @Query('listType') listType?: string,
   ) {
     // Pasamos el DTO al servicio
     const result = await this.productService.findAllByUserPaginated(
       req.user._id,
       paginationDto,
-      listType
+      listType,
     );
 
     return this.successResponse('Productos obtenidos con paginación', result);
@@ -80,8 +81,14 @@ export class ProductController {
   @Get('expiring/soon')
   async getExpiringSoon(@Req() req, @Query('days') days?: string) {
     const daysNum = days ? parseInt(days) : 30;
-    const products = await this.productService.getExpiringSoon(req.user._id, daysNum);
-    return this.successResponse(`Productos que caducan en ${daysNum} días`, products);
+    const products = await this.productService.getExpiringSoon(
+      req.user._id,
+      daysNum,
+    );
+    return this.successResponse(
+      `Productos que caducan en ${daysNum} días`,
+      products,
+    );
   }
 
   // obtener producto segun su id
@@ -101,7 +108,11 @@ export class ProductController {
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    const product = await this.productService.update(id, req.user._id, updateProductDto);
+    const product = await this.productService.update(
+      id,
+      req.user._id,
+      updateProductDto,
+    );
     return this.successResponse('Producto actualizado', product);
   }
 
@@ -132,10 +143,14 @@ export class ProductController {
   async markAsOpened(
     @Req() req,
     @Param('id') id: string,
-    @Body('openedDate') openedDateStr?: string
+    @Body('openedDate') openedDateStr?: string,
   ) {
     const customDate = openedDateStr ? new Date(openedDateStr) : undefined;
-    const product = await this.productService.markAsOpened(id, req.user._id, customDate);
+    const product = await this.productService.markAsOpened(
+      id,
+      req.user._id,
+      customDate,
+    );
     return this.successResponse('Producto marcado como abierto', product);
   }
 
@@ -149,7 +164,10 @@ export class ProductController {
   // calcular la fecha de vencimiento de producto una vez abierto
   @Post(':id/calculate-expiration')
   async calculateExpiration(@Req() req, @Param('id') id: string) {
-    const product = await this.productService.calculateExpirationFromOpening(id, req.user._id);
+    const product = await this.productService.calculateExpirationFromOpening(
+      id,
+      req.user._id,
+    );
     return this.successResponse('Fecha de caducidad calculada', product);
   }
 
@@ -157,12 +175,9 @@ export class ProductController {
   @Post(':id/upload-image')
   @UseInterceptors(
     FileInterceptor('productImage', {
-      limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB
-      },
+      limits: { fileSize: 10 * 1024 * 1024 },
       fileFilter: (req: any, file: Express.Multer.File, cb: any) => {
         const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
-        
         if (!allowedMimes.includes(file.mimetype)) {
           cb(
             new BadRequestException(
@@ -181,91 +196,38 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
+    if (!file) {
+      throw new BadRequestException('No se proporcionó ningún archivo');
+    }
+
     try {
-      if (!file) {
-        throw new BadRequestException('No se proporcionó ningún archivo');
-      }
-
-      // Verificar que el producto existe y pertenece al usuario
-      const product = await this.productService.findById(productId, req.user._id);
-      if (!product) {
-        throw new NotFoundException(`Producto ${productId} no encontrado`);
-      }
-
-      console.log(`📸 Subiendo imagen para producto: ${product.name}`);
-      console.log(`   - Tamaño original: ${(file.size / 1024).toFixed(2)}KB`);
-
-      // Comprimir imagen para producto
-      const compressedBuffer = await this.imageCompressionService.compressProductImage(
+      const updatedProduct = await this.productService.uploadProductImage(
+        productId,
+        req.user._id,
         file.buffer,
         file.mimetype,
       );
-
-      // Subir a Cloudinary en carpeta 'products'
-      const imageUrl = await this.cloudinaryService.uploadImage(
-        compressedBuffer,
-        `product_${productId}_${Date.now()}`,
-        'products',
+      return this.successResponse(
+        'Imagen de producto actualizada exitosamente',
+        updatedProduct,
       );
-
-      // Eliminar imagen anterior si existe
-      if (product.imageUrl) {
-        const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-        if (publicId) {
-          await this.cloudinaryService.deleteImage(publicId);
-          console.log(`🗑️ Imagen anterior eliminada: ${publicId}`);
-        }
-      }
-
-      // Actualizar solo el campo imageUrl
-      const updatedProduct = await this.productService.update(
-        productId,
-        req.user._id,
-        { imageUrl },
-      );
-
-      console.log(`✅ Imagen actualizada para: ${product.name}`);
-
-      return this.successResponse('Imagen de producto actualizada exitosamente', updatedProduct);
     } catch (error) {
       console.error('❌ Error al subir imagen:', error);
       if (error instanceof BadRequestException) throw error;
       if (error instanceof NotFoundException) throw error;
-      throw new BadRequestException(error.message || 'Error al subir la imagen');
+      throw new BadRequestException(
+        error.message || 'Error al subir la imagen',
+      );
     }
   }
 
   // eliminar foto del producto
   @Delete(':id/image')
   async deleteProductImage(@Param('id') productId: string, @Req() req) {
-    try {
-      const product = await this.productService.findById(productId, req.user._id);
-      if (!product) {
-        throw new NotFoundException(`Producto ${productId} no encontrado`);
-      }
-
-      if (!product.imageUrl) {
-        throw new BadRequestException('El producto no tiene imagen');
-      }
-
-      // Eliminar de Cloudinary
-      const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-      if (publicId) {
-        await this.cloudinaryService.deleteImage(publicId);
-        console.log(`🗑️ Imagen eliminada de Cloudinary: ${publicId}`);
-      }
-
-      // Actualizar producto: imageUrl = null
-      const updatedProduct = await this.productService.update(
-        productId,
-        req.user._id,
-        { imageUrl: null },
-      );
-
-      return this.successResponse('Imagen de producto eliminada', updatedProduct);
-    } catch (error) {
-      console.error('❌ Error al eliminar imagen:', error);
-      throw new BadRequestException(error.message || 'Error al eliminar la imagen');
-    }
+    const updated = await this.productService.deleteProductImage(
+      productId,
+      req.user._id,
+    );
+    return this.successResponse('Imagen de producto eliminada', updated);
   }
 }

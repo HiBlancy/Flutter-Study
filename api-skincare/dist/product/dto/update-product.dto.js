@@ -74,14 +74,29 @@ __decorate([
 ], UpdateProductDto.prototype, "listType", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_transformer_1.Type)(() => Date),
-    (0, class_validator_1.IsDate)(),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (!value)
+            return undefined;
+        const date = new Date(value);
+        return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    }),
     __metadata("design:type", Object)
 ], UpdateProductDto.prototype, "expirationDate", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => {
+        if (value === null || value === undefined)
+            return undefined;
+        const num = typeof value === 'number' ? value : parseInt(value, 10);
+        if (isNaN(num))
+            return value;
+        return `${num}M`;
+    }),
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", Object)
+    (0, class_validator_1.Matches)(/^\d+M$/, {
+        message: 'El período debe ser un número positivo seguido de M (ej: 12M)',
+    }),
+    __metadata("design:type", String)
 ], UpdateProductDto.prototype, "periodAfterOpening", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),

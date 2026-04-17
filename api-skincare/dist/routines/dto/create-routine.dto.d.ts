@@ -6,5 +6,5 @@ export declare class CreateRoutineDto {
     name: string;
     time: string;
     daysOfWeek: string[];
-    products?: RoutineProductDto[];
+    products?: string[];
 }

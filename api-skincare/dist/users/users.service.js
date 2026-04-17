@@ -50,10 +50,17 @@ const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const bcrypt = __importStar(require("bcrypt"));
+const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
 let UsersService = class UsersService {
     userModel;
-    constructor(userModel) {
+    productModel;
+    routineModel;
+    cloudinaryService;
+    constructor(userModel, productModel, routineModel, cloudinaryService) {
         this.userModel = userModel;
+        this.productModel = productModel;
+        this.routineModel = routineModel;
+        this.cloudinaryService = cloudinaryService;
     }
     async create(createUserDto) {
         const emailExists = await this.userModel.findOne({
@@ -106,6 +113,32 @@ let UsersService = class UsersService {
         return updated;
     }
     async delete(id) {
+        const user = await this.userModel.findById(id);
+        if (!user) {
+            throw new common_1.NotFoundException(`Usuario ${id} no encontrado`);
+        }
+        const products = await this.productModel
+            .find({ userId: id })
+            .select('imageUrl')
+            .exec();
+        for (const product of products) {
+            if (product.imageUrl) {
+                const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
+                if (publicId) {
+                    await this.cloudinaryService.deleteImage(publicId);
+                    console.log(`🗑️ Imagen de producto eliminada: ${publicId}`);
+                }
+            }
+        }
+        if (user.profileImage) {
+            const publicId = this.cloudinaryService.extractPublicIdFromUrl(user.profileImage);
+            if (publicId) {
+                await this.cloudinaryService.deleteImage(publicId);
+                console.log(`🗑️ Imagen de perfil eliminada: ${publicId}`);
+            }
+        }
+        await this.productModel.deleteMany({ userId: id });
+        await this.routineModel.deleteMany({ userId: id });
         const deletedUser = await this.userModel
             .findByIdAndDelete(id)
             .select('-password')
@@ -117,6 +150,11 @@ exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)('Users')),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __param(1, (0, mongoose_1.InjectModel)('Product')),
+    __param(2, (0, mongoose_1.InjectModel)('Routine')),
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
+        cloudinary_service_1.CloudinaryService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

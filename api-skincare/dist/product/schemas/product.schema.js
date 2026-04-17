@@ -26,7 +26,7 @@ exports.ProductSchema = new mongoose_1.Schema({
         enum: ['wishlist', 'have', 'used'],
         default: 'have',
     },
-    expirationDate: { type: Date, required: false },
+    expirationDate: { type: String, match: /^\d{4}-\d{2}-\d{2}$/ },
     periodAfterOpening: {
         type: String,
         required: false,
@@ -42,6 +42,9 @@ exports.ProductSchema.index({ userId: 1, barcode: 1, listType: 1 }, { sparse: tr
 exports.ProductSchema.virtual('isExpired').get(function () {
     if (!this.expirationDate)
         return false;
-    return new Date() > this.expirationDate;
+    const expDate = new Date(this.expirationDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today > expDate;
 });
 //# sourceMappingURL=product.schema.js.map

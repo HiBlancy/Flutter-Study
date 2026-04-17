@@ -3,13 +3,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { MoveProductDto } from './dto/move-product.dto';
 import { PaginationDto } from '../pagination/pagination.dto';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { ImageCompressionService } from '../services/image-compression.service';
 export declare class ProductController {
     private readonly productService;
-    private readonly cloudinaryService;
-    private readonly imageCompressionService;
-    constructor(productService: ProductService, cloudinaryService: CloudinaryService, imageCompressionService: ImageCompressionService);
+    constructor(productService: ProductService);
     private successResponse;
     create(req: any, createProductDto: CreateProductDto): Promise<{
         status: boolean;

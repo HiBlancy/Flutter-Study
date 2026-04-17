@@ -34,7 +34,8 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(6),
+    (0, class_validator_1.MinLength)(8),
+    (0, class_validator_1.IsStrongPassword)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "password", void 0);
 __decorate([

@@ -20,17 +20,11 @@ const update_product_dto_1 = require("./dto/update-product.dto");
 const move_product_dto_1 = require("./dto/move-product.dto");
 const auth_guard_1 = require("../users/guards/auth.guard");
 const pagination_dto_1 = require("../pagination/pagination.dto");
-const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
-const image_compression_service_1 = require("../services/image-compression.service");
 const platform_express_1 = require("@nestjs/platform-express");
 let ProductController = class ProductController {
     productService;
-    cloudinaryService;
-    imageCompressionService;
-    constructor(productService, cloudinaryService, imageCompressionService) {
+    constructor(productService) {
         this.productService = productService;
-        this.cloudinaryService = cloudinaryService;
-        this.imageCompressionService = imageCompressionService;
     }
     successResponse(message, data = null) {
         return { status: true, message, data };
@@ -89,27 +83,11 @@ let ProductController = class ProductController {
         return this.successResponse('Fecha de caducidad calculada', product);
     }
     async uploadProductImage(productId, file, req) {
+        if (!file) {
+            throw new common_1.BadRequestException('No se proporcionó ningún archivo');
+        }
         try {
-            if (!file) {
-                throw new common_1.BadRequestException('No se proporcionó ningún archivo');
-            }
-            const product = await this.productService.findById(productId, req.user._id);
-            if (!product) {
-                throw new common_1.NotFoundException(`Producto ${productId} no encontrado`);
-            }
-            console.log(`📸 Subiendo imagen para producto: ${product.name}`);
-            console.log(`   - Tamaño original: ${(file.size / 1024).toFixed(2)}KB`);
-            const compressedBuffer = await this.imageCompressionService.compressProductImage(file.buffer, file.mimetype);
-            const imageUrl = await this.cloudinaryService.uploadImage(compressedBuffer, `product_${productId}_${Date.now()}`, 'products');
-            if (product.imageUrl) {
-                const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-                if (publicId) {
-                    await this.cloudinaryService.deleteImage(publicId);
-                    console.log(`🗑️ Imagen anterior eliminada: ${publicId}`);
-                }
-            }
-            const updatedProduct = await this.productService.update(productId, req.user._id, { imageUrl });
-            console.log(`✅ Imagen actualizada para: ${product.name}`);
+            const updatedProduct = await this.productService.uploadProductImage(productId, req.user._id, file.buffer, file.mimetype);
             return this.successResponse('Imagen de producto actualizada exitosamente', updatedProduct);
         }
         catch (error) {
@@ -122,26 +100,8 @@ let ProductController = class ProductController {
         }
     }
     async deleteProductImage(productId, req) {
-        try {
-            const product = await this.productService.findById(productId, req.user._id);
-            if (!product) {
-                throw new common_1.NotFoundException(`Producto ${productId} no encontrado`);
-            }
-            if (!product.imageUrl) {
-                throw new common_1.BadRequestException('El producto no tiene imagen');
-            }
-            const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-            if (publicId) {
-                await this.cloudinaryService.deleteImage(publicId);
-                console.log(`🗑️ Imagen eliminada de Cloudinary: ${publicId}`);
-            }
-            const updatedProduct = await this.productService.update(productId, req.user._id, { imageUrl: null });
-            return this.successResponse('Imagen de producto eliminada', updatedProduct);
-        }
-        catch (error) {
-            console.error('❌ Error al eliminar imagen:', error);
-            throw new common_1.BadRequestException(error.message || 'Error al eliminar la imagen');
-        }
+        const updated = await this.productService.deleteProductImage(productId, req.user._id);
+        return this.successResponse('Imagen de producto eliminada', updated);
     }
 };
 exports.ProductController = ProductController;
@@ -246,9 +206,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)(':id/upload-image'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('productImage', {
-        limits: {
-            fileSize: 10 * 1024 * 1024,
-        },
+        limits: { fileSize: 10 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
             const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
             if (!allowedMimes.includes(file.mimetype)) {
@@ -277,8 +235,6 @@ __decorate([
 exports.ProductController = ProductController = __decorate([
     (0, common_1.Controller)('products'),
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
-    __metadata("design:paramtypes", [product_service_1.ProductService,
-        cloudinary_service_1.CloudinaryService,
-        image_compression_service_1.ImageCompressionService])
+    __metadata("design:paramtypes", [product_service_1.ProductService])
 ], ProductController);
 //# sourceMappingURL=product.controller.js.map

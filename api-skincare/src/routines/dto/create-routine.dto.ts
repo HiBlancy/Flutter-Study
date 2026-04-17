@@ -37,7 +37,6 @@ export class CreateRoutineDto {
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => RoutineProductDto)
-  products?: RoutineProductDto[];
+  @IsString({ each: true })
+  products?: string[]; // solo IDs, sin orden
 }

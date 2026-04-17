@@ -64,11 +64,12 @@ let CloudinaryService = class CloudinaryService {
     }
     extractPublicIdFromUrl(url) {
         try {
-            const match = url.match(/\/([^\/]+)\/([^\/]+)$/);
-            if (match) {
-                return `${match[1]}/${match[2].split('.')[0]}`;
+            const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)\.(jpg|jpeg|png|webp|gif)(?:\?|$)/i);
+            if (match && match[1]) {
+                return match[1];
             }
-            return null;
+            const simpleMatch = url.match(/\/([^\/]+\/[^\/]+)\.[a-z]+$/i);
+            return simpleMatch ? simpleMatch[1] : null;
         }
         catch (error) {
             console.error('❌ Error extrayendo public_id:', error);

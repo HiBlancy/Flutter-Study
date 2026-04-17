@@ -56,7 +56,6 @@ export class CloudinaryService {
           }
         },
       );
-
       // Piping del stream
       stream.pipe(uploadStream);
     });
@@ -83,12 +82,17 @@ export class CloudinaryService {
    */
   extractPublicIdFromUrl(url: string): string | null {
     try {
-      // URL típica: https://res.cloudinary.com/cloud_name/image/upload/v1234/folder/public_id.jpg
-      const match = url.match(/\/([^\/]+)\/([^\/]+)$/);
-      if (match) {
-        return `${match[1]}/${match[2].split('.')[0]}`;
+      // Regex que captura desde '/upload/' hasta el final sin extensión
+      // Soporta URLs con transformaciones como /upload/w_200,h_200/v1234/
+      const match = url.match(
+        /\/upload\/(?:v\d+\/)?(.+?)\.(jpg|jpeg|png|webp|gif)(?:\?|$)/i,
+      );
+      if (match && match[1]) {
+        return match[1];
       }
-      return null;
+      // Fallback al método simple original
+      const simpleMatch = url.match(/\/([^\/]+\/[^\/]+)\.[a-z]+$/i);
+      return simpleMatch ? simpleMatch[1] : null;
     } catch (error) {
       console.error('❌ Error extrayendo public_id:', error);
       return null;

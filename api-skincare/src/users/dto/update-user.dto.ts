@@ -5,6 +5,7 @@ import {
   IsString,
   MinLength,
   IsDateString,
+  IsStrongPassword,
 } from 'class-validator';
 
 export class UpdateUserDto {
@@ -19,7 +20,8 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
+  @IsStrongPassword()
   password?: string;
 
   @IsOptional()
