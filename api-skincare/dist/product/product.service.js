@@ -112,7 +112,7 @@ let ProductService = class ProductService {
         const updateData = Object.fromEntries(Object.entries(updateProductDto).filter(([_, v]) => v !== undefined));
         this.applyBusinessRules(product, updateData);
         const updated = await this.productModel
-            .findByIdAndUpdate(id, updateData, { new: true, runValidators: false })
+            .findByIdAndUpdate(id, updateData, { returnDocument: 'after', runValidators: false })
             .exec();
         return updated;
     }

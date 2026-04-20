@@ -5,6 +5,8 @@ export declare const RoutineSchema: Schema<any, import("mongoose").Model<any, an
 }, {
     name: string;
     userId: import("mongoose").Types.ObjectId;
+    time: "morning" | "night";
+    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
     products: import("mongoose").Types.DocumentArray<{
         productId: import("mongoose").Types.ObjectId;
         order: number;
@@ -15,11 +17,11 @@ export declare const RoutineSchema: Schema<any, import("mongoose").Model<any, an
         productId: import("mongoose").Types.ObjectId;
         order: number;
     }>;
-    time: "morning" | "night";
-    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
 } & import("mongoose").DefaultTimestampProps, import("mongoose").Document<unknown, {}, {
     name: string;
     userId: import("mongoose").Types.ObjectId;
+    time: "morning" | "night";
+    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
     products: import("mongoose").Types.DocumentArray<{
         productId: import("mongoose").Types.ObjectId;
         order: number;
@@ -30,8 +32,6 @@ export declare const RoutineSchema: Schema<any, import("mongoose").Model<any, an
         productId: import("mongoose").Types.ObjectId;
         order: number;
     }>;
-    time: "morning" | "night";
-    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
 } & import("mongoose").DefaultTimestampProps, {
     id: string;
 }, Omit<import("mongoose").DefaultSchemaOptions, "timestamps" | "strict"> & {
@@ -40,6 +40,8 @@ export declare const RoutineSchema: Schema<any, import("mongoose").Model<any, an
 }> & Omit<{
     name: string;
     userId: import("mongoose").Types.ObjectId;
+    time: "morning" | "night";
+    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
     products: import("mongoose").Types.DocumentArray<{
         productId: import("mongoose").Types.ObjectId;
         order: number;
@@ -50,8 +52,6 @@ export declare const RoutineSchema: Schema<any, import("mongoose").Model<any, an
         productId: import("mongoose").Types.ObjectId;
         order: number;
     }>;
-    time: "morning" | "night";
-    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
 } & import("mongoose").DefaultTimestampProps & {
     _id: import("mongoose").Types.ObjectId;
 } & {
@@ -61,6 +61,8 @@ export declare const RoutineSchema: Schema<any, import("mongoose").Model<any, an
 }, unknown, {
     name: string;
     userId: import("mongoose").Types.ObjectId;
+    time: "morning" | "night";
+    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
     products: import("mongoose").Types.DocumentArray<{
         productId: import("mongoose").Types.ObjectId;
         order: number;
@@ -71,8 +73,6 @@ export declare const RoutineSchema: Schema<any, import("mongoose").Model<any, an
         productId: import("mongoose").Types.ObjectId;
         order: number;
     }>;
-    time: "morning" | "night";
-    daysOfWeek: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday")[];
     createdAt: NativeDate;
     updatedAt: NativeDate;
 } & {

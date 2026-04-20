@@ -99,7 +99,7 @@ let RoutineService = class RoutineService {
         const productIds = reorderDto.products.map((p) => p.productId);
         await this.validateProducts(userId, productIds);
         const updated = await this.routineModel
-            .findByIdAndUpdate(id, { products: reorderDto.products }, { new: true })
+            .findByIdAndUpdate(id, { products: reorderDto.products }, { returnDocument: 'after' })
             .populate('products.productId')
             .exec();
         if (!updated)
