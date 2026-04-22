@@ -62,6 +62,16 @@ let ProductService = class ProductService {
         this.cloudinaryService = cloudinaryService;
         this.imageCompressionService = imageCompressionService;
     }
+    async deleteCloudinaryImageByUrl(imageUrl, logPrefix) {
+        if (!imageUrl)
+            return;
+        const publicId = this.cloudinaryService.extractPublicIdFromUrl(imageUrl);
+        if (!publicId)
+            return;
+        await this.cloudinaryService.deleteImage(publicId);
+        if (logPrefix)
+            console.log(`${logPrefix}: ${publicId}`);
+    }
     async create(userId, createProductDto) {
         const newProduct = new this.productModel({
             ...createProductDto,
@@ -99,9 +109,6 @@ let ProductService = class ProductService {
         const product = await this.productModel.findById(id).exec();
         if (!product)
             return null;
-        if (product.userId.toString() !== userId.toString()) {
-            throw new common_1.ForbiddenException('No tienes permiso para ver este producto');
-        }
         return product;
     }
     async update(id, userId, updateProductDto) {
@@ -109,9 +116,6 @@ let ProductService = class ProductService {
             const product = await this.productModel.findById(id).exec();
             if (!product) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            if (product.userId.toString() !== userId.toString()) {
-                throw new common_1.ForbiddenException('No puedes modificar este producto');
             }
             const updateData = Object.fromEntries(Object.entries(updateProductDto).filter(([_, v]) => v !== undefined));
             this.applyBusinessRules(product, updateData);
@@ -127,10 +131,7 @@ let ProductService = class ProductService {
             return updated;
         }
         catch (error) {
-            if (error instanceof mongoose_2.default.Error.CastError) {
-                throw new common_1.NotFoundException(`Producto no encontrado`);
-            }
-            throw error;
+            throw new common_1.NotFoundException(error, 'Producto no encontrado');
         }
     }
     applyBusinessRules(product, updateData) {
@@ -157,16 +158,7 @@ let ProductService = class ProductService {
             if (!product) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
             }
-            if (product.userId.toString() !== userId.toString()) {
-                throw new common_1.ForbiddenException('No puedes eliminar este producto');
-            }
-            if (product.imageUrl) {
-                const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-                if (publicId) {
-                    await this.cloudinaryService.deleteImage(publicId);
-                    console.log(`🗑️ Imagen eliminada de Cloudinary al borrar producto: ${publicId}`);
-                }
-            }
+            await this.deleteCloudinaryImageByUrl(product.imageUrl, '🗑️ Imagen eliminada de Cloudinary al borrar producto');
             const deleted = await this.productModel.findByIdAndDelete(id).exec();
             if (!deleted) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado después de eliminar`);
@@ -174,10 +166,7 @@ let ProductService = class ProductService {
             return deleted;
         }
         catch (error) {
-            if (error instanceof mongoose_2.default.Error.CastError) {
-                throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            throw error;
+            throw new common_1.NotFoundException(error, `Producto ${id} no encontrado`);
         }
     }
     async moveToList(id, userId, targetList) {
@@ -195,10 +184,7 @@ let ProductService = class ProductService {
             return updated;
         }
         catch (error) {
-            if (error instanceof mongoose_2.default.Error.CastError) {
-                throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            throw error;
+            throw new common_1.NotFoundException(error, `Producto ${id} no encontrado`);
         }
     }
     async markAsOpened(id, userId, customOpenedDate) {
@@ -206,9 +192,6 @@ let ProductService = class ProductService {
             const product = await this.productModel.findById(id).exec();
             if (!product) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            if (product.userId.toString() !== userId.toString()) {
-                throw new common_1.ForbiddenException('No puedes modificar este producto');
             }
             if (product.isOpened) {
                 throw new common_1.BadRequestException('El producto ya está abierto');
@@ -233,10 +216,7 @@ let ProductService = class ProductService {
             return updated;
         }
         catch (error) {
-            if (error instanceof mongoose_2.default.Error.CastError) {
-                throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            throw error;
+            throw new common_1.NotFoundException(error, `Producto ${id} no encontrado`);
         }
     }
     async markAsClosed(id, userId) {
@@ -244,9 +224,6 @@ let ProductService = class ProductService {
             const product = await this.productModel.findById(id).exec();
             if (!product) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            if (product.userId.toString() !== userId.toString()) {
-                throw new common_1.ForbiddenException('No puedes modificar este producto');
             }
             if (!product.isOpened) {
                 throw new common_1.BadRequestException('El producto no está abierto');
@@ -260,10 +237,7 @@ let ProductService = class ProductService {
             return updated;
         }
         catch (error) {
-            if (error instanceof mongoose_2.default.Error.CastError) {
-                throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            throw error;
+            throw new common_1.NotFoundException(error, `Producto ${id} no encontrado`);
         }
     }
     async calculateExpirationFromOpening(id, userId) {
@@ -271,9 +245,6 @@ let ProductService = class ProductService {
             const product = await this.productModel.findById(id).exec();
             if (!product) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            if (product.userId.toString() !== userId.toString()) {
-                throw new common_1.ForbiddenException('No puedes modificar este producto');
             }
             if (!product.isOpened) {
                 throw new common_1.BadRequestException('El producto no ha sido abierto aún');
@@ -294,10 +265,7 @@ let ProductService = class ProductService {
             return updated;
         }
         catch (error) {
-            if (error instanceof mongoose_2.default.Error.CastError) {
-                throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
-            }
-            throw error;
+            throw new common_1.NotFoundException(error, `Producto ${id} no encontrado`);
         }
     }
     async getStats(userId) {
@@ -380,13 +348,7 @@ let ProductService = class ProductService {
         console.log(`📸 Subiendo imagen para producto: ${product.name}`);
         const compressedBuffer = await this.imageCompressionService.compressProductImage(fileBuffer, mimeType);
         const imageUrl = await this.cloudinaryService.uploadImage(compressedBuffer, `product_${productId}_${Date.now()}`, 'products');
-        if (product.imageUrl) {
-            const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-            if (publicId) {
-                await this.cloudinaryService.deleteImage(publicId);
-                console.log(`🗑️ Imagen anterior eliminada: ${publicId}`);
-            }
-        }
+        await this.deleteCloudinaryImageByUrl(product.imageUrl, '🗑️ Imagen anterior eliminada');
         const updatedProduct = await this.update(productId, userId, { imageUrl });
         if (!updatedProduct) {
             throw new common_1.BadRequestException('No se pudo actualizar el producto con la nueva imagen');
@@ -400,11 +362,7 @@ let ProductService = class ProductService {
             throw new common_1.NotFoundException(`Producto ${productId} no encontrado`);
         if (!product.imageUrl)
             throw new common_1.BadRequestException('El producto no tiene imagen');
-        const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-        if (publicId) {
-            await this.cloudinaryService.deleteImage(publicId);
-            console.log(`🗑️ Imagen eliminada de Cloudinary: ${publicId}`);
-        }
+        await this.deleteCloudinaryImageByUrl(product.imageUrl, '🗑️ Imagen eliminada de Cloudinary');
         const updatedProduct = await this.update(productId, userId, {
             imageUrl: null,
         });

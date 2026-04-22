@@ -22,7 +22,7 @@ export class UsersService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
-  // REGISTER
+  // Crea un usuario (register). Valida email único y guarda password hasheado.
   async create(createUserDto: CreateUserDto): Promise<User> {
     const emailExists = await this.userModel.findOne({
       email: createUserDto.email.toLowerCase(),
@@ -42,22 +42,22 @@ export class UsersService {
     return newUser.save();
   }
 
-  // LOGIN — igual que tu findOne anterior
+  // Busca un usuario (login) por condición (ej. email).
   async findOne(condition: any): Promise<User | null> {
     return this.userModel.findOne(condition).exec();
   }
 
-  // VER PERFIL
+  // Obtiene un usuario por id (para perfil y checks internos).
   async findById(id: string): Promise<User | null> {
     return this.userModel.findById(id).exec();
   }
 
-  // VER TODOS PERFILES
+  // Lista usuarios sin el password.
   async getAllUsers(): Promise<User[]> {
     return this.userModel.find().select('-password').exec();
   }
 
-  // EDITAR
+  // Actualiza perfil. Normaliza email, hashea password si viene y convierte birthDate.
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
     if (updateUserDto.email) {
       const emailExists = await this.userModel.findOne({
@@ -72,12 +72,12 @@ export class UsersService {
       updateUserDto.email = updateUserDto.email.toLowerCase();
     }
 
-    // Hashear password si viene
+    // Hashear password si viene (nunca guardamos password en texto).
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
-    // Convertir birthDate si viene
+    // Convertir birthDate si viene (guardamos Date en Mongo).
     if (updateUserDto.birthDate) {
       updateUserDto.birthDate = new Date(updateUserDto.birthDate);
     }
@@ -93,21 +93,21 @@ export class UsersService {
     return updated;
   }
 
-  // ELIMINAR
+  // Elimina cuenta. Borra imágenes en Cloudinary y documentos relacionados.
   async delete(id: string): Promise<User | null> {
-    // 1. Obtener el usuario (para acceder a su profileImage)
+    // 1) Obtener el usuario (para acceder a su profileImage).
     const user = await this.userModel.findById(id);
     if (!user) {
       throw new NotFoundException(`Usuario ${id} no encontrado`);
     }
 
-    // 2. Obtener todos los productos del usuario (para eliminar sus imágenes)
+    // 2) Obtener productos del usuario (para borrar sus imágenes).
     const products = await this.productModel
       .find({ userId: id })
       .select('imageUrl')
       .exec();
 
-    // 3. Eliminar imágenes de Cloudinary (productos)
+    // 3) Eliminar imágenes de productos en Cloudinary.
     for (const product of products) {
       if (product.imageUrl) {
         const publicId = this.cloudinaryService.extractPublicIdFromUrl(
@@ -120,7 +120,7 @@ export class UsersService {
       }
     }
 
-    // 4. Eliminar imagen de perfil del usuario
+    // 4) Eliminar imagen de perfil en Cloudinary.
     if (user.profileImage) {
       const publicId = this.cloudinaryService.extractPublicIdFromUrl(
         user.profileImage,
@@ -131,7 +131,7 @@ export class UsersService {
       }
     }
 
-    // 5. Eliminar documentos de la BD
+    // 5) Eliminar documentos relacionados y luego el usuario.
     await this.productModel.deleteMany({ userId: id });
     await this.routineModel.deleteMany({ userId: id });
     const deletedUser = await this.userModel

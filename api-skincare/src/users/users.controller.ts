@@ -25,6 +25,21 @@ import { AuthGuard } from './guards/auth.guard';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ImageCompressionService } from '../services/image-compression.service';
 
+function createMulterImageFilter(allowedMimes: string[]) {
+  return (req: any, file: Express.Multer.File, cb: any) => {
+    if (!allowedMimes.includes(file.mimetype)) {
+      cb(
+        new BadRequestException(
+          `Tipo de archivo no permitido. Permitidos: ${allowedMimes.join(', ')}`,
+        ),
+        false,
+      );
+    } else {
+      cb(null, true);
+    }
+  };
+}
+
 @Controller('users')
 export class UsersController {
   constructor(
@@ -38,6 +53,7 @@ export class UsersController {
     return { status: true, message, data };
   }
 
+  // Register: crea usuario y devuelve token.
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     try {
@@ -62,6 +78,7 @@ export class UsersController {
     }
   }
 
+  // Login: valida credenciales y devuelve token.
   @Post('login')
   async login(@Body() body: { email: string; password: string }) {
     try {
@@ -88,12 +105,14 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get('me')
   async getProfile(@Req() req) {
+    // Devuelve el usuario del token (set por el guard).
     return this.successResponse('Perfil obtenido', req.user);
   }
 
   @UseGuards(AuthGuard)
   @Patch('me')
   async updateProfile(@Body() updateUserDto: UpdateUserDto, @Req() req) {
+    // Actualiza perfil del usuario autenticado.
     const updatedUser = await this.usersService.update(
       req.user._id,
       updateUserDto,
@@ -101,31 +120,20 @@ export class UsersController {
     return this.successResponse('Perfil actualizado', updatedUser);
   }
 
-  /**
-   * 🆕 ENDPOINT PARA SUBIR IMAGEN DE PERFIL CON COMPRESIÓN
-   * POST /users/me/upload-image
-   */
+  // Sube imagen de perfil: comprime, sube a Cloudinary, borra la anterior y guarda la URL.
   @UseGuards(AuthGuard)
   @Patch('me/upload-image')
   @UseInterceptors(
     FileInterceptor('profileImage', {
       limits: {
-        fileSize: 10 * 1024 * 1024, // Aumentamos a 10MB para permitir fotos de cámara
+        fileSize: 10 * 1024 * 1024, // 10MB (fotos de cámara)
       },
-      fileFilter: (req: any, file: Express.Multer.File, cb: any) => {
-        const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
-        
-        if (!allowedMimes.includes(file.mimetype)) {
-          cb(
-            new BadRequestException(
-              `Tipo de archivo no permitido. Permitidos: ${allowedMimes.join(', ')}`,
-            ),
-            false,
-          );
-        } else {
-          cb(null, true);
-        }
-      },
+      fileFilter: createMulterImageFilter([
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/heic',
+      ]),
     }),
   )
   async uploadProfileImage(
@@ -133,12 +141,12 @@ export class UsersController {
     @Req() req,
   ) {
     try {
-      // Validar que hay archivo
+      // Validar archivo.
       if (!file) {
         throw new BadRequestException('No se proporcionó ningún archivo');
       }
 
-      // ✅ COMPRIMIR LA IMAGEN
+      // Comprimir antes de subir (menos peso / más rápido).
       const compressedBuffer = await this.imageCompressionService.compressProfileImage(
         file.buffer,
         file.mimetype,
@@ -146,14 +154,14 @@ export class UsersController {
 
       console.log(`✅ Imagen comprimida exitosamente`);
 
-      // Subir la imagen comprimida a Cloudinary
+      // Subir a Cloudinary.
       const imageUrl = await this.cloudinaryService.uploadImage(
         compressedBuffer,
         `${req.user._id}_profile_${Date.now()}`,
         'user-profiles',
       );
 
-      // Eliminar imagen anterior si existe
+      // Eliminar imagen anterior (si existe).
       const currentUser = await this.usersService.findById(req.user._id);
       if (currentUser?.profileImage) {
         const publicId = this.cloudinaryService.extractPublicIdFromUrl(
@@ -165,7 +173,7 @@ export class UsersController {
         }
       }
 
-      // Actualizar usuario con la nueva URL
+      // Guardar URL en el usuario.
       const updateDto: UpdateUserDto = {
         profileImage: imageUrl,
       };
@@ -193,6 +201,7 @@ export class UsersController {
 
   @Get()
   async findAllUsers() {
+    // Lista usuarios (sin password).
     const users = await this.usersService.getAllUsers();
     return this.successResponse('Usuarios obtenidos', users);
   }
@@ -200,6 +209,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Delete('me')
   async deleteMyAccount(@Req() req) {
+    // Elimina la cuenta del usuario autenticado.
     const userId = req.user._id;
     const deletedUser = await this.usersService.delete(userId);
     return this.successResponse('Cuenta eliminada exitosamente', deletedUser);
@@ -220,14 +230,14 @@ export class UsersController {
         throw new BadRequestException('No hay imagen de perfil para eliminar');
       }
 
-      // Extraer el publicId de la URL de Cloudinary
+      // Borrar imagen en Cloudinary.
       const publicId = this.cloudinaryService.extractPublicIdFromUrl(user.profileImage);
       if (publicId) {
         await this.cloudinaryService.deleteImage(publicId);
         console.log(`🗑️ Imagen de perfil eliminada de Cloudinary: ${publicId}`);
       }
 
-      // Actualizar el usuario, poniendo profileImage como null
+      // Quitar URL del usuario.
       const updatedUser = await this.usersService.update(userId, { profileImage: null });
 
       return this.successResponse('Imagen de perfil eliminada exitosamente', updatedUser);

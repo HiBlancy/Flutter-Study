@@ -22,6 +22,16 @@ const jwt_1 = require("@nestjs/jwt");
 const auth_guard_1 = require("./guards/auth.guard");
 const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
 const image_compression_service_1 = require("../services/image-compression.service");
+function createMulterImageFilter(allowedMimes) {
+    return (req, file, cb) => {
+        if (!allowedMimes.includes(file.mimetype)) {
+            cb(new common_1.BadRequestException(`Tipo de archivo no permitido. Permitidos: ${allowedMimes.join(', ')}`), false);
+        }
+        else {
+            cb(null, true);
+        }
+    };
+}
 let UsersController = class UsersController {
     usersService;
     jwtService;
@@ -193,15 +203,12 @@ __decorate([
         limits: {
             fileSize: 10 * 1024 * 1024,
         },
-        fileFilter: (req, file, cb) => {
-            const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
-            if (!allowedMimes.includes(file.mimetype)) {
-                cb(new common_1.BadRequestException(`Tipo de archivo no permitido. Permitidos: ${allowedMimes.join(', ')}`), false);
-            }
-            else {
-                cb(null, true);
-            }
-        },
+        fileFilter: createMulterImageFilter([
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/heic',
+        ]),
     })),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Req)()),

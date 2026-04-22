@@ -23,14 +23,17 @@ let RoutineService = class RoutineService {
         this.routineModel = routineModel;
         this.productModel = productModel;
     }
+    toOrderedProducts(productIds) {
+        return (productIds || []).map((productId, index) => ({
+            productId,
+            order: index,
+        }));
+    }
     async create(userId, createRoutineDto) {
         if (createRoutineDto.products && createRoutineDto.products.length > 0) {
             await this.validateProducts(userId, createRoutineDto.products);
         }
-        const productsWithOrder = (createRoutineDto.products || []).map((productId, index) => ({
-            productId,
-            order: index,
-        }));
+        const productsWithOrder = this.toOrderedProducts(createRoutineDto.products || []);
         const newRoutine = new this.routineModel({
             ...createRoutineDto,
             userId,
@@ -71,11 +74,9 @@ let RoutineService = class RoutineService {
                 throw new common_1.ForbiddenException();
             const updateData = Object.fromEntries(Object.entries(updateRoutineDto).filter(([_, v]) => v !== undefined));
             if (updateData.products && Array.isArray(updateData.products)) {
-                updateData.products = updateData.products.map((productId, idx) => ({
-                    productId,
-                    order: idx,
-                }));
-                await this.validateProducts(userId, updateData.products.map((p) => p.productId));
+                const productIds = updateData.products;
+                updateData.products = this.toOrderedProducts(productIds);
+                await this.validateProducts(userId, productIds);
             }
             const updated = await this.routineModel
                 .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
@@ -122,47 +123,52 @@ let RoutineService = class RoutineService {
         }
     }
     async addProduct(id, userId, productId) {
-        try {
-            const routine = await this.routineModel.findById(id).exec();
-            if (!routine) {
-                throw new common_1.NotFoundException(`Rutina ${id} no encontrada`);
-            }
-            if (routine.userId.toString() !== userId.toString()) {
-                throw new common_1.ForbiddenException('No tienes permiso para actualizar esta rutina');
-            }
-            await this.validateProducts(userId, [productId]);
-            const alreadyExists = routine.products.some((p) => p.productId.toString() === productId);
-            if (alreadyExists) {
-                throw new common_1.BadRequestException('Este producto ya está en la rutina');
-            }
-            const nextOrder = routine.products.length > 0
-                ? Math.max(...routine.products.map((p) => p.order)) + 1
-                : 0;
-            routine.products.push({
-                productId: productId,
-                order: nextOrder,
-            });
-            await routine.save();
-            const populatedRoutine = await this.routineModel
-                .findById(id)
-                .populate('products.productId')
-                .exec();
-            if (!populatedRoutine) {
-                throw new common_1.NotFoundException(`Rutina ${id} no encontrada después de agregar producto`);
-            }
-            return populatedRoutine;
-        }
-        catch (error) {
-            throw new common_1.NotFoundException(`Rutina ${id} no encontrada`);
-        }
-    }
-    async removeProduct(id, userId, productId) {
         const routine = await this.routineModel.findById(id).exec();
         if (!routine) {
             throw new common_1.NotFoundException(`Rutina ${id} no encontrada`);
         }
         if (routine.userId.toString() !== userId.toString()) {
             throw new common_1.ForbiddenException('No tienes permiso para actualizar esta rutina');
+        }
+        await this.validateProducts(userId, [productId]);
+        const alreadyExists = routine.products.some((p) => p.productId.toString() === productId);
+        if (alreadyExists) {
+            throw new common_1.BadRequestException('Este producto ya está en la rutina');
+        }
+        const nextOrder = routine.products.length > 0
+            ? Math.max(...routine.products.map((p) => p.order)) + 1
+            : 0;
+        routine.products.push({
+            productId: productId,
+            order: nextOrder,
+        });
+        await routine.save();
+        const populatedRoutine = await this.routineModel
+            .findById(id)
+            .populate('products.productId')
+            .exec();
+        if (!populatedRoutine) {
+            throw new common_1.NotFoundException(`Rutina ${id} no encontrada después de agregar producto`);
+        }
+        return populatedRoutine;
+    }
+    async removeProduct(id, userId, productId) {
+        let routine;
+        try {
+            routine = await this.routineModel.findById(id).exec();
+        }
+        catch (error) {
+            throw new common_1.NotFoundException(`Rutina ${id} no encontrada`);
+        }
+        if (!routine) {
+            throw new common_1.NotFoundException(`Rutina ${id} no encontrada`);
+        }
+        if (routine.userId.toString() !== userId.toString()) {
+            throw new common_1.ForbiddenException('No tienes permiso para modificar esta rutina');
+        }
+        const productExists = routine.products.some((p) => p.productId.toString() === productId);
+        if (!productExists) {
+            throw new common_1.BadRequestException(`El producto ${productId} no pertenece a esta rutina`);
         }
         routine.products = routine.products
             .filter((p) => p.productId.toString() !== productId)

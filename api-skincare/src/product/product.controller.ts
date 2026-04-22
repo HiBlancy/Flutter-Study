@@ -23,13 +23,28 @@ import { PaginationDto } from '../pagination/pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CleanupService } from '../monthly-stats/services/cleanup.service';
 
+function createMulterImageFilter(allowedMimes: string[]) {
+  return (req: any, file: Express.Multer.File, cb: any) => {
+    if (!allowedMimes.includes(file.mimetype)) {
+      cb(
+        new BadRequestException(
+          `Tipo de archivo no permitido. Permitidos: ${allowedMimes.join(', ')}`,
+        ),
+        false,
+      );
+    } else {
+      cb(null, true);
+    }
+  };
+}
+
 @Controller('products')
 @UseGuards(AuthGuard)
 export class ProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly cleanupService: CleanupService,
-  ) { }
+  ) {}
 
   private successResponse(message: string, data: any = null) {
     return { status: true, message, data };
@@ -52,13 +67,11 @@ export class ProductController {
     @Query() paginationDto: PaginationDto,
     @Query('listType') listType?: string,
   ) {
-    // Pasamos el DTO al servicio
     const result = await this.productService.findAllByUserPaginated(
       req.user._id,
       paginationDto,
       listType,
     );
-
     return this.successResponse('Productos obtenidos con paginación', result);
   }
 
@@ -82,18 +95,15 @@ export class ProductController {
   // obtener productos que caducan pronto
   @Get('expiring/soon')
   async getExpiringSoon(@Req() req, @Query('days') days?: string) {
-    const daysNum = days ? parseInt(days) : 30;
+    const daysNum = days ? parseInt(days, 10) : 30;
     const products = await this.productService.getExpiringSoon(
       req.user._id,
       daysNum,
     );
-    return this.successResponse(
-      `Productos que caducan en ${daysNum} días`,
-      {
-        count: products.length,
-        products,
-      }
-    );
+    return this.successResponse(`Productos que caducan en ${daysNum} días`, {
+      count: products.length,
+      products,
+    });
   }
 
   // obtener producto segun su id
@@ -204,26 +214,16 @@ export class ProductController {
     if (!file) {
       throw new BadRequestException('No se proporcionó ningún archivo');
     }
-
-    try {
-      const updatedProduct = await this.productService.uploadProductImage(
-        productId,
-        req.user._id,
-        file.buffer,
-        file.mimetype,
-      );
-      return this.successResponse(
-        'Imagen de producto actualizada exitosamente',
-        updatedProduct,
-      );
-    } catch (error) {
-      console.error('❌ Error al subir imagen:', error);
-      if (error instanceof BadRequestException) throw error;
-      if (error instanceof NotFoundException) throw error;
-      throw new BadRequestException(
-        error.message || 'Error al subir la imagen',
-      );
-    }
+    const updatedProduct = await this.productService.uploadProductImage(
+      productId,
+      req.user._id,
+      file.buffer,
+      file.mimetype,
+    );
+    return this.successResponse(
+      'Imagen de producto actualizada exitosamente',
+      updatedProduct,
+    );
   }
 
   // eliminar foto del producto
@@ -257,7 +257,7 @@ export class ProductController {
     return this.successResponse('Estadísticas del mes actual', stats);
   }
 
-  // Endpoint de pruebas (mes actual)
+  // endpoint de pruebas (mes actual)
   @Post('cleanup/test')
   async triggerTestCleanup(@Req() req) {
     const result = await this.cleanupService.testCleanupNow();

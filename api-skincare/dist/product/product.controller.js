@@ -22,6 +22,16 @@ const auth_guard_1 = require("../users/guards/auth.guard");
 const pagination_dto_1 = require("../pagination/pagination.dto");
 const platform_express_1 = require("@nestjs/platform-express");
 const cleanup_service_1 = require("../monthly-stats/services/cleanup.service");
+function createMulterImageFilter(allowedMimes) {
+    return (req, file, cb) => {
+        if (!allowedMimes.includes(file.mimetype)) {
+            cb(new common_1.BadRequestException(`Tipo de archivo no permitido. Permitidos: ${allowedMimes.join(', ')}`), false);
+        }
+        else {
+            cb(null, true);
+        }
+    };
+}
 let ProductController = class ProductController {
     productService;
     cleanupService;
@@ -52,7 +62,7 @@ let ProductController = class ProductController {
         });
     }
     async getExpiringSoon(req, days) {
-        const daysNum = days ? parseInt(days) : 30;
+        const daysNum = days ? parseInt(days, 10) : 30;
         const products = await this.productService.getExpiringSoon(req.user._id, daysNum);
         return this.successResponse(`Productos que caducan en ${daysNum} días`, {
             count: products.length,
@@ -95,18 +105,8 @@ let ProductController = class ProductController {
         if (!file) {
             throw new common_1.BadRequestException('No se proporcionó ningún archivo');
         }
-        try {
-            const updatedProduct = await this.productService.uploadProductImage(productId, req.user._id, file.buffer, file.mimetype);
-            return this.successResponse('Imagen de producto actualizada exitosamente', updatedProduct);
-        }
-        catch (error) {
-            console.error('❌ Error al subir imagen:', error);
-            if (error instanceof common_1.BadRequestException)
-                throw error;
-            if (error instanceof common_1.NotFoundException)
-                throw error;
-            throw new common_1.BadRequestException(error.message || 'Error al subir la imagen');
-        }
+        const updatedProduct = await this.productService.uploadProductImage(productId, req.user._id, file.buffer, file.mimetype);
+        return this.successResponse('Imagen de producto actualizada exitosamente', updatedProduct);
     }
     async deleteProductImage(productId, req) {
         const updated = await this.productService.deleteProductImage(productId, req.user._id);

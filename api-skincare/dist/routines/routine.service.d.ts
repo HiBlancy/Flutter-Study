@@ -8,6 +8,7 @@ export declare class RoutineService {
     private readonly routineModel;
     private readonly productModel;
     constructor(routineModel: Model<Routine>, productModel: Model<Product>);
+    private toOrderedProducts;
     create(userId: string, createRoutineDto: CreateRoutineDto): Promise<Routine>;
     findAllByUser(userId: string): Promise<Routine[]>;
     findById(id: string, userId: string): Promise<Routine | null>;

@@ -12,6 +12,7 @@ export declare class ProductService {
     private readonly cloudinaryService;
     private readonly imageCompressionService;
     constructor(productModel: Model<Product>, monthlyStatsModel: Model<MonthlyStats>, cloudinaryService: CloudinaryService, imageCompressionService: ImageCompressionService);
+    private deleteCloudinaryImageByUrl;
     create(userId: string, createProductDto: CreateProductDto): Promise<Product>;
     findAllByUserPaginated(userId: string, paginationDto: PaginationDto, listType?: string): Promise<{
         data: (mongoose.Document<unknown, {}, Product, {}, mongoose.DefaultSchemaOptions> & Product & Required<{

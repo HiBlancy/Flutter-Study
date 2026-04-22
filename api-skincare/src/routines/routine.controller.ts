@@ -1,5 +1,3 @@
-// routines/routine.controller.ts
-
 import {
   Controller,
   Get,
@@ -27,10 +25,7 @@ export class RoutineController {
     return { status: true, message, data };
   }
 
-  /**
-   * Crear una nueva rutina
-   * POST /routines
-   */
+  // Crea una rutina (opcionalmente con productos).
   @Post()
   async create(@Req() req, @Body() createRoutineDto: CreateRoutineDto) {
     const routine = await this.routineService.create(
@@ -40,10 +35,7 @@ export class RoutineController {
     return this.successResponse('Rutina creada exitosamente', routine);
   }
 
-  /**
-   * Obtener todas las rutinas del usuario
-   * GET /routines
-   */
+  // Lista rutinas del usuario.
   @Get()
   async findAll(@Req() req) {
     const routines = await this.routineService.findAllByUser(req.user._id);
@@ -53,10 +45,7 @@ export class RoutineController {
     });
   }
 
-  /**
-   * Obtener una rutina específica
-   * GET /routines/:id
-   */
+  // Obtiene una rutina por id.
   @Get(':id')
   async findOne(@Req() req, @Param('id') id: string) {
     const routine = await this.routineService.findById(id, req.user._id);
@@ -66,10 +55,7 @@ export class RoutineController {
     return this.successResponse('Rutina obtenida', routine);
   }
 
-  /**
-   * Actualizar una rutina
-   * PATCH /routines/:id
-   */
+  // Actualiza nombre/tipo/productos de una rutina.
   @Patch(':id')
   async update(
     @Req() req,
@@ -84,20 +70,14 @@ export class RoutineController {
     return this.successResponse('Rutina actualizada exitosamente', routine);
   }
 
-  /**
-   * Eliminar una rutina
-   * DELETE /routines/:id
-   */
+  // Elimina una rutina.
   @Delete(':id')
   async delete(@Req() req, @Param('id') id: string) {
     const routine = await this.routineService.delete(id, req.user._id);
     return this.successResponse('Rutina eliminada exitosamente', routine);
   }
 
-  /**
-   * Reordenar productos en una rutina
-   * PATCH /routines/:id/reorder
-   */
+  // Reordena los productos de una rutina.
   @Patch(':id/reorder')
   async reorderProducts(
     @Req() req,
@@ -112,10 +92,7 @@ export class RoutineController {
     return this.successResponse('Productos reordenados exitosamente', routine);
   }
 
-  /**
-   * Agregar un producto a una rutina
-   * POST /routines/:id/products
-   */
+  // Agrega un producto a una rutina.
   @Post(':id/products')
   async addProduct(
     @Req() req,
@@ -130,10 +107,7 @@ export class RoutineController {
     return this.successResponse('Producto agregado a la rutina', routine);
   }
 
-  /**
-   * Eliminar un producto de una rutina
-   * DELETE /routines/:id/products/:productId
-   */
+  // Elimina un producto de una rutina.
   @Delete(':id/products/:productId')
   async removeProduct(
     @Req() req,

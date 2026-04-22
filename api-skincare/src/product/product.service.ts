@@ -24,6 +24,14 @@ export class ProductService {
     private readonly imageCompressionService: ImageCompressionService,
   ) { }
 
+  private async deleteCloudinaryImageByUrl(imageUrl?: string | null, logPrefix?: string) {
+    if (!imageUrl) return;
+    const publicId = this.cloudinaryService.extractPublicIdFromUrl(imageUrl);
+    if (!publicId) return;
+    await this.cloudinaryService.deleteImage(publicId);
+    if (logPrefix) console.log(`${logPrefix}: ${publicId}`);
+  }
+
   // crear producto
   async create(
     userId: string,
@@ -74,9 +82,6 @@ export class ProductService {
   async findById(id: string, userId: string): Promise<Product | null> {
     const product = await this.productModel.findById(id).exec();
     if (!product) return null;
-    if (product.userId.toString() !== userId.toString()) {
-      throw new ForbiddenException('No tienes permiso para ver este producto');
-    }
     return product;
   }
 
@@ -91,16 +96,13 @@ export class ProductService {
       if (!product) {
         throw new NotFoundException(`Producto ${id} no encontrado`);
       }
-      if (product.userId.toString() !== userId.toString()) {
-        throw new ForbiddenException('No puedes modificar este producto');
-      }
 
       // Limpiar campos undefined
       const updateData = Object.fromEntries(
         Object.entries(updateProductDto).filter(([_, v]) => v !== undefined),
       );
 
-      // Aplicar reglas de negocio (caducidad, etc.)
+      // Reglas de negocio (caducidad, etc.) cuando cambian campos relacionados.
       this.applyBusinessRules(product, updateData);
 
       const updated = await this.productModel
@@ -116,17 +118,12 @@ export class ProductService {
 
       return updated;
     } catch (error) {
-      // Capturar error de cast de MongoDB (ID inválido)
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(`Producto no encontrado`);
-      }
-      // Relanzar cualquier otro error (ForbiddenException, BadRequestException, etc.)
-      throw error;
+      throw new NotFoundException(error, 'Producto no encontrado');
     }
   }
 
   private applyBusinessRules(product: Product, updateData: any): void {
-    // Regla 1: Si el producto está abierto y se cambia el período después de apertura
+    // Si el producto ya está abierto y cambia el PAO, recalcular caducidad.
     if (product.isOpened && updateData.periodAfterOpening !== undefined) {
       const newExpiration = this.calculateExpirationDate(
         updateData.openedDate || product.openedDate,
@@ -138,7 +135,7 @@ export class ProductService {
       if (newExpiration) updateData.expirationDate = newExpiration;
     }
 
-    // Regla 2: (futura) Si se marca como abierto y tiene período, calcular caducidad
+    // Si se marca como abierto y existe PAO, calcular caducidad (si no viene ya definida).
     if (
       updateData.isOpened === true &&
       product.periodAfterOpening &&
@@ -161,29 +158,22 @@ export class ProductService {
       if (!product) {
         throw new NotFoundException(`Producto ${id} no encontrado`);
       }
-      if (product.userId.toString() !== userId.toString()) {
-        throw new ForbiddenException('No puedes eliminar este producto');
-      }
 
-      // Eliminar imagen de Cloudinary si existe
-      if (product.imageUrl) {
-        const publicId = this.cloudinaryService.extractPublicIdFromUrl(product.imageUrl);
-        if (publicId) {
-          await this.cloudinaryService.deleteImage(publicId);
-          console.log(`🗑️ Imagen eliminada de Cloudinary al borrar producto: ${publicId}`);
-        }
-      }
+      // Eliminar imagen de Cloudinary (si existe)
+      await this.deleteCloudinaryImageByUrl(
+        product.imageUrl,
+        '🗑️ Imagen eliminada de Cloudinary al borrar producto',
+      );
 
       const deleted = await this.productModel.findByIdAndDelete(id).exec();
       if (!deleted) {
-        throw new NotFoundException(`Producto ${id} no encontrado después de eliminar`);
+        throw new NotFoundException(
+          `Producto ${id} no encontrado después de eliminar`,
+        );
       }
       return deleted;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      throw error;
+      throw new NotFoundException(error, `Producto ${id} no encontrado`);
     }
   }
 
@@ -213,12 +203,7 @@ export class ProductService {
 
       return updated;
     } catch (error) {
-      // Capturar error de cast de MongoDB (ID inválido)
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      // Relanzar cualquier otro error (ForbiddenException, BadRequestException, etc.)
-      throw error;
+      throw new NotFoundException(error, `Producto ${id} no encontrado`);
     }
   }
 
@@ -232,9 +217,6 @@ export class ProductService {
       const product = await this.productModel.findById(id).exec();
       if (!product) {
         throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      if (product.userId.toString() !== userId.toString()) {
-        throw new ForbiddenException('No puedes modificar este producto');
       }
       if (product.isOpened) {
         throw new BadRequestException('El producto ya está abierto');
@@ -269,10 +251,7 @@ export class ProductService {
 
       return updated;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      throw error;
+      throw new NotFoundException(error, `Producto ${id} no encontrado`);
     }
   }
 
@@ -282,9 +261,6 @@ export class ProductService {
       const product = await this.productModel.findById(id).exec();
       if (!product) {
         throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      if (product.userId.toString() !== userId.toString()) {
-        throw new ForbiddenException('No puedes modificar este producto');
       }
       if (!product.isOpened) {
         throw new BadRequestException('El producto no está abierto');
@@ -300,10 +276,7 @@ export class ProductService {
 
       return updated;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      throw error;
+      throw new NotFoundException(error, `Producto ${id} no encontrado`);
     }
   }
 
@@ -316,9 +289,6 @@ export class ProductService {
       const product = await this.productModel.findById(id).exec();
       if (!product) {
         throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      if (product.userId.toString() !== userId.toString()) {
-        throw new ForbiddenException('No puedes modificar este producto');
       }
       if (!product.isOpened) {
         throw new BadRequestException('El producto no ha sido abierto aún');
@@ -354,10 +324,7 @@ export class ProductService {
 
       return updated;
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        throw new NotFoundException(`Producto ${id} no encontrado`);
-      }
-      throw error;
+      throw new NotFoundException(error, `Producto ${id} no encontrado`);
     }
   }
 
@@ -478,16 +445,8 @@ export class ProductService {
       'products',
     );
 
-    // Eliminar imagen anterior si existe
-    if (product.imageUrl) {
-      const publicId = this.cloudinaryService.extractPublicIdFromUrl(
-        product.imageUrl,
-      );
-      if (publicId) {
-        await this.cloudinaryService.deleteImage(publicId);
-        console.log(`🗑️ Imagen anterior eliminada: ${publicId}`);
-      }
-    }
+    // Eliminar imagen anterior (si existe)
+    await this.deleteCloudinaryImageByUrl(product.imageUrl, '🗑️ Imagen anterior eliminada');
 
     // Actualizar el producto con la nueva URL
     const updatedProduct = await this.update(productId, userId, { imageUrl });
@@ -512,13 +471,10 @@ export class ProductService {
     if (!product.imageUrl)
       throw new BadRequestException('El producto no tiene imagen');
 
-    const publicId = this.cloudinaryService.extractPublicIdFromUrl(
+    await this.deleteCloudinaryImageByUrl(
       product.imageUrl,
+      '🗑️ Imagen eliminada de Cloudinary',
     );
-    if (publicId) {
-      await this.cloudinaryService.deleteImage(publicId);
-      console.log(`🗑️ Imagen eliminada de Cloudinary: ${publicId}`);
-    }
 
     const updatedProduct = await this.update(productId, userId, {
       imageUrl: null,

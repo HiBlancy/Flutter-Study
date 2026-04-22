@@ -19,22 +19,27 @@ export class RoutineService {
     @InjectModel('Product') private readonly productModel: Model<Product>,
   ) {}
 
-  // routine.service.ts - create()
+  private toOrderedProducts(productIds: string[]) {
+    // Convierte ["id1","id2"] => [{productId:"id1", order:0}, ...]
+    return (productIds || []).map((productId, index) => ({
+      productId,
+      order: index,
+    }));
+  }
+
+  // Crea una rutina y guarda los productos con orden (0..n).
   async create(
     userId: string,
     createRoutineDto: CreateRoutineDto,
   ): Promise<Routine> {
-    // Validar productos (createRoutineDto.products es string[])
+    // Si vienen productos, validar que existan y sean del usuario.
     if (createRoutineDto.products && createRoutineDto.products.length > 0) {
       await this.validateProducts(userId, createRoutineDto.products);
     }
 
-    // Asignar órdenes automáticamente (0,1,2...)
-    const productsWithOrder = (createRoutineDto.products || []).map(
-      (productId, index) => ({
-        productId,
-        order: index,
-      }),
+    // Guardar productos con orden.
+    const productsWithOrder = this.toOrderedProducts(
+      createRoutineDto.products || [],
     );
 
     const newRoutine = new this.routineModel({
@@ -62,11 +67,14 @@ export class RoutineService {
         .exec();
       if (!routine) return null;
       if (routine.userId.toString() !== userId.toString()) {
-        throw new ForbiddenException('No tienes permiso para acceder a esta rutina');
+        throw new ForbiddenException(
+          'No tienes permiso para acceder a esta rutina',
+        );
       }
       return routine;
     } catch (error) {
-        throw new NotFoundException(`Rutina ${id} no encontrada`);
+      // Cualquier error se responde como 404 (comportamiento actual).
+      throw new NotFoundException(`Rutina ${id} no encontrada`);
     }
   }
 
@@ -85,17 +93,11 @@ export class RoutineService {
         Object.entries(updateRoutineDto).filter(([_, v]) => v !== undefined),
       );
 
-      // Si se actualizan los productos (como array de IDs), transformar a objetos con orden
+      // Si vienen productos, los convertimos a { productId, order } y validamos.
       if (updateData.products && Array.isArray(updateData.products)) {
-        updateData.products = updateData.products.map((productId, idx) => ({
-          productId,
-          order: idx,
-        }));
-        // Validar que los productos pertenezcan al usuario
-        await this.validateProducts(
-          userId,
-          updateData.products.map((p) => p.productId),
-        );
+        const productIds = updateData.products;
+        updateData.products = this.toOrderedProducts(productIds);
+        await this.validateProducts(userId, productIds);
       }
 
       const updated = await this.routineModel
@@ -107,7 +109,8 @@ export class RoutineService {
           `Rutina ${id} no encontrada después de actualizar`,
         );
       return updated;
-    }catch (error) {
+    } catch (error) {
+      // Cualquier error se responde como 404 (comportamiento actual).
       throw new NotFoundException(`Rutina ${id} no encontrada`);
     }
   }
@@ -120,7 +123,7 @@ export class RoutineService {
         'No tienes permiso para eliminar esta rutina',
       );
 
-    // Eliminar la rutina
+    // Eliminar la rutina.
     const deleted = await this.routineModel.findByIdAndDelete(id).exec();
     if (!deleted)
       throw new NotFoundException(`Rutina ${id} no encontrada al eliminar`);
@@ -140,6 +143,7 @@ export class RoutineService {
         throw new ForbiddenException();
 
       const productIds = reorderDto.products.map((p) => p.productId);
+      // Validar que los productos existan y sean del usuario.
       await this.validateProducts(userId, productIds);
 
       const updated = await this.routineModel
@@ -153,6 +157,7 @@ export class RoutineService {
       if (!updated) throw new NotFoundException();
       return updated;
     } catch (error) {
+      // Cualquier error se responde como 404 (comportamiento actual).
       throw new NotFoundException(`Rutina ${id} no encontrada`);
     }
   }
@@ -162,55 +167,55 @@ export class RoutineService {
     userId: string,
     productId: string,
   ): Promise<Routine> {
-    try {
-      const routine = await this.routineModel.findById(id).exec();
-
-      if (!routine) {
-        throw new NotFoundException(`Rutina ${id} no encontrada`);
-      }
-
-      if (routine.userId.toString() !== userId.toString()) {
-        throw new ForbiddenException(
-          'No tienes permiso para actualizar esta rutina',
-        );
-      }
-
-      await this.validateProducts(userId, [productId]);
-
-      const alreadyExists = routine.products.some(
-        (p) => p.productId.toString() === productId,
-      );
-      if (alreadyExists) {
-        throw new BadRequestException('Este producto ya está en la rutina');
-      }
-
-      const nextOrder =
-        routine.products.length > 0
-          ? Math.max(...routine.products.map((p) => p.order)) + 1
-          : 0;
-
-      routine.products.push({
-        productId: productId as any,
-        order: nextOrder,
-      });
-
-      await routine.save();
-
-      const populatedRoutine = await this.routineModel
-        .findById(id)
-        .populate('products.productId')
-        .exec();
-
-      if (!populatedRoutine) {
-        throw new NotFoundException(
-          `Rutina ${id} no encontrada después de agregar producto`,
-        );
-      }
-
-      return populatedRoutine;
-    } catch (error) {
+    const routine = await this.routineModel.findById(id).exec();
+    if (!routine) {
       throw new NotFoundException(`Rutina ${id} no encontrada`);
     }
+
+    // 2. Verificar permisos
+    if (routine.userId.toString() !== userId.toString()) {
+      throw new ForbiddenException(
+        'No tienes permiso para actualizar esta rutina',
+      );
+    }
+
+    // 3. Validar que el producto exista y pertenezca al usuario
+    await this.validateProducts(userId, [productId]);
+
+    // 4. Verificar duplicado
+    const alreadyExists = routine.products.some(
+      (p) => p.productId.toString() === productId,
+    );
+    if (alreadyExists) {
+      throw new BadRequestException('Este producto ya está en la rutina');
+    }
+
+    // 5. Calcular siguiente orden
+    const nextOrder =
+      routine.products.length > 0
+        ? Math.max(...routine.products.map((p) => p.order)) + 1
+        : 0;
+
+    // 6. Agregar producto
+    routine.products.push({
+      productId: productId as any,
+      order: nextOrder,
+    });
+    await routine.save();
+
+    // 7. Devolver rutina populada
+    const populatedRoutine = await this.routineModel
+      .findById(id)
+      .populate('products.productId')
+      .exec();
+
+    if (!populatedRoutine) {
+      throw new NotFoundException(
+        `Rutina ${id} no encontrada después de agregar producto`,
+      );
+    }
+
+    return populatedRoutine;
   }
 
   async removeProduct(
@@ -218,18 +223,38 @@ export class RoutineService {
     userId: string,
     productId: string,
   ): Promise<Routine> {
-    const routine = await this.routineModel.findById(id).exec();
+    // 1. Buscar la rutina (con try-catch para IDs inválidos)
+    let routine;
+    try {
+      routine = await this.routineModel.findById(id).exec();
+    } catch (error) {
+      // Si el ID tiene formato incorrecto (CastError), lanzamos 404
+      throw new NotFoundException(`Rutina ${id} no encontrada`);
+    }
 
+    // 2. Verificar que la rutina existe
     if (!routine) {
       throw new NotFoundException(`Rutina ${id} no encontrada`);
     }
 
+    // 3. Verificar permisos
     if (routine.userId.toString() !== userId.toString()) {
       throw new ForbiddenException(
-        'No tienes permiso para actualizar esta rutina',
+        'No tienes permiso para modificar esta rutina',
       );
     }
 
+    // 4. Verificar que el producto existe DENTRO de la rutina
+    const productExists = routine.products.some(
+      (p) => p.productId.toString() === productId,
+    );
+    if (!productExists) {
+      throw new BadRequestException(
+        `El producto ${productId} no pertenece a esta rutina`,
+      );
+    }
+
+    // 5. Eliminar el producto y reordenar los restantes
     routine.products = routine.products
       .filter((p) => p.productId.toString() !== productId)
       .map((p, index) => ({
@@ -239,6 +264,7 @@ export class RoutineService {
 
     await routine.save();
 
+    // 6. Devolver la rutina actualizada con productos populados
     const populatedRoutine = await this.routineModel
       .findById(id)
       .populate('products.productId')
@@ -254,20 +280,18 @@ export class RoutineService {
   }
 
   private async validateProducts(
-  userId: string,
-  productIds: string[],
-): Promise<void> {
-  if (productIds.length === 0) return;
+    userId: string,
+    productIds: string[],
+  ): Promise<void> {
+    if (productIds.length === 0) return;
 
-  const products = await this.productModel
-    .find({ _id: { $in: productIds }, userId })
-    .exec();
+    const products = await this.productModel
+      .find({ _id: { $in: productIds }, userId })
+      .exec();
 
-  if (products.length !== productIds.length) {
-    // Lanzar 404 en lugar de 400
-    throw new NotFoundException(
-      'Uno o más productos no existen',
-    );
+    // 404 cuando un producto no existe o no pertenece al usuario.
+    if (products.length !== productIds.length) {
+      throw new NotFoundException('Uno o más productos no existen');
+    }
   }
-}
 }

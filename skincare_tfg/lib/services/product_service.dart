@@ -150,15 +150,19 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       
-      if (data['status'] == true && data['data'] is List) {
-        return (data['data'] as List)
-            .map((product) => BeautyProduct.fromBackend(product))
-            .toList();
+      // ✅ Ahora accedemos a data['data']['products']
+      if (data['status'] == true && data['data'] != null) {
+        final productsList = data['data']['products'] as List?;
+        if (productsList != null) {
+          return productsList
+              .map((json) => BeautyProduct.fromBackend(json))
+              .toList();
+        }
       }
     }
     return [];
   } catch (e) {
-    print('❌ Error: $e');
+    print('❌ Error en getExpiringSoon: $e');
     return [];
   }
 }
