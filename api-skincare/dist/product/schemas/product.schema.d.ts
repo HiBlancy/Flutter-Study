@@ -3,8 +3,8 @@ export declare const ProductSchema: Schema<any, import("mongoose").Model<any, an
     timestamps: true;
     strict: false;
 }, {
-    userId: import("mongoose").Types.ObjectId;
     name: string;
+    userId: import("mongoose").Types.ObjectId;
     brand: string;
     categories: string[];
     listType: "wishlist" | "have" | "used";
@@ -17,8 +17,8 @@ export declare const ProductSchema: Schema<any, import("mongoose").Model<any, an
     periodAfterOpening?: string | null | undefined;
     openedDate?: NativeDate | null | undefined;
 } & import("mongoose").DefaultTimestampProps, import("mongoose").Document<unknown, {}, {
-    userId: import("mongoose").Types.ObjectId;
     name: string;
+    userId: import("mongoose").Types.ObjectId;
     brand: string;
     categories: string[];
     listType: "wishlist" | "have" | "used";
@@ -36,8 +36,8 @@ export declare const ProductSchema: Schema<any, import("mongoose").Model<any, an
     timestamps: true;
     strict: false;
 }> & Omit<{
-    userId: import("mongoose").Types.ObjectId;
     name: string;
+    userId: import("mongoose").Types.ObjectId;
     brand: string;
     categories: string[];
     listType: "wishlist" | "have" | "used";
@@ -56,8 +56,8 @@ export declare const ProductSchema: Schema<any, import("mongoose").Model<any, an
 }, "id"> & {
     id: string;
 }, unknown, {
-    userId: import("mongoose").Types.ObjectId;
     name: string;
+    userId: import("mongoose").Types.ObjectId;
     brand: string;
     categories: string[];
     listType: "wishlist" | "have" | "used";

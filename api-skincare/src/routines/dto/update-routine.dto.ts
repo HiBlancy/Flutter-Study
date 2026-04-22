@@ -7,6 +7,7 @@ import {
   ValidateNested,
   IsNumber,
   Min,
+  IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -24,6 +25,7 @@ export class RoutineProductDto {
 export class UpdateRoutineDto {
   @IsOptional()
   @IsString()
+  @IsNotEmpty()
   name?: string;
 
   @IsOptional()
