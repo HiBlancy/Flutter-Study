@@ -2,8 +2,8 @@ import '../screens/add_product_screen.dart';
 import '../screens/my_products_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
-import '../screens/scan_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/routines_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   final int initialIndex;
@@ -35,7 +35,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       HomeScreen(),
       MyProductsScreen(),
       AddProductScreen(),
-      ScanScreen(),
+      RoutinesScreen(),
       ProfileScreen(),
     ];
   }
@@ -73,7 +73,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       BottomNavigationBarItem(
         icon: Icon(Icons.camera_alt_outlined),
         activeIcon: Icon(Icons.camera_alt),
-        label: 'Cámara',
+        label: 'Rutinas',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.person_outline),

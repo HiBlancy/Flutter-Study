@@ -28,4 +28,7 @@ class ApiConfig {
   static String getProductStatsUrl() => '$baseUrl/products/stats/summary';
   static String getExpiredProductsUrl() => '$baseUrl/products/expired/all';
   static String getExpiringSoonUrl({int days = 30}) => '$baseUrl/products/expiring/soon?days=$days';
+
+  //ROUTINES
+    static String getRoutinesUrl() => '$baseUrl/routines';
 }
