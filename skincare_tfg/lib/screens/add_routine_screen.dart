@@ -5,7 +5,6 @@ import '../services/routine_service.dart';
 import '../widgets/main_toolbar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
-import '../l10n/app_localizations.dart';
 
 class AddRoutineScreen extends StatefulWidget {
   const AddRoutineScreen({super.key});
@@ -60,24 +59,36 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
   }
 
   Future<void> _save() async {
-    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedDays.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Selecciona al menos 1 día'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
 
     setState(() => _isLoading = true);
 
     try {
+      final days = _selectedDays.toList()..sort();
       final routine = Routine(
         name: _nameController.text.trim(),
         type: _selectedType,
-        days: _selectedDays.toList(),
+        days: days,
       );
 
       await _routineService.createRoutine(routine);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.routineCreatedSuccess),
+          const SnackBar(
+            content: Text('✓ Rutina creada correctamente'),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
@@ -89,7 +100,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.routineCreateError),
+            content: Text('Error al crear la rutina: $e'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -103,12 +114,11 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
     final cardBg = theme.colorScheme.primaryContainer.withValues(alpha: isDark ? 0.15 : 0.2);
 
     return CustomAppBar(
-      title: l10n.newRoutine,
+      title: 'Nueva Rutina',
       showDrawer: false,
       showBackButton: true,
       child: SingleChildScrollView(
@@ -123,21 +133,21 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
               // Nombre
               CustomTextField(
                 controller: _nameController,
-                label: l10n.routineNameRequiredLabel,
+                label: 'Nombre de la rutina *',
                 prefixIcon: Icons.auto_awesome_outlined,
-                hint: l10n.routineNameHint,
-                validator: (v) => v?.trim().isEmpty == true ? l10n.requiredField : null,
+                hint: 'Ej: Rutina de mañana',
+                validator: (v) => v?.trim().isEmpty == true ? 'Obligatorio' : null,
               ),
               const SizedBox(height: 24),
 
               // Tipo: Mañana / Noche
-              _buildSectionLabel(theme, Icons.schedule_outlined, l10n.routineType),
+              _buildSectionLabel(theme, Icons.schedule_outlined, 'Tipo de rutina'),
               const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: _buildTypeCard(
-                      label: l10n.morning,
+                      label: 'Mañana',
                       icon: Icons.wb_sunny_outlined,
                       type: RoutineType.morning,
                       theme: theme,
@@ -147,7 +157,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
                   const SizedBox(width: 14),
                   Expanded(
                     child: _buildTypeCard(
-                      label: l10n.night,
+                      label: 'Noche',
                       icon: Icons.nights_stay_outlined,
                       type: RoutineType.night,
                       theme: theme,
@@ -168,7 +178,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
                           size: 18, color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Text(
-                        l10n.weekDays,
+                        'Días de la semana',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -180,7 +190,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
                   GestureDetector(
                     onTap: _selectAll,
                     child: Text(
-                      _selectedDays.length == _days.length ? l10n.none : l10n.all,
+                      _selectedDays.length == _days.length ? 'Ninguno' : 'Todos',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -266,7 +276,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
 
               // Botón guardar
               CustomButton(
-                text: l10n.createRoutine,
+                text: 'Crear rutina',
                 onPressed: _save,
                 isLoading: _isLoading,
                 type: ButtonType.primary,

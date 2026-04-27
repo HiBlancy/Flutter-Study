@@ -1,5 +1,6 @@
 // lib/services/routine_service.dart
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/routine_model.dart';
 import 'auth_service.dart';
@@ -7,6 +8,23 @@ import 'api_config.dart'; // ← igual que product_service.dart
 
 class RoutineService {
   final AuthService _authService = AuthService();
+
+  Map<String, dynamic> _decodeJson(http.Response response) {
+    final decoded = jsonDecode(response.body);
+    if (decoded is Map<String, dynamic>) return decoded;
+    return {'data': decoded};
+  }
+
+  Map<String, dynamic>? _extractDataObject(Map<String, dynamic> json) {
+    final data = json['data'];
+    if (data is Map<String, dynamic>) {
+      // Some controllers wrap again as { data: {...}, total, ... }
+      final inner = data['data'];
+      if (inner is Map<String, dynamic>) return inner;
+      return data;
+    }
+    return null;
+  }
 
   Future<Map<String, String>> _getHeaders() async {
     final token = await _authService.getToken();
@@ -24,44 +42,105 @@ class RoutineService {
       headers: headers,
     );
 
-    if (response.statusCode != 200) throw Exception('Error ${response.statusCode}');
+    if (response.statusCode != 200) {
+      throw Exception('Error ${response.statusCode}: ${response.body}');
+    }
 
-    final json = jsonDecode(response.body);
-    // El controller devuelve: { status, data: { data: [...], total: N } }
-    final List<dynamic> data = json['data']['data'] ?? [];
-    return data.map((r) => Routine.fromJson(r as Map<String, dynamic>)).toList();
+    final json = _decodeJson(response);
+    // Typical: { status, data: { data: [...], total } } OR { status, data: [...] }
+    final dynamic maybeData = json['data'];
+    final List<dynamic> data = maybeData is Map<String, dynamic>
+        ? (maybeData['data'] as List<dynamic>? ?? [])
+        : (maybeData as List<dynamic>? ?? []);
+    final routines = data
+        .whereType<Map<String, dynamic>>()
+        .map((r) {
+          if (kDebugMode) {
+            final raw = r['type'] ??
+                r['routineType'] ??
+                r['moment'] ??
+                r['timeOfDay'] ??
+                r['isNight'] ??
+                r['night'] ??
+                r['isMorning'];
+            debugPrint('🧴 Routine ${r['_id']}: rawType=$raw');
+          }
+          return Routine.fromJson(r);
+        })
+        .toList();
+    return routines;
   }
 
   // POST /routines
   Future<Routine> createRoutine(Routine routine) async {
     final headers = await _getHeaders();
+    final bodyMap = routine.toJson();
+    // Backend compatibility: accept alternative field names too.
+    bodyMap['routineType'] = bodyMap['type'];
+    bodyMap['moment'] = bodyMap['type'];
+    bodyMap['timeOfDay'] = bodyMap['type'];
+    bodyMap['time'] = bodyMap['type']; // backend expects `time`
+    bodyMap['daysOfWeek'] = bodyMap['days'];
+    bodyMap['weekDays'] = bodyMap['days'];
+    bodyMap['isNight'] = bodyMap['type'] == 'night';
+    bodyMap['isMorning'] = bodyMap['type'] == 'morning';
+    bodyMap['message'] = bodyMap['name']; // backend expects `message`
+
     final response = await http.post(
       Uri.parse(ApiConfig.getRoutinesUrl()),
       headers: headers,
-      body: jsonEncode(routine.toJson()),
+      body: jsonEncode(bodyMap),
     );
 
     if (response.statusCode != 201 && response.statusCode != 200) {
-      throw Exception('Error al crear rutina');
+      throw Exception('Error al crear rutina (${response.statusCode}): ${response.body}');
     }
 
-    final json = jsonDecode(response.body);
-    return Routine.fromJson(json['data']);
+    final json = _decodeJson(response);
+    final dataObj = _extractDataObject(json);
+    if (dataObj == null) {
+      throw Exception('Respuesta inesperada al crear rutina: ${response.body}');
+    }
+    return Routine.fromJson(dataObj);
   }
 
   // PATCH /routines/:id
   Future<Routine> updateRoutine(String id, Map<String, dynamic> data) async {
     final headers = await _getHeaders();
+    final payload = Map<String, dynamic>.from(data);
+    // Backend compatibility: accept alternative field names too.
+    if (payload.containsKey('type')) {
+      payload['routineType'] = payload['type'];
+      payload['moment'] = payload['type'];
+      payload['timeOfDay'] = payload['type'];
+      payload['time'] = payload['type'];
+      payload['isNight'] = payload['type'] == 'night';
+      payload['isMorning'] = payload['type'] == 'morning';
+    }
+    if (payload.containsKey('days')) {
+      payload['daysOfWeek'] = payload['days'];
+      payload['weekDays'] = payload['days'];
+    }
+    if (payload.containsKey('name')) {
+      payload['message'] = payload['name'];
+    }
+
     final response = await http.patch(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
       headers: headers,
-      body: jsonEncode(data),
+      body: jsonEncode(payload),
     );
 
-    if (response.statusCode != 200) throw Exception('Error al actualizar rutina');
+    if (response.statusCode != 200) {
+      throw Exception('Error al actualizar rutina (${response.statusCode}): ${response.body}');
+    }
 
-    final json = jsonDecode(response.body);
-    return Routine.fromJson(json['data']);
+    final json = _decodeJson(response);
+    final dataObj = _extractDataObject(json);
+    if (dataObj == null) {
+      throw Exception('Respuesta inesperada al actualizar rutina: ${response.body}');
+    }
+    return Routine.fromJson(dataObj);
   }
 
   // DELETE /routines/:id
@@ -72,7 +151,9 @@ class RoutineService {
       headers: headers,
     );
 
-    if (response.statusCode != 200) throw Exception('Error al eliminar rutina');
+    if (response.statusCode != 200) {
+      throw Exception('Error al eliminar rutina (${response.statusCode}): ${response.body}');
+    }
   }
 
   // POST /routines/:id/products
@@ -85,11 +166,15 @@ class RoutineService {
     );
 
     if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Error al añadir producto');
+      throw Exception('Error al añadir producto (${response.statusCode}): ${response.body}');
     }
 
-    final json = jsonDecode(response.body);
-    return Routine.fromJson(json['data']);
+    final json = _decodeJson(response);
+    final dataObj = _extractDataObject(json);
+    if (dataObj == null) {
+      throw Exception('Respuesta inesperada al añadir producto: ${response.body}');
+    }
+    return Routine.fromJson(dataObj);
   }
 
   // DELETE /routines/:id/products/:productId
@@ -100,10 +185,16 @@ class RoutineService {
       headers: headers,
     );
 
-    if (response.statusCode != 200) throw Exception('Error al eliminar producto');
+    if (response.statusCode != 200) {
+      throw Exception('Error al eliminar producto (${response.statusCode}): ${response.body}');
+    }
 
-    final json = jsonDecode(response.body);
-    return Routine.fromJson(json['data']);
+    final json = _decodeJson(response);
+    final dataObj = _extractDataObject(json);
+    if (dataObj == null) {
+      throw Exception('Respuesta inesperada al eliminar producto: ${response.body}');
+    }
+    return Routine.fromJson(dataObj);
   }
 
   // PATCH /routines/:id/reorder
@@ -118,10 +209,16 @@ class RoutineService {
       body: jsonEncode({'products': products}),
     );
 
-    if (response.statusCode != 200) throw Exception('Error al reordenar productos');
+    if (response.statusCode != 200) {
+      throw Exception('Error al reordenar productos (${response.statusCode}): ${response.body}');
+    }
 
-    final json = jsonDecode(response.body);
-    return Routine.fromJson(json['data']);
+    final json = _decodeJson(response);
+    final dataObj = _extractDataObject(json);
+    if (dataObj == null) {
+      throw Exception('Respuesta inesperada al reordenar: ${response.body}');
+    }
+    return Routine.fromJson(dataObj);
   }
 
   // GET /routines/:id
@@ -134,7 +231,9 @@ Future<Routine?> getRoutineById(String id) async {
 
   if (response.statusCode != 200) return null;
 
-  final json = jsonDecode(response.body);
-  return Routine.fromJson(json['data']);
+  final json = _decodeJson(response);
+  final dataObj = _extractDataObject(json);
+  if (dataObj == null) return null;
+  return Routine.fromJson(dataObj);
 }
 }

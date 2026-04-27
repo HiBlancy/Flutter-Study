@@ -7,7 +7,6 @@ import '../services/product_service.dart';
 import '../widgets/main_toolbar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
-import '../l10n/app_localizations.dart';
 
 class RoutineDetailScreen extends StatefulWidget {
   final Routine routine;
@@ -78,19 +77,24 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
     if (_routine.id == null) return;
     setState(() => _isLoading = true);
     try {
+      final sortedDays = _editingDays.toList()..sort();
+      // Optimistic UI update so changes are visible immediately.
+      setState(() {
+        _routine = _routine.copyWith(type: _editingType, days: sortedDays);
+      });
       final updated = await _routineService.updateRoutine(_routine.id!, {
         'name': _nameController.text.trim(),
         'type': _editingType == RoutineType.morning ? 'morning' : 'night',
-        'days': _editingDays.toList(),
+        'days': sortedDays,
       });
       setState(() {
         _routine = updated;
         _hasChanges = true;
         _isEditing = false;
       });
-      _showSnackBar(AppLocalizations.of(context)!.routineUpdated);
+      _showSnackBar('Rutina actualizada');
     } catch (e) {
-      _showSnackBar(AppLocalizations.of(context)!.updateError, isError: true);
+      _showSnackBar('Error al actualizar: $e', isError: true);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -108,9 +112,9 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         _routine = updated;
         _hasChanges = true;
       });
-      _showSnackBar(AppLocalizations.of(context)!.productRemovedFromRoutine);
+      _showSnackBar('Producto eliminado de la rutina');
     } catch (e) {
-      _showSnackBar(AppLocalizations.of(context)!.productRemoveError, isError: true);
+      _showSnackBar('Error al eliminar producto', isError: true);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -148,7 +152,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
     } catch (e) {
       // Revert on error
       setState(() => _routine = widget.routine);
-      _showSnackBar(AppLocalizations.of(context)!.reorderProductsError, isError: true);
+      _showSnackBar('Error al reordenar productos', isError: true);
     }
   }
 
@@ -216,7 +220,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                     child: Row(
                       children: [
                         Text(
-                          AppLocalizations.of(context)!.addProduct,
+                          'Añadir producto',
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -244,7 +248,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    AppLocalizations.of(context)!.noMoreProductsToAdd,
+                                    'No hay más productos\npara añadir',
                                     textAlign: TextAlign.center,
                                     style: theme.textTheme.bodyMedium?.copyWith(
                                       color: theme.colorScheme.onSurface
@@ -349,9 +353,9 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         _routine = updated;
         _hasChanges = true;
       });
-      _showSnackBar(AppLocalizations.of(context)!.productAddedToRoutine);
+      _showSnackBar('Producto añadido a la rutina');
     } catch (e) {
-      _showSnackBar(AppLocalizations.of(context)!.productAddError, isError: true);
+      _showSnackBar('Error al añadir producto', isError: true);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -371,7 +375,6 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
     final isMorning = _routine.type == RoutineType.morning;
     final cardBg = theme.colorScheme.primaryContainer.withValues(alpha: isDark ? 0.15 : 0.2);
@@ -385,6 +388,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         title: _routine.name,
         showDrawer: false,
         showBackButton: true,
+        onBack: () => Navigator.pop(context, _hasChanges),
         child: _isLoading && _routine.products.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
@@ -404,11 +408,11 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                 child: _isEditing
                                     ? CustomTextField(
                                         controller: _nameController,
-                                        label: l10n.routineNameLabel,
+                                        label: 'Nombre',
                                         prefixIcon: Icons
                                             .edit_outlined, // ← Añadir este parámetro requerido
                                         validator: (v) => v?.isEmpty == true
-                                            ? l10n.requiredField
+                                            ? 'Obligatorio'
                                             : null,
                                       )
                                     : Text(
@@ -480,8 +484,8 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                       const SizedBox(width: 6),
                                       Text(
                                         isMorning
-                                            ? l10n.morningRoutineLabel
-                                            : l10n.nightRoutineLabel,
+                                            ? 'Rutina de mañana'
+                                            : 'Rutina de noche',
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 13,
@@ -538,14 +542,14 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                             _buildSectionLabel(
                               theme,
                               Icons.schedule_outlined,
-                              l10n.routineType,
+                              'Tipo de rutina',
                             ),
                             const SizedBox(height: 10),
                             Row(
                               children: [
                                 Expanded(
                                   child: _buildTypeCardEditable(
-                                    label: l10n.morning,
+                                    label: 'Mañana',
                                     icon: Icons.wb_sunny_outlined,
                                     type: RoutineType.morning,
                                     isSelected:
@@ -558,7 +562,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: _buildTypeCardEditable(
-                                    label: l10n.night,
+                                    label: 'Noche',
                                     icon: Icons.nights_stay_outlined,
                                     type: RoutineType.night,
                                     isSelected:
@@ -585,7 +589,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      l10n.weekDays,
+                                      'Días de la semana',
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
@@ -610,8 +614,8 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                   },
                                   child: Text(
                                     _editingDays.length == _allDays.length
-                                        ? l10n.none
-                                        : l10n.all,
+                                        ? 'Ninguno'
+                                        : 'Todos',
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -708,14 +712,14 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    l10n.products,
+                                    'Productos',
                                     style: theme.textTheme.titleMedium
                                         ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     _routine.products.isEmpty
-                                        ? l10n.noProductAdded
-                                        : l10n.longPressReorder,
+                                        ? 'Ningún producto añadido'
+                                        : 'Mantén pulsado para reordenar',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurface
                                           .withValues(alpha: 0.5),
@@ -724,7 +728,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                 ],
                               ),
                               CustomButton(
-                                text: l10n.addProduct,
+                                text: 'Añadir',
                                 onPressed: _showAddProductSheet,
                                 type: ButtonType.outlined,
                                 size: ButtonSize.small,
@@ -795,14 +799,14 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              AppLocalizations.of(context)!.noProductsYet,
+              'Sin productos aún',
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              AppLocalizations.of(context)!.addProductsToBuildRoutine,
+              'Añade productos de tu armario\npara construir tu rutina',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -810,7 +814,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
             ),
             const SizedBox(height: 20),
             CustomButton(
-              text: AppLocalizations.of(context)!.addProduct,
+              text: 'Añadir producto',
               onPressed: _showAddProductSheet,
               type: ButtonType.primary,
               size: ButtonSize.medium,
