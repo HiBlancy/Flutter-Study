@@ -1,4 +1,4 @@
-// product_card.dart
+
 import 'package:flutter/material.dart';
 import '../models/beauty_product.dart';
 
@@ -6,8 +6,8 @@ class ProductCard extends StatefulWidget {
   final BeautyProduct product;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
-  final VoidCallback? onDelete; // Mantenemos por si lo usas luego
-  final VoidCallback? onMove;   // Mantenemos por si lo usas luego
+  final VoidCallback? onDelete;
+  final VoidCallback? onMove;
 
   const ProductCard({
     super.key,
@@ -53,8 +53,8 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
-    // Colores dinámicos extraídos de tu lógica anterior
+
+
     final subtleBg = theme.colorScheme.onSurface.withValues(alpha: 0.05);
     final subtleIcon = theme.colorScheme.onSurface.withValues(alpha: 0.4);
     final borderColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
@@ -77,18 +77,18 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                // Imagen del producto corregida
+
                 _buildProductImage(theme, subtleBg, subtleIcon),
-                
+
                 const SizedBox(width: 14),
-                
-                // Información (Nombre y Marca)
+
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.product.name, // Acceso correcto vía widget.
+                        widget.product.name,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -107,8 +107,8 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
                     ],
                   ),
                 ),
-                
-                // Icono de flecha o acciones
+
+
                 Icon(
                   Icons.chevron_right,
                   color: subtleIcon,
@@ -136,7 +136,7 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
               child: Image.network(
                 widget.product.imageUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => 
+                errorBuilder: (context, error, stackTrace) =>
                     Icon(Icons.image_not_supported_outlined, color: iconColor, size: 28),
               ),
             )

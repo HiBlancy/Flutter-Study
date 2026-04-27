@@ -1,4 +1,4 @@
-// lib/widgets/edit_product_dialog.dart
+
 
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -11,10 +11,10 @@ import '../l10n/app_localizations.dart';
 
 class EditProductDialog extends StatefulWidget {
   final BeautyProduct product;
-  final Function(BeautyProduct) onProductUpdated; // ✅ Callback para actualizar
+  final Function(BeautyProduct) onProductUpdated;
 
   const EditProductDialog({
-    super.key, 
+    super.key,
     required this.product,
     required this.onProductUpdated,
   });
@@ -26,7 +26,7 @@ class EditProductDialog extends StatefulWidget {
 class _EditProductDialogState extends State<EditProductDialog> {
   final ProductService _productService = ProductService();
   final ImageService _imageService = ImageService();
-  
+
   late final TextEditingController _nameController;
   late final TextEditingController _brandController;
   late final TextEditingController _notesController;
@@ -38,8 +38,8 @@ class _EditProductDialogState extends State<EditProductDialog> {
   DateTime? _openedDate;
   late List<String> _categories;
   late ProductListType _selectedListType;
-  
-  // 🆕 Estado para la imagen
+
+
   File? _selectedImageFile;
   String? _currentImageUrl;
   bool _isUploadingImage = false;
@@ -72,7 +72,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
     super.dispose();
   }
 
-  // 🆕 Mostrar opciones para cambiar imagen
+
   void _showImagePickerOptions() {
     showModalBottomSheet(
       context: context,
@@ -130,12 +130,12 @@ class _EditProductDialogState extends State<EditProductDialog> {
     );
   }
 
-  // 🆕 Seleccionar imagen de cámara
+
   Future<void> _pickImageFromCamera() async {
     setState(() => _isUploadingImage = true);
-    
+
     final imageFile = await _imageService.takePhotoWithCamera();
-    
+
     if (imageFile != null && mounted) {
       setState(() {
         _selectedImageFile = imageFile;
@@ -144,16 +144,16 @@ class _EditProductDialogState extends State<EditProductDialog> {
     } else if (mounted) {
       _showSnackBar(AppLocalizations.of(context)!.imageCaptureError, isError: true);
     }
-    
+
     setState(() => _isUploadingImage = false);
   }
 
-  // 🆕 Seleccionar imagen de galería
+
   Future<void> _pickImageFromGallery() async {
     setState(() => _isUploadingImage = true);
-    
+
     final imageFile = await _imageService.pickImageFromGallery();
-    
+
     if (imageFile != null && mounted) {
       setState(() {
         _selectedImageFile = imageFile;
@@ -162,11 +162,11 @@ class _EditProductDialogState extends State<EditProductDialog> {
     } else if (mounted) {
       _showSnackBar(AppLocalizations.of(context)!.imageSelectError, isError: true);
     }
-    
+
     setState(() => _isUploadingImage = false);
   }
 
-  // 🆕 Eliminar imagen
+
   Future<void> _deleteImage() async {
     setState(() => _isUploadingImage = true);
 
@@ -181,8 +181,8 @@ class _EditProductDialogState extends State<EditProductDialog> {
           _selectedImageFile = null;
         });
         _showSnackBar(AppLocalizations.of(context)!.imageDeletedSuccess);
-        
-        // Notificar al padre que el producto cambió
+
+
         widget.onProductUpdated(updatedProduct);
       } else {
         _showSnackBar(AppLocalizations.of(context)!.deleteImageError, isError: true);
@@ -242,7 +242,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
   setState(() => _isUploadingImage = true);
 
   try {
-    // 1️⃣ Subir imagen si hay una seleccionada
+
     bool imageUploaded = false;
     if (_selectedImageFile != null) {
       final uploadedProduct = await _productService.uploadProductImage(
@@ -252,7 +252,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
       if (uploadedProduct != null) {
         imageUploaded = true;
         widget.onProductUpdated(uploadedProduct);
-        // Actualizar la URL local para que el PATCH no la toque
+
         _currentImageUrl = uploadedProduct.imageUrl;
 
       } else {
@@ -261,8 +261,8 @@ class _EditProductDialogState extends State<EditProductDialog> {
       }
     }
 
-    // 2️⃣ Preparar datos actualizados (sin incluir imageUrl si ya se subió)
-   
+
+
 
     final updatedProductData = {
       'name': _nameController.text.trim(),
@@ -276,20 +276,20 @@ class _EditProductDialogState extends State<EditProductDialog> {
       'openedDate': _openedDate?.toIso8601String(),
     };
 
-    // Si no se subió imagen nueva, y quieres mantener la existente, NO envíes el campo imageUrl
-    // (el backend no lo modificará). Si quieres borrarla, tendrías que enviar explícitamente null.
-    // En este caso, como ya se actualizó la imagen vía upload, omitimos el campo.
-    // Si nunca tuvo imagen y no se subió, no pasa nada.
 
-    // 3️⃣ Actualizar el producto en el backend (solo campos de texto)
+
+
+
+
+
     final result = await _productService.updateProduct(
       widget.product.id!,
       updatedProductData,
     );
 
     if (result != null && mounted) {
-      // Si la imagen se subió, el producto devuelto por updateProduct puede no tener la URL nueva,
-      // por eso usamos el que ya teníamos de uploadProductImage o combinamos.
+
+
       final finalProduct = imageUploaded && _currentImageUrl != null
           ? result.copyWith(imageUrl: _currentImageUrl)
           : result;
@@ -329,15 +329,15 @@ class _EditProductDialogState extends State<EditProductDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🆕 Selector de imagen
+
                     _buildImageSelector(theme, subtleBorder),
                     const SizedBox(height: 20),
-                    
-                    // Selector de lista
+
+
                     _buildListSelector(theme, subtleBorder),
                     const SizedBox(height: 20),
-                    
-                    // Nombre
+
+
                     CustomTextField(
                       controller: _nameController,
                       label: AppLocalizations.of(context)!.productNameRequiredLabel,
@@ -345,8 +345,8 @@ class _EditProductDialogState extends State<EditProductDialog> {
                       hint: AppLocalizations.of(context)!.productNameHint,
                     ),
                     const SizedBox(height: 16),
-                    
-                    // Marca
+
+
                     CustomTextField(
                       controller: _brandController,
                       label: AppLocalizations.of(context)!.brand,
@@ -354,12 +354,12 @@ class _EditProductDialogState extends State<EditProductDialog> {
                       hint: AppLocalizations.of(context)!.brandHint,
                     ),
                     const SizedBox(height: 16),
-                    
-                    // Calificación
+
+
                     _buildRatingSection(subtleBorder),
                     const SizedBox(height: 16),
-                    
-                    // Fecha de caducidad
+
+
                     _buildDateSelector(
                       icon: Icons.warning_amber,
                       iconColor: Colors.orange,
@@ -377,8 +377,8 @@ class _EditProductDialogState extends State<EditProductDialog> {
                       onClear: () => setState(() => _expirationDate = null),
                     ),
                     const SizedBox(height: 16),
-                    
-                    // Duración después de abrir
+
+
                     CustomTextField(
                       controller: _periodAfterOpeningController,
                       label: AppLocalizations.of(context)!.periodAfterOpening,
@@ -386,12 +386,12 @@ class _EditProductDialogState extends State<EditProductDialog> {
                       hint: AppLocalizations.of(context)!.customPaoHint,
                     ),
                     const SizedBox(height: 16),
-                    
-                    // Categorías
+
+
                     _buildCategoriesSection(subtleBorder),
                     const SizedBox(height: 16),
-                    
-                    // Notas
+
+
                     CustomTextField(
                       controller: _notesController,
                       label: AppLocalizations.of(context)!.additionalNotes,
@@ -410,7 +410,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
     );
   }
 
-  // 🆕 Widget para selector de imagen
+
   Widget _buildImageSelector(ThemeData theme, Color borderColor) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -552,7 +552,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
     );
   }
 
-  // ... El resto de tus métodos existentes (_buildListSelector, _buildRatingSection, etc.) se mantienen igual ...
+
   Widget _buildListSelector(ThemeData theme, Color borderColor) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -829,7 +829,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
 
   Widget _buildActionButtons(Color borderColor) {
   final theme = Theme.of(context);
-  
+
   return Container(
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
@@ -837,7 +837,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
     ),
     child: Row(
       children: [
-        // Botón Cancelar con ElevatedButton
+
         Expanded(
           child: ElevatedButton(
             onPressed: () => Navigator.pop(context),
@@ -854,11 +854,11 @@ class _EditProductDialogState extends State<EditProductDialog> {
           ),
         ),
         const SizedBox(width: 16),
-        // Botón Guardar con ElevatedButton
+
         Expanded(
           child: ElevatedButton(
-            onPressed: _isUploadingImage 
-                ? null 
+            onPressed: _isUploadingImage
+                ? null
                 : () {
                     _saveProduct();
                   },

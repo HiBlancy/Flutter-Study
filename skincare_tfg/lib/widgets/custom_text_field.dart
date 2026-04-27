@@ -1,4 +1,4 @@
-// custom_text_field.dart
+
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -46,7 +46,7 @@ class _CustomTextFieldState extends State<CustomTextField>
   void initState() {
     super.initState();
     _internalFocusNode = widget.focusNode ?? FocusNode();
-    
+
     _borderAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -141,8 +141,8 @@ class _CustomTextFieldState extends State<CustomTextField>
             hintStyle: theme.textTheme.bodySmall?.copyWith(
               color: subtleColor.withValues(alpha: 0.4),
             ),
-            
-            // Prefix Icon
+
+
             prefixIcon: Padding(
               padding: const EdgeInsets.only(left: 16, right: 12),
               child: Icon(
@@ -154,8 +154,8 @@ class _CustomTextFieldState extends State<CustomTextField>
               ),
             ),
             prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-            
-            // Suffix Icon (Visibility Toggle)
+
+
             suffixIcon: widget.showVisibilityToggle
                 ? Padding(
                     padding: const EdgeInsets.only(right: 8),
@@ -174,8 +174,8 @@ class _CustomTextFieldState extends State<CustomTextField>
                     ),
                   )
                 : null,
-            
-            // Border
+
+
             contentPadding: const EdgeInsets.symmetric(
               vertical: 16,
               horizontal: 0,
@@ -210,22 +210,22 @@ class _CustomTextFieldState extends State<CustomTextField>
                 width: 2.5,
               ),
             ),
-            
-            // Error style
+
+
             errorStyle: theme.textTheme.bodySmall?.copyWith(
               color: errorColor,
               fontWeight: FontWeight.w500,
             ),
-            
-            // Background
+
+
             filled: true,
             fillColor: _internalFocusNode.hasFocus
                 ? (isDark
                     ? theme.colorScheme.primary.withValues(alpha: 0.08)
                     : theme.colorScheme.primary.withValues(alpha: 0.05))
                 : Colors.transparent,
-            
-            // Floated label
+
+
             floatingLabelBehavior: FloatingLabelBehavior.auto,
           ),
         );

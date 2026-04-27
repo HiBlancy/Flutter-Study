@@ -1,8 +1,7 @@
 class AppConstants {
   static const String appName = 'DueGlow';
   static const String version = '1.0.0';
-  
-  // Rutas
+
   static const String routeLogin = '/';
   static const String routeHome = '/home';
   static const String routeRegister = '/register';
@@ -15,8 +14,7 @@ class AppConstants {
   static const String routeEdit = '/edit';
   static const String routeMyProducts = '/my_products';
   static const String routeMyRoutines = '/routines';
-  
-  // SharedPreferences keys
+
   static const String prefUserEmail = 'user_email';
   static const String prefUserName = 'user_name';
   static const String prefUserId = 'user_id';

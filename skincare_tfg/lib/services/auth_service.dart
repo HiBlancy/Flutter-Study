@@ -12,7 +12,7 @@ class AuthService {
   Future<SharedPreferences> get _prefs async =>
       await SharedPreferences.getInstance();
 
-  // Guardar token y datos de usuario
+
   Future<void> saveSession(String token, Map<String, dynamic> userData) async {
     final prefs = await _prefs;
     await prefs.setString(_tokenKey, token);
@@ -32,51 +32,51 @@ class AuthService {
     );
   }
 
-  // Obtener token
+
   Future<String?> getToken() async {
     final prefs = await _prefs;
     return prefs.getString(_tokenKey);
   }
 
-  // Obtener nombre del usuario
+
   Future<String?> getUserName() async {
     final prefs = await _prefs;
     final name = prefs.getString(AppConstants.prefUserName);
     return name;
   }
 
-  // Obtener email del usuario
+
   Future<String?> getUserEmail() async {
     final prefs = await _prefs;
     final email = prefs.getString(AppConstants.prefUserEmail);
     return email;
   }
 
-  // Obtener ID del usuario
+
   Future<String?> getUserId() async {
     final prefs = await _prefs;
     return prefs.getString(AppConstants.prefUserId);
   }
 
-  // Obtener teléfono
+
   Future<String?> getUserPhone() async {
     final prefs = await _prefs;
     return prefs.getString(AppConstants.prefUserPhone);
   }
 
-  // Obtener fecha de nacimiento
+
   Future<String?> getUserBirthDate() async {
     final prefs = await _prefs;
     return prefs.getString(AppConstants.prefUserBD);
   }
 
-  // Obtener imagen de perfil
+
   Future<String?> getUserProfileImage() async {
     final prefs = await _prefs;
     return prefs.getString(AppConstants.prefUserProfileImage);
   }
 
-  // Verificar si está autenticado
+
   Future<bool> isLoggedIn() async {
     final prefs = await _prefs;
     final token = prefs.getString(_tokenKey);
@@ -85,7 +85,7 @@ class AuthService {
     return isLoggedIn;
   }
 
-  // Registrar usuario con JWT
+
   Future<Map<String, dynamic>?> register(
     String email,
     String password,
@@ -162,12 +162,13 @@ class AuthService {
     }
   }
 
-  // Obtener perfil del usuario autenticado
+
   Future<Map<String, dynamic>?> getProfile() async {
     final token = await getToken();
     if (token == null) return null;
 
     try {
+      // API call
       final response = await http.get(
         Uri.parse(ApiConfig.getProfileUrl()),
         headers: {
@@ -180,7 +181,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == true && data['data'] != null) {
-          // Actualizar los datos en SharedPreferences
+
           final userData = data['data'];
           await saveSession(token, userData);
           return userData;
@@ -193,7 +194,7 @@ class AuthService {
     }
   }
 
-  // Actualizar usuario (sin imagen)
+
   Future<Map<String, dynamic>?> updateUser({
     String? name,
     String? phone,
@@ -217,6 +218,7 @@ class AuthService {
       if (profileImage != null && profileImage.isNotEmpty)
         updateData['profileImage'] = profileImage;
 
+      // API call
       final response = await http.patch(
         url,
         headers: {
@@ -232,7 +234,7 @@ class AuthService {
           final updatedUser = data['data'];
           final prefs = await _prefs;
 
-          // Actualizar campos en SharedPreferences
+
           if (updatedUser['name'] != null) {
             await prefs.setString(
               AppConstants.prefUserName,
@@ -265,20 +267,20 @@ class AuthService {
     }
   }
 
-  // 🆕 SUBIR IMAGEN DE PERFIL (multipart/form-data)
+
   Future<Map<String, dynamic>?> uploadProfileImage(File imageFile) async {
   final token = await getToken();
   if (token == null) return null;
 
   try {
     final url = Uri.parse(ApiConfig.getUploadProfileImageUrl());
-    
-    // Leer los bytes del archivo
+
+
     final bytes = await imageFile.readAsBytes();
-    
-    // Determinar el MIME type real (puedes usar el package 'mime' o adivinarlo por extensión)
+
+
     String mimeType = _getMimeType(imageFile.path);
-    
+
     final request = http.MultipartRequest('PATCH', url)
       ..headers['Authorization'] = 'Bearer $token'
       ..files.add(
@@ -286,11 +288,12 @@ class AuthService {
           'profileImage',
           bytes,
           filename: 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg',
-          contentType: MediaType('image', 'jpeg'), // Forzamos JPEG
+          contentType: MediaType('image', 'jpeg'),
         ),
       );
 
     print('📤 Subiendo imagen de perfil (MIME: $mimeType)');
+    // API call
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
 
@@ -316,7 +319,7 @@ class AuthService {
   }
 }
 
-// Helper para obtener MIME type (puedes usar el paquete 'mime' o este simple)
+
 String _getMimeType(String path) {
   final ext = path.split('.').last.toLowerCase();
   switch (ext) {
@@ -333,6 +336,7 @@ String _getMimeType(String path) {
   if (token == null) return null;
 
   try {
+    // API call
     final response = await http.delete(
       Uri.parse(ApiConfig.getDeleteProfileImageUrl()),
       headers: {
@@ -345,18 +349,18 @@ String _getMimeType(String path) {
       final data = jsonDecode(response.body);
       if (data['status'] == true && data['data'] != null) {
         final updatedUser = data['data'];
-        
-        // Limpiar la URL de la imagen de los datos locales
+
+
         final prefs = await _prefs;
         await prefs.remove(AppConstants.prefUserProfileImage);
-        
+
         print('✅ Imagen de perfil eliminada correctamente');
         return updatedUser;
       }
     } else if (response.statusCode == 404) {
       print('⚠️ Endpoint para eliminar imagen no encontrado. Asegúrate de que el backend esté actualizado.');
     }
-    
+
     print('❌ Error al eliminar imagen: ${response.statusCode}');
     return null;
   } catch (e) {
@@ -365,7 +369,7 @@ String _getMimeType(String path) {
   }
 }
 
-  // Cerrar sesión
+
   Future<void> logout() async {
     final prefs = await _prefs;
     await prefs.remove(_tokenKey);
@@ -379,3 +383,5 @@ String _getMimeType(String path) {
     print('👋 Sesión cerrada');
   }
 }
+
+

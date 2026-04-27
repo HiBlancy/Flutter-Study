@@ -230,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildFormSection(ThemeData theme) => Column(
     children: [
-      // Campo de nombre
+
       CustomTextField(
         controller: _nameController,
         label: AppLocalizations.of(context)!.fullName,
@@ -244,7 +244,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       const SizedBox(height: 16),
 
-      // Campo de email
+
       CustomTextField(
         controller: _emailController,
         label: AppLocalizations.of(context)!.email,
@@ -261,7 +261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       const SizedBox(height: 16),
 
-      // Campo de contraseña
+
       CustomTextField(
         controller: _passwordController,
         label: AppLocalizations.of(context)!.password,
@@ -279,7 +279,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       const SizedBox(height: 16),
 
-      // Campo de confirmar contraseña
+
       CustomTextField(
         controller: _confirmPasswordController,
         label: AppLocalizations.of(context)!.confirmPassword,
@@ -383,7 +383,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
    Widget _buildSocialLogins(ThemeData theme) {
     return Column(
       children: [
-        // Divisor con texto "O"
+
         Row(
           children: [
             Expanded(
@@ -409,25 +409,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Botones de Google y Apple
+
         Row(
           children: [
-            // Botón Google
+
             Expanded(
               child: _socialButton(
-                icon: Icons.g_mobiledata, // O puedes usar un FontAwesome/Asset
+                icon: Icons.g_mobiledata,
                 label: 'Google',
-                onPressed: () {}, // No funcional por ahora
+                onPressed: () {},
                 theme: theme,
               ),
             ),
             const SizedBox(width: 16),
-            // Botón Apple
+
             Expanded(
               child: _socialButton(
                 icon: Icons.apple,
                 label: 'Apple',
-                onPressed: () {}, // No funcional por ahoras
+                onPressed: () {},
                 theme: theme,
               ),
             ),

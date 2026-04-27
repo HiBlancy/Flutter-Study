@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Text( 
+                                Text(
                                   l10n.skinGlowTagline,
                                   style: theme.textTheme.displayLarge?.copyWith(
                                     fontWeight: FontWeight.w500,
@@ -234,15 +234,15 @@ class _HomeScreenState extends State<HomeScreen> {
         _buildEmptyCard(theme, l10n, isDark)
       else
         SizedBox(
-          height: 260, // Altura fija para el scroll horizontal (ajústala según el tamaño de tus tarjetas)
+          height: 260,
           child: ListView.builder(
-            scrollDirection: Axis.horizontal, // Scroll horizontal
+            scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 24),
             itemCount: displayProducts.length,
             itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.only(right: 12), // Espacio entre tarjetas
+              padding: const EdgeInsets.only(right: 12),
               child: SizedBox(
-                width: 160, // Ancho fijo para cada tarjeta
+                width: 160,
                 child: _buildExpiringProductCardVertical(
                   displayProducts[index],
                   isDark,
@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-      const SizedBox(height: 24), // Espacio extra al final
+      const SizedBox(height: 24),
     ],
   );
 }
@@ -323,11 +323,11 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0), // Reducido padding
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                height: 100, // Ajusta este valor para controlar la altura de la imagen
+                height: 100,
                 width: double.infinity,
                 color: isDark
                     ? theme.colorScheme.surfaceContainerHigh
@@ -349,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10), // Padding reducido
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -462,3 +462,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

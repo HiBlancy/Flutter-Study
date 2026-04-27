@@ -50,18 +50,18 @@ class _ScanScreenState extends State<ScanScreen> {
         _cameraController.start();
       });
     } else {
-      // Usamos el contexto del diálogo para obtener el tema de forma segura tras el await
+
       final shouldCreate = await showDialog<bool>(
         context: context,
         builder: (dialogContext) {
           final theme = Theme.of(dialogContext);
-          
+
           return AlertDialog(
             backgroundColor: theme.colorScheme.surface,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
-              side: theme.brightness == Brightness.dark 
+              side: theme.brightness == Brightness.dark
                   ? BorderSide(color: theme.colorScheme.onSurface.withValues(alpha: 0.1))
                   : BorderSide.none,
             ),
@@ -76,7 +76,7 @@ class _ScanScreenState extends State<ScanScreen> {
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
                 child: Text(
-                  AppLocalizations.of(context)!.cancel, 
+                  AppLocalizations.of(context)!.cancel,
                   style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6))
                 ),
               ),
@@ -196,7 +196,7 @@ class _Corner extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLeft = alignment == Alignment.topLeft || alignment == Alignment.bottomLeft;
     final isTop = alignment == Alignment.topLeft || alignment == Alignment.topRight;
-    
+
     final brandColor = Theme.of(context).colorScheme.primary;
 
     return Align(

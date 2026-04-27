@@ -1,4 +1,4 @@
-// lib/screens/add_routine_screen.dart
+
 import 'package:flutter/material.dart';
 import '../models/routine_model.dart';
 import '../services/routine_service.dart';
@@ -131,7 +131,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
             children: [
               const SizedBox(height: 8),
 
-              // Nombre
+
               CustomTextField(
                 controller: _nameController,
                 label: AppLocalizations.of(context)!.routineNameRequiredLabel,
@@ -141,7 +141,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Tipo: Mañana / Noche
+
               _buildSectionLabel(theme, Icons.schedule_outlined, AppLocalizations.of(context)!.routineType),
               const SizedBox(height: 10),
               Row(
@@ -169,7 +169,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Días de la semana
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -275,7 +275,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
 
               const SizedBox(height: 36),
 
-              // Botón guardar
+
               CustomButton(
                 text: AppLocalizations.of(context)!.createRoutine,
                 onPressed: _save,

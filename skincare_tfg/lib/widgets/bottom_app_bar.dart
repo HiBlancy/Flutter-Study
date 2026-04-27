@@ -51,8 +51,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    
-    // Generamos los colores dinámicos basados en la opacidad del texto principal
+
+
     final unselectedColor = theme.colorScheme.onSurface.withValues(alpha: 0.5);
     final borderColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
@@ -88,7 +88,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     return Scaffold(
       body: body,
-      // Envolvemos el BottomNavigationBar en un Container para añadir el borde sutil
+
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(
@@ -99,11 +99,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
           currentIndex: _currentIndex,
           onTap: _onTap,
           type: BottomNavigationBarType.fixed,
-          // Ya usa tu color magenta/ciruela automáticamente según el tema
-          selectedItemColor: theme.colorScheme.primary, 
+
+          selectedItemColor: theme.colorScheme.primary,
           unselectedItemColor: unselectedColor,
           backgroundColor: theme.colorScheme.surface,
-          elevation: 0, // Quitamos la sombra gruesa a favor del borde superior
+          elevation: 0,
           showSelectedLabels: widget.showLabels,
           showUnselectedLabels: widget.showLabels,
           items: widget.items ?? defaultItems,

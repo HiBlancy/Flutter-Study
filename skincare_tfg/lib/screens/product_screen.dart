@@ -127,7 +127,7 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
-  // --- CAMBIAR DE LISTA ---
+
 
   Future<void> _changeProductList() async {
     final theme = Theme.of(context);
@@ -230,7 +230,7 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
-  // --- ACCIONES PRINCIPALES (simplificadas) ---
+
 
   Future<void> _addToMyProducts() async {
     if (!await _confirmAction(
@@ -254,9 +254,9 @@ class _ProductScreenState extends State<ProductScreen> {
     final editedProduct = await showDialog<BeautyProduct>(
       context: context,
       builder: (context) => EditProductDialog(
-        product: _currentProduct, // ✅ Usa _currentProduct, no product
+        product: _currentProduct,
         onProductUpdated: (updatedProduct) {
-          // Actualizar directamente el producto actual
+
           setState(() {
             _currentProduct = updatedProduct;
           });
@@ -318,7 +318,7 @@ class _ProductScreenState extends State<ProductScreen> {
   await _executeAction(
     action: () => _productService.updateProduct(_currentProduct.id!, {
       'listType': 'used',
-      'finishedDate': DateTime.now().toIso8601String(), // Guardar fecha
+      'finishedDate': DateTime.now().toIso8601String(),
     }),
     successMessage: AppLocalizations.of(context)!.productMarkedFinished(_currentProduct.name),
     loadingKey: 'finishing',
@@ -450,11 +450,11 @@ class _ProductScreenState extends State<ProductScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: isDark
-            ? const Color(0xff3a1a2f) // Mismo color oscuro
-            : theme.colorScheme.surface, // Mismo color claro
+            ? const Color(0xff3a1a2f)
+            : theme.colorScheme.surface,
         foregroundColor: isDark
-            ? const Color(0xfff4add8) // Mismo rosa
-            : theme.colorScheme.primary, // Mismo color primario
+            ? const Color(0xfff4add8)
+            : theme.colorScheme.primary,
         title: Text(
           'DueGlow',
           maxLines: 1,
@@ -875,7 +875,7 @@ class _ProductScreenState extends State<ProductScreen> {
   String _formatDate(DateTime date) => '${date.day}/${date.month}/${date.year}';
 }
 
-// --- COMPONENTES REUTILIZABLES ---
+
 
 class _InfoRow extends StatelessWidget {
   final IconData icon;
@@ -953,3 +953,4 @@ class _DialogListTile extends StatelessWidget {
     );
   }
 }
+

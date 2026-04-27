@@ -18,7 +18,7 @@ class ProductService {
       final token = await _authService.getToken();
       if (token == null) return null;
 
-      // Construir la URL con Query Parameters
+
       final queryParams = {
         'page': page.toString(),
         'limit': limit.toString(),
@@ -29,6 +29,7 @@ class ProductService {
         ApiConfig.getProductsUrl(),
       ).replace(queryParameters: queryParams);
 
+      // API call
       final response = await http.get(
         uri,
         headers: {
@@ -55,6 +56,7 @@ class ProductService {
       final token = await _authService.getToken();
       if (token == null) return null;
 
+      // API call
       final response = await http.post(
         Uri.parse(ApiConfig.getProductsUrl()),
         headers: {
@@ -91,6 +93,7 @@ class ProductService {
         print('📦 Campo $key: ${value ?? 'null'}');
       });
 
+      // API call
       final response = await http.patch(
         Uri.parse('${ApiConfig.getProductsUrl()}/$id'),
         headers: {
@@ -118,6 +121,7 @@ class ProductService {
       final token = await _authService.getToken();
       if (token == null) return false;
 
+      // API call
       final response = await http.delete(
         Uri.parse('${ApiConfig.getProductsUrl()}/$id'),
         headers: {
@@ -133,12 +137,13 @@ class ProductService {
     }
   }
 
- // Obtener productos próximos a caducar
+
 Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
   try {
     final token = await _authService.getToken();
     if (token == null) return [];
 
+    // API call
     final response = await http.get(
       Uri.parse(ApiConfig.getExpiringSoonUrl(days: days)),
       headers: {
@@ -149,8 +154,8 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      
-      // ✅ Ahora accedemos a data['data']['products']
+
+
       if (data['status'] == true && data['data'] != null) {
         final productsList = data['data']['products'] as List?;
         if (productsList != null) {
@@ -172,6 +177,7 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
       final token = await _authService.getToken();
       if (token == null) return null;
 
+      // API call
       final response = await http.patch(
         Uri.parse('${ApiConfig.getProductsUrl()}/$id/move'),
         headers: {
@@ -199,16 +205,17 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
       final token = await _authService.getToken();
       if (token == null) return null;
 
-      // Preparar los datos para el backend
+
       final productData = {
         'name': product.name,
         'brand': product.brand,
         'barcode': product.barcode,
         'imageUrl': product.imageUrl,
         'categories': product.categories,
-        'listType': 'have', // Forzamos a "have"
+        'listType': 'have',
       };
 
+      // API call
       final response = await http.post(
         Uri.parse(ApiConfig.getProductsUrl()),
         headers: {
@@ -239,9 +246,10 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
       final token = await _authService.getToken();
       if (token == null) return null;
 
-      // Si no se proporciona fecha, usar la fecha actual
+
       final dateToSend = openedDate ?? DateTime.now();
 
+      // API call
       final response = await http.patch(
         Uri.parse('${ApiConfig.getProductsUrl()}/$id/open'),
         headers: {
@@ -269,6 +277,7 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
       final token = await _authService.getToken();
       if (token == null) return null;
 
+      // API call
       final response = await http.patch(
         Uri.parse('${ApiConfig.getProductsUrl()}/$id/close'),
         headers: {
@@ -277,9 +286,9 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
         },
         body: jsonEncode({
           'isOpened': false,
-          'openedDate': null, // Limpiar fecha de apertura
-          'expirationDate': null, // Limpiar fecha de caducidad calculada
-          // NOTA: NO tocamos periodAfterOpening, se conserva
+          'openedDate': null,
+          'expirationDate': null,
+
         }),
       );
 
@@ -301,6 +310,7 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
       final token = await _authService.getToken();
       if (token == null) return null;
 
+      // API call
       final response = await http.post(
         Uri.parse('${ApiConfig.getProductsUrl()}/$id/calculate-expiration'),
         headers: {
@@ -322,14 +332,14 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
     }
   }
 
-  // 🆕 Subir imagen de producto
+
   Future<BeautyProduct?> uploadProductImage(String productId, File imageFile) async {
   try {
     final token = await _authService.getToken();
     if (token == null) return null;
 
     final bytes = await imageFile.readAsBytes();
-    
+
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('${ApiConfig.getProductsUrl()}/$productId/upload-image'),
@@ -344,6 +354,7 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
       ),
     );
 
+    // API call
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
 
@@ -361,12 +372,13 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
   }
 }
 
-  // 🆕 Eliminar imagen de producto
+
   Future<BeautyProduct?> deleteProductImage(String productId) async {
     try {
       final token = await _authService.getToken();
       if (token == null) return null;
 
+      // API call
       final response = await http.delete(
         Uri.parse('${ApiConfig.getProductsUrl()}/$productId/image'),
         headers: {
@@ -388,3 +400,5 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
     }
   }
 }
+
+

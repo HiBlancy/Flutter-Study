@@ -1,4 +1,4 @@
-// lib/screens/routine_detail_screen.dart
+
 import 'package:flutter/material.dart';
 import '../models/routine_model.dart';
 import '../models/beauty_product.dart';
@@ -48,7 +48,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
     _nameController = TextEditingController(text: _routine.name);
     _editingType = _routine.type;
     _editingDays = _routine.days.toSet();
-    _loadFreshRoutine(); // Cargar datos frescos
+    _loadFreshRoutine();
   }
 
   Future<void> _loadFreshRoutine() async {
@@ -79,7 +79,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
     setState(() => _isLoading = true);
     try {
       final sortedDays = _editingDays.toList()..sort();
-      // Optimistic UI update so changes are visible immediately.
+
       setState(() {
         _routine = _routine.copyWith(type: _editingType, days: sortedDays);
       });
@@ -129,12 +129,12 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
     final item = products.removeAt(oldIndex);
     products.insert(newIndex, item);
 
-    // Optimistic update
+
     setState(() {
       _routine = _routine.copyWith(products: products);
     });
 
-    // Build reorder payload
+
     final reorderPayload = products
         .asMap()
         .entries
@@ -151,7 +151,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         _hasChanges = true;
       });
     } catch (e) {
-      // Revert on error
+
       setState(() => _routine = widget.routine);
       _showSnackBar(AppLocalizations.of(context)!.reorderProductsError, isError: true);
     }
@@ -170,7 +170,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
       builder: (sheetCtx) {
         return StatefulBuilder(
           builder: (ctx, setModalState) {
-            // Carga productos del usuario al abrir el sheet
+
             if (loadingProducts) {
               _productService
                   .getProducts(listType: 'have', limit: 100)
@@ -190,7 +190,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
 
             final theme = Theme.of(ctx);
             final isDark = theme.brightness == Brightness.dark;
-            // Filter out already added products
+
             final addedIds = _routine.products.map((p) => p.productId).toSet();
             final available = userProducts
                 .where((p) => !addedIds.contains(p.id))
@@ -206,7 +206,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
               ),
               child: Column(
                 children: [
-                  // Handle
+
                   Container(
                     margin: const EdgeInsets.only(top: 12),
                     width: 40,
@@ -394,15 +394,15 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
             ? const Center(child: CircularProgressIndicator())
             : CustomScrollView(
                 slivers: [
-                  // Info header
-                  // Info header (reemplaza el SliverToBoxAdapter actual)
+
+
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header con nombre y botón editar
+
                           Row(
                             children: [
                               Expanded(
@@ -411,7 +411,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                         controller: _nameController,
                                         label: AppLocalizations.of(context)!.routineNameLabel,
                                         prefixIcon: Icons
-                                            .edit_outlined, // ← Añadir este parámetro requerido
+                                            .edit_outlined,
                                         validator: (v) => v?.isEmpty == true
                                             ? AppLocalizations.of(context)!.requiredField
                                             : null,
@@ -432,7 +432,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                                 ),
                                 onPressed: () {
                                   if (_isEditing) {
-                                    // Cancelar edición
+
                                     setState(() {
                                       _isEditing = false;
                                       _nameController.text = _routine.name;
@@ -456,9 +456,9 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                           ),
                           const SizedBox(height: 16),
 
-                          // Type badge + days (editables cuando _isEditing es true)
+
                           if (!_isEditing) ...[
-                            // Modo visualización normal
+
                             Row(
                               children: [
                                 Container(
@@ -499,7 +499,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                               ],
                             ),
                             const SizedBox(height: 14),
-                            // Days row (solo visualización)
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: _allDays.map((day) {
@@ -539,7 +539,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                               }).toList(),
                             ),
                           ] else ...[
-                            // Modo edición - Tipo
+
                             _buildSectionLabel(
                               theme,
                               Icons.schedule_outlined,
@@ -577,7 +577,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                             ),
                             const SizedBox(height: 24),
 
-                            // Días editables
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -705,7 +705,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
 
                           const SizedBox(height: 24),
 
-                          // Products header (mantener igual)
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -743,7 +743,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                     ),
                   ),
 
-                  // Products list (reorderable)
+
                   _routine.products.isEmpty
                       ? SliverToBoxAdapter(
                           child: _buildEmptyProducts(theme, isDark),
@@ -850,7 +850,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         leading: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Order number
+
             Container(
               width: 24,
               height: 24,
@@ -869,7 +869,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            // Product image
+
             Container(
               width: 44,
               height: 44,
@@ -912,7 +912,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Delete button
+
             IconButton(
               icon: Icon(
                 Icons.remove_circle_outline,
@@ -926,7 +926,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
             ),
-            // Drag handle
+
             Icon(
               Icons.drag_handle_rounded,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
@@ -1022,3 +1022,4 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
     );
   }
 }
+

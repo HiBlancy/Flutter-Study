@@ -1,10 +1,10 @@
-// lib/services/routine_service.dart
+
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/routine_model.dart';
 import 'auth_service.dart';
-import 'api_config.dart'; // ← igual que product_service.dart
+import 'api_config.dart';
 
 class RoutineService {
   final AuthService _authService = AuthService();
@@ -18,7 +18,7 @@ class RoutineService {
   Map<String, dynamic>? _extractDataObject(Map<String, dynamic> json) {
     final data = json['data'];
     if (data is Map<String, dynamic>) {
-      // Some controllers wrap again as { data: {...}, total, ... }
+
       final inner = data['data'];
       if (inner is Map<String, dynamic>) return inner;
       return data;
@@ -34,9 +34,10 @@ class RoutineService {
     };
   }
 
-  // GET /routines
+
   Future<List<Routine>> getRoutines() async {
     final headers = await _getHeaders();
+    // API call
     final response = await http.get(
       Uri.parse(ApiConfig.getRoutinesUrl()),
       headers: headers,
@@ -47,7 +48,7 @@ class RoutineService {
     }
 
     final json = _decodeJson(response);
-    // Typical: { status, data: { data: [...], total } } OR { status, data: [...] }
+
     final dynamic maybeData = json['data'];
     final List<dynamic> data = maybeData is Map<String, dynamic>
         ? (maybeData['data'] as List<dynamic>? ?? [])
@@ -71,21 +72,22 @@ class RoutineService {
     return routines;
   }
 
-  // POST /routines
+
   Future<Routine> createRoutine(Routine routine) async {
     final headers = await _getHeaders();
     final bodyMap = routine.toJson();
-    // Backend compatibility: accept alternative field names too.
+
     bodyMap['routineType'] = bodyMap['type'];
     bodyMap['moment'] = bodyMap['type'];
     bodyMap['timeOfDay'] = bodyMap['type'];
-    bodyMap['time'] = bodyMap['type']; // backend expects `time`
+    bodyMap['time'] = bodyMap['type'];
     bodyMap['daysOfWeek'] = bodyMap['days'];
     bodyMap['weekDays'] = bodyMap['days'];
     bodyMap['isNight'] = bodyMap['type'] == 'night';
     bodyMap['isMorning'] = bodyMap['type'] == 'morning';
-    bodyMap['message'] = bodyMap['name']; // backend expects `message`
+    bodyMap['message'] = bodyMap['name'];
 
+    // API call
     final response = await http.post(
       Uri.parse(ApiConfig.getRoutinesUrl()),
       headers: headers,
@@ -104,11 +106,11 @@ class RoutineService {
     return Routine.fromJson(dataObj);
   }
 
-  // PATCH /routines/:id
+
   Future<Routine> updateRoutine(String id, Map<String, dynamic> data) async {
     final headers = await _getHeaders();
     final payload = Map<String, dynamic>.from(data);
-    // Backend compatibility: accept alternative field names too.
+
     if (payload.containsKey('type')) {
       payload['routineType'] = payload['type'];
       payload['moment'] = payload['type'];
@@ -125,6 +127,7 @@ class RoutineService {
       payload['message'] = payload['name'];
     }
 
+    // API call
     final response = await http.patch(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
       headers: headers,
@@ -143,9 +146,10 @@ class RoutineService {
     return Routine.fromJson(dataObj);
   }
 
-  // DELETE /routines/:id
+
   Future<void> deleteRoutine(String id) async {
     final headers = await _getHeaders();
+    // API call
     final response = await http.delete(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
       headers: headers,
@@ -156,9 +160,10 @@ class RoutineService {
     }
   }
 
-  // POST /routines/:id/products
+
   Future<Routine> addProduct(String routineId, String productId) async {
     final headers = await _getHeaders();
+    // API call
     final response = await http.post(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$routineId/products'),
       headers: headers,
@@ -177,9 +182,10 @@ class RoutineService {
     return Routine.fromJson(dataObj);
   }
 
-  // DELETE /routines/:id/products/:productId
+
   Future<Routine> removeProduct(String routineId, String productId) async {
     final headers = await _getHeaders();
+    // API call
     final response = await http.delete(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$routineId/products/$productId'),
       headers: headers,
@@ -197,12 +203,13 @@ class RoutineService {
     return Routine.fromJson(dataObj);
   }
 
-  // PATCH /routines/:id/reorder
+
   Future<Routine> reorderProducts(
     String routineId,
     List<Map<String, dynamic>> products,
   ) async {
     final headers = await _getHeaders();
+    // API call
     final response = await http.patch(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$routineId/reorder'),
       headers: headers,
@@ -221,9 +228,10 @@ class RoutineService {
     return Routine.fromJson(dataObj);
   }
 
-  // GET /routines/:id
+
 Future<Routine?> getRoutineById(String id) async {
   final headers = await _getHeaders();
+  // API call
   final response = await http.get(
     Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
     headers: headers,

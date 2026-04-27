@@ -1,6 +1,6 @@
-// lib/services/image_service.dart (versión ultra simple)
+
 import 'dart:io';
-//import 'dart:typed_data';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -11,9 +11,9 @@ class ImageService {
     try {
       final XFile? pickedFile = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 85, // Compresión nativa de image_picker
+        imageQuality: 85,
       );
-      
+
       if (pickedFile != null) {
         if (kIsWeb) {
           final bytes = await pickedFile.readAsBytes();
@@ -38,7 +38,7 @@ class ImageService {
         source: ImageSource.camera,
         imageQuality: 85,
       );
-      
+
       if (pickedFile != null) {
         if (kIsWeb) {
           final bytes = await pickedFile.readAsBytes();

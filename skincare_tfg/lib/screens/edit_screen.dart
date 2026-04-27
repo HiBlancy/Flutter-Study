@@ -1,4 +1,4 @@
-// lib/screens/edit_screen.dart
+
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../widgets/custom_text_field.dart';
@@ -18,14 +18,14 @@ class _EditScreenState extends State<EditScreen> {
   final _imageService = ImageService();
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
+
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _birthDateController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
 
-  // Estado
+
   bool _isLoading = true;
   bool _isSaving = false;
   bool _isUploadingImage = false;
@@ -96,7 +96,7 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
-  // 🆕 Mostrar opciones de selección de imagen
+
   void _showImagePickerOptions() {
     showModalBottomSheet(
       context: context,
@@ -167,7 +167,7 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
-  // 🆕 Seleccionar imagen desde cámara
+
   Future<void> _pickImageFromCamera() async {
     setState(() => _isUploadingImage = true);
 
@@ -177,7 +177,7 @@ class _EditScreenState extends State<EditScreen> {
       setState(() => _selectedImage = imageFile);
       _showCustomSnackBar('Foto capturada correctamente');
 
-      // Mostrar info de la imagen
+
       final info = await _imageService.getImageInfo(imageFile);
       print('📸 Info de imagen: $info');
     } else {
@@ -187,7 +187,7 @@ class _EditScreenState extends State<EditScreen> {
     setState(() => _isUploadingImage = false);
   }
 
-  // 🆕 Seleccionar imagen desde galería
+
   Future<void> _pickImageFromGallery() async {
     setState(() => _isUploadingImage = true);
 
@@ -197,7 +197,7 @@ class _EditScreenState extends State<EditScreen> {
       setState(() => _selectedImage = imageFile);
       _showCustomSnackBar('Imagen seleccionada correctamente');
 
-      // Mostrar info de la imagen
+
       final info = await _imageService.getImageInfo(imageFile);
       print('🖼️ Info de imagen: $info');
     } else {
@@ -221,7 +221,7 @@ class _EditScreenState extends State<EditScreen> {
   String? finalProfileImageUrl = _currentProfileImageUrl;
 
   try {
-    // 1️⃣ Eliminar imagen si está marcado
+
     if (_shouldDeleteImage) {
       final deleted = await _authService.deleteProfileImage();
       if (deleted != null) {
@@ -234,7 +234,7 @@ class _EditScreenState extends State<EditScreen> {
       }
     }
 
-    // 2️⃣ Subir nueva imagen si se seleccionó
+
     if (_selectedImage != null) {
       final uploaded = await _authService.uploadProfileImage(_selectedImage!);
       if (uploaded != null && uploaded['profileImage'] != null) {
@@ -246,7 +246,7 @@ class _EditScreenState extends State<EditScreen> {
       }
     }
 
-    // 3️⃣ Preparar datos de actualización
+
     String? formattedBirthDate;
     if (_birthDateController.text.isNotEmpty) {
       formattedBirthDate = _convertToISODate(_birthDateController.text);
@@ -257,7 +257,7 @@ class _EditScreenState extends State<EditScreen> {
       phone: _phoneController.text.isNotEmpty ? _phoneController.text : null,
       birthDate: formattedBirthDate,
       password: _passwordController.text.isNotEmpty ? _passwordController.text : null,
-      profileImage: finalProfileImageUrl, // null si se eliminó, o la nueva URL
+      profileImage: finalProfileImageUrl,
     );
 
     if (updateResult != null && mounted) {
@@ -464,7 +464,7 @@ class _EditScreenState extends State<EditScreen> {
           CircleAvatar(
             radius: 60,
             backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-            // 🆕 Mostrar imagen seleccionada o descargada
+
             backgroundImage: _selectedImage != null
                 ? FileImage(_selectedImage!)
                 : _currentProfileImageUrl != null
@@ -495,7 +495,7 @@ class _EditScreenState extends State<EditScreen> {
                         ? null
                         : _showImagePickerOptions,
                   ),
-                  // Mostrar indicador de carga si se está subiendo
+
                   if (_isUploadingImage)
                     Positioned.fill(
                       child: Center(
@@ -523,7 +523,7 @@ class _EditScreenState extends State<EditScreen> {
   Widget _buildSaveButton() {
     return Column(
       children: [
-        // Botón guardar cambios (único)
+
         ElevatedButton(
           onPressed: _isSaving ? null : _saveChanges,
           style: ElevatedButton.styleFrom(
@@ -560,3 +560,4 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 }
+

@@ -1,12 +1,12 @@
 class BeautyProduct {
-  // Campos básicos (para búsqueda externa)
+
   final String barcode;
   final String name;
-  final String? brand;  // ✅ Cambiado a nullable
+  final String? brand;
   final String? imageUrl;
-  final List<String>? categories;  // ✅ Cambiado a nullable
-  
-  // Campos adicionales (para productos guardados en tu backend)
+  final List<String>? categories;
+
+
   final String? id;
   final String? notes;
   final int? rating;
@@ -36,23 +36,23 @@ class BeautyProduct {
     this.isOpened,
   });
 
-  // Factory para productos desde Open Beauty Facts (API externa)
+
   factory BeautyProduct.fromOpenBeautyFacts(Map<String, dynamic> json) {
     return BeautyProduct(
       barcode: json['code']?.toString() ?? '',
       name: json['product_name']?.toString().trim() ?? '',
       brand: json['brands']?.toString().trim(),
-      imageUrl: json['image_front_small_url']?.toString() ?? 
-                json['image_front_url']?.toString() ?? 
+      imageUrl: json['image_front_small_url']?.toString() ??
+                json['image_front_url']?.toString() ??
                 json['image_url']?.toString(),
       isOpened: false,
     );
   }
 
-  // Factory para productos desde tu backend
+
   factory BeautyProduct.fromBackend(Map<String, dynamic> json) {
     final rawCategories = json['categories'] as List<dynamic>?;
-    
+
     return BeautyProduct(
       id: json['_id']?.toString(),
       barcode: json['barcode']?.toString() ?? '',
@@ -63,28 +63,28 @@ class BeautyProduct {
       notes: json['notes']?.toString(),
       rating: json['rating'] as int?,
       listType: json['listType']?.toString(),
-      expirationDate: json['expirationDate'] != null 
-          ? DateTime.parse(json['expirationDate']) 
+      expirationDate: json['expirationDate'] != null
+          ? DateTime.parse(json['expirationDate'])
           : null,
       periodAfterOpening: json['periodAfterOpening']?.toString(),
-      openedDate: json['openedDate'] != null 
-          ? DateTime.parse(json['openedDate']) 
+      openedDate: json['openedDate'] != null
+          ? DateTime.parse(json['openedDate'])
           : null,
-      addedAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      addedAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : null,
       isOpened: json['isOpened'] as bool?,
     );
   }
 
-  // Convertir a formato para enviar a tu backend
+
   Map<String, dynamic> toBackendJson() {
     return {
       'name': name,
-      'brand': brand,  // ✅ Puede ser null
+      'brand': brand,
       'barcode': barcode,
       'imageUrl': imageUrl,
-      'categories': categories,  // ✅ Puede ser null
+      'categories': categories,
       'notes': notes,
       'rating': rating,
       'listType': listType ?? 'have',
@@ -95,7 +95,7 @@ class BeautyProduct {
     };
   }
 
-  // Crear una copia con campos actualizados
+
   BeautyProduct copyWith({
     String? barcode,
     String? name,
@@ -147,7 +147,7 @@ class PaginatedProducts {
   });
 
   factory PaginatedProducts.fromJson(Map<String, dynamic> json) {
-    final data = json['data']; // El objeto que contiene {data, info}
+    final data = json['data'];
     final List<dynamic> productsList = data['data'];
     final info = data['info'];
 

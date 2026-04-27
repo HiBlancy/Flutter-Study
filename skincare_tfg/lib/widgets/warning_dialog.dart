@@ -1,4 +1,4 @@
-// warning_dialog.dart
+
 import 'package:flutter/material.dart';
 
 class WarningDialog {
@@ -12,16 +12,16 @@ class WarningDialog {
   }) async {
     final theme = Theme.of(context);
     final subtleText = theme.colorScheme.onSurface.withOpacity(0.7);
-    
+
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface,
-        elevation: 0, // En modo oscuro los bordes redondeados lucen mejor sin sombra extra
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          // Pequeño borde para diferenciarlo del fondo si se usa en modo oscuro
-          side: theme.brightness == Brightness.dark 
+
+          side: theme.brightness == Brightness.dark
               ? BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.1))
               : BorderSide.none,
         ),
@@ -32,7 +32,7 @@ class WarningDialog {
               color: isDanger ? theme.colorScheme.error : theme.colorScheme.primary,
             ),
             const SizedBox(width: 8),
-            // Expanded evita el desbordamiento si el título es muy largo
+
             Expanded(
               child: Text(
                 title,
@@ -50,14 +50,14 @@ class WarningDialog {
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               cancelText,
-              // Botón cancelar más discreto
+
               style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDanger 
+              backgroundColor: isDanger
                   ? theme.colorScheme.error
                   : theme.colorScheme.primary,
               foregroundColor: isDanger
@@ -83,7 +83,7 @@ class WarningDialog {
   }) async {
     final theme = Theme.of(context);
     final subtleText = theme.colorScheme.onSurface.withOpacity(0.7);
-    
+
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -91,7 +91,7 @@ class WarningDialog {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: theme.brightness == Brightness.dark 
+          side: theme.brightness == Brightness.dark
               ? BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.1))
               : BorderSide.none,
         ),

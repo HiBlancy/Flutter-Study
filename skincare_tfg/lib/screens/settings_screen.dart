@@ -19,36 +19,36 @@ class SettingsScreen extends StatelessWidget {
       showBackButton: true,
       child: ListView(
         children: [
-          // ===== NOTIFICACIONES =====
+
           _SettingsSection(
-            title: AppLocalizations.of(context)!.general, 
+            title: AppLocalizations.of(context)!.general,
             children: [
             _NotificationTile(),
           ]),
-          
+
           Divider(color: dividerColor, height: 1),
-          
-          // ===== TEMAS =====
+
+
           _SettingsSection(
             title: AppLocalizations.of(context)!.appearance,
             children: [
             _ThemeTile(),
           ]),
-          
+
           Divider(color: dividerColor, height: 1),
-          
-          // ===== IDIOMAS =====
+
+
           _SettingsSection(
-            title: AppLocalizations.of(context)!.language, 
+            title: AppLocalizations.of(context)!.language,
             children: [
             _LanguageTile(),
           ]),
-          
+
           Divider(color: dividerColor, height: 1),
-          
-          // ===== ACERCA DE =====
+
+
           _SettingsSection(
-            title: AppLocalizations.of(context)!.information, 
+            title: AppLocalizations.of(context)!.information,
             children: [
             _AboutTile(),
           ]),
@@ -58,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-// Widget para notificaciones
+
 class _NotificationTile extends StatefulWidget {
   const _NotificationTile();
 
@@ -77,28 +77,28 @@ class _NotificationTileState extends State<_NotificationTile> {
 
     return ListTile(
       leading: Icon(Icons.notifications, color: theme.colorScheme.primary),
-      title: Text(l10n.notifications), 
+      title: Text(l10n.notifications),
       subtitle: Text(l10n.notifText, style: TextStyle(color: subtleText)),
       trailing: Switch(
         value: _notificationsEnabled,
         thumbColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
           if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.primary; // Color de tu marca cuando está activo
+            return theme.colorScheme.primary;
           }
-          return null; // Devuelve null para usar el color por defecto cuando está inactivo
+          return null;
         }),
         trackColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
           if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.primary.withValues(alpha: 0.5); 
+            return theme.colorScheme.primary.withValues(alpha: 0.5);
           }
-          return null; 
+          return null;
         }),
         onChanged: (bool value) {
           setState(() {
             _notificationsEnabled = value;
           });
-          
-          // Snackbar unificado con tu marca
+
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -117,7 +117,7 @@ class _NotificationTileState extends State<_NotificationTile> {
   }
 }
 
-// Widget para cambiar el tema
+
 class _ThemeTile extends StatelessWidget {
   const _ThemeTile();
 
@@ -127,25 +127,25 @@ class _ThemeTile extends StatelessWidget {
     final theme = Theme.of(context);
 
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Column(
       children: [
-        // Opción Claro
+
         ListTile(
           leading: Icon(Icons.light_mode, color: theme.colorScheme.primary),
           title: Text(l10n.lightMode),
           trailing: themeProvider.themeMode == ThemeMode.light
-              ? Icon(Icons.check_circle, color: theme.colorScheme.primary) // Adiós Colors.green
+              ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
               : null,
           onTap: () => themeProvider.setLightMode(),
         ),
-        
-        // Opción Oscuro
+
+
         ListTile(
           leading: Icon(Icons.dark_mode, color: theme.colorScheme.primary),
           title: Text(l10n.darkMode),
           trailing: themeProvider.themeMode == ThemeMode.dark
-              ? Icon(Icons.check_circle, color: theme.colorScheme.primary) // Adiós Colors.green
+              ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
               : null,
           onTap: () => themeProvider.setDarkMode(),
         ),
@@ -154,7 +154,7 @@ class _ThemeTile extends StatelessWidget {
   }
 }
 
-// Widget para cambiar el idioma
+
 class _LanguageTile extends StatelessWidget {
   const _LanguageTile();
 
@@ -165,36 +165,36 @@ class _LanguageTile extends StatelessWidget {
     final theme = Theme.of(context);
     final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Column(
       children: [
-        // Español
+
         ListTile(
           leading: Icon(Icons.translate, color: theme.colorScheme.primary),
           title: Text(l10n.spanish),
           subtitle: Text(l10n.english, style: TextStyle(color: subtleText)),
           trailing: currentLocale == 'es'
-              ? Icon(Icons.check_circle, color: theme.colorScheme.primary) // Adiós Colors.green
+              ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
               : null,
           onTap: () {
             localeProvider.setSpanish();
           },
         ),
-        
-        // Inglés
+
+
         ListTile(
           leading: Icon(Icons.translate, color: theme.colorScheme.primary),
           title: Text(l10n.english),
           subtitle: Text(l10n.spanish, style: TextStyle(color: subtleText)),
           trailing: currentLocale == 'en'
-              ? Icon(Icons.check_circle, color: theme.colorScheme.primary) // Adiós Colors.green
+              ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
               : null,
           onTap: () {
             localeProvider.setEnglish();
           },
         ),
 
-        // Ruso
+
         ListTile(
           leading: Icon(Icons.translate, color: theme.colorScheme.primary),
           title: Text(l10n.russian),
@@ -211,7 +211,7 @@ class _LanguageTile extends StatelessWidget {
   }
 }
 
-// Widget para Acerca de
+
 class _AboutTile extends StatelessWidget {
   const _AboutTile();
 
@@ -228,18 +228,18 @@ class _AboutTile extends StatelessWidget {
       subtitle: Text(l10n.versionLabel('1.0.0'), style: TextStyle(color: subtleText)),
       trailing: Icon(Icons.chevron_right, color: subtleText),
       onTap: () {
-        // Navegar a la pantalla de About
+
         Navigator.pushNamed(context, '/about');
       },
     );
   }
 }
 
-// Sección con título
+
 class _SettingsSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
-  
+
   const _SettingsSection({
     required this.title,
     required this.children,
@@ -251,13 +251,13 @@ class _SettingsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8), // Más espacio arriba
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
           child: Text(
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
-              letterSpacing: 0.5, // Leve espaciado para que se vea más premium
+              letterSpacing: 0.5,
             ),
           ),
         ),

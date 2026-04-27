@@ -1,4 +1,4 @@
-// add_product_screen.dart
+
 import 'dart:io';
 import 'package:dueglow/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +33,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
   DateTime? _openedDate;
   final List<String> _categories = [];
   bool _isLoading = false;
-  
-  // Estado para la imagen
+
+
   File? _selectedImageFile;
   bool _isUploadingImage = false;
-  
-  // Opciones predefinidas de PAO
+
+
   final List<String> _paoOptions = ['3M', '6M', '12M', '18M', '24M'];
 
   @override
@@ -52,7 +52,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     super.dispose();
   }
 
-  // Mostrar opciones para seleccionar imagen
+
   void _showImagePickerOptions() {
     showModalBottomSheet(
       context: context,
@@ -111,10 +111,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // Seleccionar imagen de cámara
+
   Future<void> _pickImageFromCamera() async {
     final imageFile = await _imageService.takePhotoWithCamera();
-    
+
     if (imageFile != null && mounted) {
       setState(() {
         _selectedImageFile = imageFile;
@@ -125,10 +125,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  // Seleccionar imagen de galería
+
   Future<void> _pickImageFromGallery() async {
     final imageFile = await _imageService.pickImageFromGallery();
-    
+
     if (imageFile != null && mounted) {
       setState(() {
         _selectedImageFile = imageFile;
@@ -139,7 +139,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  // --- LÓGICA DE NEGOCIO ---
+
   Future<void> _selectDate({
     required DateTime? initialDate,
     required DateTime firstDate,
@@ -164,8 +164,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
       });
     }
   }
-  
-  // Seleccionar PAO de las opciones
+
+
   void _selectPao(String pao) {
     setState(() {
       _paoController.text = pao;
@@ -174,7 +174,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   Future<void> _saveProductManually() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isLoading = true);
 
     try {
@@ -187,7 +187,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         periodAfterOpening: _paoController.text.trim().isEmpty ? null : _paoController.text.trim(),
         expirationDate: _expirationDate,
         openedDate: _openedDate,
-        listType: 'have', 
+        listType: 'have',
         addedAt: DateTime.now(),
         isOpened: _openedDate != null,
       );
@@ -197,14 +197,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
       if (addedProduct != null && mounted) {
         if (_selectedImageFile != null) {
           setState(() => _isUploadingImage = true);
-          
+
           final updatedProduct = await _productService.uploadProductImage(
             addedProduct.id!,
             _selectedImageFile!,
           );
-          
+
           setState(() => _isUploadingImage = false);
-          
+
           if (updatedProduct != null) {
             addedProduct = updatedProduct;
           } else {
@@ -233,14 +233,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   void _clearForm() {
     setState(() {
-      _nameController.clear(); 
-      _brandController.clear(); 
+      _nameController.clear();
+      _brandController.clear();
       _barcodeController.clear();
-      _paoController.clear(); 
-      _notesController.clear(); 
+      _paoController.clear();
+      _notesController.clear();
       _newCategoryController.clear();
-      _expirationDate = null; 
-      _openedDate = null; 
+      _expirationDate = null;
+      _openedDate = null;
       _categories.clear();
       _selectedImageFile = null;
     });
@@ -257,7 +257,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // --- DISEÑO ---
+
 
   @override
   Widget build(BuildContext context) {
@@ -272,7 +272,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // 1. TARJETAS DE ACCIONES RÁPIDAS (mismo fondo, icono con círculo)
+
             Row(
               children: [
                 Expanded(
@@ -297,8 +297,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
               ],
             ),
             const SizedBox(height: 32),
-            
-            // Separador sutil
+
+
             Row(
               children: [
                 Expanded(child: Divider(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5))),
@@ -319,15 +319,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
             const SizedBox(height: 28),
 
-            // 2. FORMULARIO - SIN CAJA BLANCA (campos integrados)
+
             Form(
               key: _formKey,
               child: Column(
                 children: [
-                  // Selector de imagen (mismo fondo que las tarjetas)
+
                   _buildImageSelector(theme, cardBackgroundColor),
                   const SizedBox(height: 24),
-                  
+
                   CustomTextField(
                     controller: _nameController,
                     label: AppLocalizations.of(context)!.productNameRequiredLabel,
@@ -336,7 +336,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     validator: (v) => v?.trim().isEmpty == true ? AppLocalizations.of(context)!.requiredField : null,
                   ),
                   const SizedBox(height: 20),
-                  
+
                   CustomTextField(
                     controller: _brandController,
                     label: AppLocalizations.of(context)!.brand,
@@ -344,8 +344,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     hint: AppLocalizations.of(context)!.brandHint,
                   ),
                   const SizedBox(height: 20),
-                  
-                  // Fecha de caducidad
+
+
                   _buildDateSelector(
                     icon: Icons.calendar_today_outlined,
                     text: _expirationDate != null
@@ -361,16 +361,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     onClear: () => setState(() => _expirationDate = null),
                   ),
                   const SizedBox(height: 20),
-                  
-                  // PAO - Selector visual
+
+
                   _buildPaoSelector(theme),
                   const SizedBox(height: 20),
-                  
-                  // Categorías
+
+
                   _buildCategoriesSection(theme),
                   const SizedBox(height: 24),
-                  
-                  // Botón guardar
+
+
                   CustomButton(
                     text: AppLocalizations.of(context)!.saveInMyVanity,
                     onPressed: _saveProductManually,
@@ -389,7 +389,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // Nueva tarjeta de acción rápida con icono dentro de círculo
+
   Widget _buildQuickActionCard({
     required IconData icon,
     required String title,
@@ -408,7 +408,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
         child: Column(
           children: [
-            // Icono dentro de círculo
+
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -442,7 +442,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // Selector de imagen con el mismo fondo que las tarjetas
+
   Widget _buildImageSelector(ThemeData theme, Color cardBackgroundColor) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -517,9 +517,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  // Selector visual de PAO con icono de tarro abierto
+
   Widget _buildPaoSelector(ThemeData theme) {
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -549,10 +549,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
           ),
           child: Column(
             children: [
-              // Información visual del PAO (como en la imagen)
+
               Row(
                 children: [
-                  // Icono de tarro abierto
+
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -604,7 +604,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              // Opciones de PAO
+
               Wrap(
                 spacing: 12,
                 runSpacing: 10,
@@ -615,13 +615,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected 
-                            ? theme.colorScheme.primary 
+                        color: isSelected
+                            ? theme.colorScheme.primary
                             : theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(
-                          color: isSelected 
-                              ? theme.colorScheme.primary 
+                          color: isSelected
+                              ? theme.colorScheme.primary
                               : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                         ),
                       ),
@@ -631,8 +631,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           Icon(
                             Icons.schedule,
                             size: 16,
-                            color: isSelected 
-                                ? theme.colorScheme.onPrimary 
+                            color: isSelected
+                                ? theme.colorScheme.onPrimary
                                 : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                           const SizedBox(width: 6),
@@ -640,8 +640,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             pao,
                             style: TextStyle(
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              color: isSelected 
-                                  ? theme.colorScheme.onPrimary 
+                              color: isSelected
+                                  ? theme.colorScheme.onPrimary
                                   : theme.colorScheme.onSurface,
                             ),
                           ),
@@ -651,7 +651,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   );
                 }).toList(),
               ),
-              // Campo opcional para PAO personalizado
+
               const SizedBox(height: 12),
               TextField(
                 controller: _paoController,
@@ -738,7 +738,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               onPressed: _addCategory,
               icon: const Icon(Icons.add),
               style: IconButton.styleFrom(
-                backgroundColor: theme.colorScheme.primaryContainer, 
+                backgroundColor: theme.colorScheme.primaryContainer,
                 foregroundColor: theme.colorScheme.primary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),

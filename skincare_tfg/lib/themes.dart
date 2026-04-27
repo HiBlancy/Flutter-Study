@@ -1,9 +1,9 @@
-// themes.dart
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppThemes {
-  // ==================== PALETAS DE ALTO CONTRASTE ====================
+
 
   static const ColorScheme _lightHighContrastScheme = ColorScheme(
     brightness: Brightness.light,
@@ -35,38 +35,38 @@ class AppThemes {
     inversePrimary: Color(0xfff8b1dc),
   );
 
-  // ==================== TEMA OSCURO MEJORADO ====================
-  // Colores más vibrantes y accesibles, AppBar con color
+
+
 
   static const ColorScheme _darkHighContrastScheme = ColorScheme(
     brightness: Brightness.dark,
-    // Primario: Rosa/Magenta más claro y vibrante para oscuro
+
     primary: Color(0xfff4add8),
     surfaceTint: Color(0xfff8b1dc),
-    onPrimary: Color(0xff3a1a2f), // Texto oscuro sobre primario claro
-    // Contenedor primario: Rosa más saturada
+    onPrimary: Color(0xff3a1a2f),
+
     primaryContainer: Color(0xffd9a3c8),
     onPrimaryContainer: Color(0xff1e0016),
-    // Secundario: Tonos cálidos complementarios
+
     secondary: Color(0xffe8c9d8),
     onSecondary: Color(0xff2d1721),
     secondaryContainer: Color(0xffcfb3c2),
     onSecondaryContainer: Color(0xff160611),
-    // Terciario: Púrpura más vibrante
+
     tertiary: Color(0xffe8d5f2),
     onTertiary: Color(0xff3a1f45),
     tertiaryContainer: Color(0xffd4bfe8),
     onTertiaryContainer: Color(0xff1a0023),
-    // Error: Rojo coral más visible
+
     error: Color(0xffffb4ab),
     onError: Color(0xff5a1c1f),
     errorContainer: Color(0xffff8a7f),
     onErrorContainer: Color(0xff220001),
-    // Superficie: Gris oscuro con toque púrpura (no puro negro)
+
     surface: Color(0xff1a1419),
     onSurface: Color(0xfff4eff3),
     onSurfaceVariant: Color(0xffe8d5e0),
-    // Outline: Colores definidos, no grises
+
     outline: Color(0xffd9a3c8),
     outlineVariant: Color(0xffb095a8),
     shadow: Color(0xff000000),
@@ -75,13 +75,13 @@ class AppThemes {
     inversePrimary: Color(0xff6b355a),
   );
 
-  // ==================== GENERADOR DE TEMA ====================
+
 
   static ThemeData _buildTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      
+
       textTheme: TextTheme(
         displayLarge: GoogleFonts.crimsonText(
           fontSize: 48,
@@ -136,20 +136,20 @@ class AppThemes {
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
-        // En modo oscuro: AppBar con color (primario), en claro: el primario original
-        backgroundColor: colorScheme.brightness == Brightness.light 
+
+        backgroundColor: colorScheme.brightness == Brightness.light
             ? Color(0xfffff8f9)
-            : Color(0xff3a1a2f), // Gris oscuro con toque púrpura (base del primario oscuro)
-        foregroundColor: colorScheme.brightness == Brightness.light 
-            ? colorScheme.primary 
-            : Color(0xfff4add8), // Texto rosa claro en oscuro
+            : Color(0xff3a1a2f),
+        foregroundColor: colorScheme.brightness == Brightness.light
+            ? colorScheme.primary
+            : Color(0xfff4add8),
         titleTextStyle: GoogleFonts.crimsonText(
           fontSize: 30,
           fontWeight: FontWeight.w600,
           fontStyle: FontStyle.italic,
-          color: colorScheme.brightness == Brightness.light 
-              ? colorScheme.primary 
-              : Color(0xfff4add8), // Título rosa en oscuro
+          color: colorScheme.brightness == Brightness.light
+              ? colorScheme.primary
+              : Color(0xfff4add8),
         ),
         iconTheme: IconThemeData(
           color: colorScheme.brightness == Brightness.light
@@ -170,7 +170,7 @@ class AppThemes {
       ),
 
       scaffoldBackgroundColor: colorScheme.surface,
-      
+
       cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -180,7 +180,7 @@ class AppThemes {
     );
   }
 
-  // ==================== EXPOSICIÓN FINAL ====================
+
 
   static ThemeData get lightTheme => _buildTheme(_lightHighContrastScheme);
   static ThemeData get darkTheme => _buildTheme(_darkHighContrastScheme);

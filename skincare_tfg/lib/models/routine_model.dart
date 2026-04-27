@@ -1,4 +1,4 @@
-// lib/models/routine.dart
+
 
 enum RoutineType { morning, night }
 
@@ -116,7 +116,7 @@ List<String> _daysFromBackend(dynamic raw) {
 class RoutineProduct {
   final String productId;
   final int order;
-  final Map<String, dynamic>? productData; // populated product info
+  final Map<String, dynamic>? productData;
 
   RoutineProduct({
     required this.productId,
@@ -125,7 +125,7 @@ class RoutineProduct {
   });
 
   factory RoutineProduct.fromJson(Map<String, dynamic> json) {
-    // productId can be a string or a populated object
+
     final productIdField = json['productId'];
     String id;
     Map<String, dynamic>? data;
@@ -158,7 +158,7 @@ class Routine {
   final String? id;
   final String name;
   final RoutineType type;
-  final List<String> days; // ['monday', 'tuesday', ...]
+  final List<String> days;
   final List<RoutineProduct> products;
   final DateTime? createdAt;
 
@@ -173,7 +173,7 @@ class Routine {
 
   factory Routine.fromJson(Map<String, dynamic> json) {
     dynamic rawType;
-    // Priority: explicit type fields > explicit isNight > derived from isMorning
+
     rawType = json['type'] ??
         json['routineType'] ??
         json['moment'] ??
@@ -188,7 +188,7 @@ class Routine {
       } else if (json.containsKey('isMorning')) {
         final v = json['isMorning'];
         if (v is bool) {
-          rawType = !v; // isMorning=false => night
+          rawType = !v;
         } else {
           final s = v?.toString().trim().toLowerCase();
           if (s == 'true') rawType = 'morning';

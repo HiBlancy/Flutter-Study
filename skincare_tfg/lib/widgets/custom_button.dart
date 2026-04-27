@@ -1,29 +1,29 @@
-// custom_button.dart
+
 import 'package:flutter/material.dart';
 
-/// Tipos de botones disponibles
+
 enum ButtonType {
-  primary, // Botón principal (fondo sólido)
-  secondary, // Botón secundario (borde, sin fondo)
-  danger, // Botón de peligro (rojo)
-  text, // Botón de texto (sin bordes)
-  outlined, // Botón con borde (similar a secondary pero más genérico)
+  primary,
+  secondary,
+  danger,
+  text,
+  outlined,
 }
 
-/// Tamaños de botón predefinidos
+
 enum ButtonSize {
-  small, // Compacto
-  medium, // Tamaño estándar
-  large, // Grande
-  full, // Ancho completo
+  small,
+  medium,
+  large,
+  full,
 }
 
 class CustomButton extends StatefulWidget {
-  // Propiedades requeridas
+
   final String text;
   final VoidCallback onPressed;
 
-  // Propiedades de estilo
+
   final ButtonType type;
   final ButtonSize size;
   final IconData? icon;
@@ -34,13 +34,13 @@ class CustomButton extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final double borderRadius;
 
-  // Propiedades de color personalizado
+
   final Color? backgroundColor;
   final Color? textColor;
   final Color? borderColor;
   final Color? loadingColor;
 
-  // Callbacks adicionales
+
   final VoidCallback? onLongPress;
 
   const CustomButton({
@@ -144,7 +144,7 @@ class _CustomButtonState extends State<CustomButton>
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Colores por defecto según el tipo
+
     Color defaultBgColor;
     Color defaultTextColor;
     Color defaultBorderColor;
@@ -168,7 +168,7 @@ class _CustomButtonState extends State<CustomButton>
         defaultBgColor = widget.backgroundColor ?? theme.colorScheme.primary;
         defaultTextColor = widget.textColor ?? theme.colorScheme.onPrimary;
         defaultBorderColor = widget.borderColor ?? Colors.transparent;
-        // Hover: más saturado o más claro según el modo
+
         defaultHoverColor = isDark
             ? theme.colorScheme.primary.withValues(alpha: 0.9)
             : theme.colorScheme.primary.withValues(alpha: 0.85);
@@ -203,7 +203,7 @@ class _CustomButtonState extends State<CustomButton>
         break;
     }
 
-    // Ajustar opacidad si está deshabilitado
+
     final bgColor = widget.isEnabled
         ? defaultBgColor
         : defaultBgColor.withValues(alpha: 0.3);
@@ -275,7 +275,7 @@ class _CustomButtonState extends State<CustomButton>
     if (widget.isLoading) {
       final theme = Theme.of(context);
 
-      // Color del loader dinámico según el tipo de botón
+
       Color defaultLoaderColor;
       if (widget.type == ButtonType.primary) {
         defaultLoaderColor = theme.colorScheme.onPrimary;
@@ -313,7 +313,7 @@ class _CustomButtonState extends State<CustomButton>
   }
 }
 
-// Extensión para facilitar el uso con context
+
 extension CustomButtonExtension on BuildContext {
   Widget primaryButton(
     String text,
@@ -383,3 +383,4 @@ extension CustomButtonExtension on BuildContext {
     );
   }
 }
+

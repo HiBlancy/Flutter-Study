@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Precargar credenciales para desarrollo (ELIMINAR AL TERMINAR TESTEO)
+
     _emailController.text = 'blancy@gmail.com';
     _passwordController.text = '123456';
   }
@@ -190,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildHeader(ThemeData theme, bool isDark) => Column(
     children: [
-      // Logo/Icono decorativo
+
       Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
@@ -204,20 +204,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 : theme.colorScheme.primary.withValues(alpha: 0.2),
             width: 4,
           ),
-        ), // Para asegurar que la imagen se mantenga circular si es necesario
+        ),
         child: Image.asset(
-          'assets/logo.png', // <--- LA RUTA DE TU LOGO
-          width: 120, // Ajusta el tamaño aquí
+          'assets/logo.png',
+          width: 120,
           height: 120,
           fit: BoxFit.contain,
-          // Si quieres que el logo cambie de color según el tema (solo si es un PNG plano/icono)
-          // color: theme.colorScheme.primary,
+
+
         ),
       ),
 
       const SizedBox(height: 24),
 
-      // Título
+
       Text(
         'DueGlow',
         style: theme.textTheme.displayLarge?.copyWith(
@@ -229,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       const SizedBox(height: 8),
 
-      // Subtítulo
+
       Text(
         'Tu rutina de belleza personalizada',
         style: theme.textTheme.bodyLarge?.copyWith(
@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildFormSection(ThemeData theme, bool isDark) => Column(
     children: [
-      // Campo de email
+
       CustomTextField(
         controller: _emailController,
         label: AppLocalizations.of(context)!.email,
@@ -260,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       const SizedBox(height: 20),
 
-      // Campo de contraseña
+
       CustomTextField(
         controller: _passwordController,
         label: AppLocalizations.of(context)!.password,
@@ -279,12 +279,12 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       const SizedBox(height: 12),
 
-      // Link "Olvidé mi contraseña"
+
       Align(
         alignment: Alignment.centerRight,
         child: TextButton(
           onPressed: () {
-            // TODO: Implementar recuperación de contraseña
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(AppLocalizations.of(context)!.comingSoon),
@@ -346,7 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildSocialLogins(ThemeData theme) {
     return Column(
       children: [
-        // Divisor con texto "O"
+
         Row(
           children: [
             Expanded(
@@ -372,25 +372,25 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Botones de Google y Apple
+
         Row(
           children: [
-            // Botón Google
+
             Expanded(
               child: _socialButton(
-                icon: Icons.g_mobiledata, // O puedes usar un FontAwesome/Asset
+                icon: Icons.g_mobiledata,
                 label: 'Google',
-                onPressed: () {}, // No funcional por ahora
+                onPressed: () {},
                 theme: theme,
               ),
             ),
             const SizedBox(width: 16),
-            // Botón Apple
+
             Expanded(
               child: _socialButton(
                 icon: Icons.apple,
                 label: 'Apple',
-                onPressed: () {}, // No funcional por ahoras
+                onPressed: () {},
                 theme: theme,
               ),
             ),
@@ -421,3 +421,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

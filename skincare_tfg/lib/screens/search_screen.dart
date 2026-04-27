@@ -29,15 +29,15 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchController.addListener(_onSearchChanged);
   }
 
-  /// Debounce: espera 600ms después de que el usuario deje de escribir
-  /// Esto evita hacer muchas llamadas a la API
+
+
   void _onSearchChanged() {
-    // Cancelar el timer anterior si existe
+
     _debounceTimer?.cancel();
 
     final query = _searchController.text.trim();
 
-    // Si el campo está vacío, limpiar resultados
+
     if (query.isEmpty) {
       setState(() {
         _results = [];
@@ -47,7 +47,7 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
-    // Esperar 600ms antes de hacer la búsqueda
+
     _debounceTimer = Timer(const Duration(milliseconds: 600), () {
       if (query.length >= 2) {
         _performSearch(query);
@@ -116,10 +116,10 @@ class _SearchScreenState extends State<SearchScreen> {
       showBackButton: false,
       child: Column(
         children: [
-          // Barra de búsqueda mejorada
+
           _buildSearchBar(theme, isDark),
-          
-          // Contenido principal
+
+
           Expanded(child: _buildBody(theme)),
         ],
       ),
@@ -147,8 +147,8 @@ class _SearchScreenState extends State<SearchScreen> {
           hintStyle: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
           ),
-          
-          // Prefix Icon
+
+
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 16, right: 12),
             child: Icon(
@@ -160,8 +160,8 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
           prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-          
-          // Suffix Icon - Mostrar clear o loading
+
+
           suffixIcon: _searchController.text.isNotEmpty
               ? Padding(
                   padding: const EdgeInsets.only(right: 8),
@@ -190,8 +190,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                 )
               : null,
-          
-          // Border
+
+
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide.none,
@@ -212,11 +212,11 @@ class _SearchScreenState extends State<SearchScreen> {
               width: 2,
             ),
           ),
-          
-          // Background
+
+
           filled: true,
           fillColor: searchBgColor,
-          
+
           contentPadding: const EdgeInsets.symmetric(
             vertical: 14,
             horizontal: 0,
@@ -377,7 +377,7 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    // Results List
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: _results.length,
@@ -471,16 +471,16 @@ class _ProductTileState extends State<_ProductTile>
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  // Imagen
+
                   _buildProductImage(theme),
                   const SizedBox(width: 12),
-                  
-                  // Información
+
+
                   Expanded(
                     child: _buildProductInfo(theme),
                   ),
-                  
-                  // Chevron
+
+
                   Icon(
                     Icons.chevron_right_rounded,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
@@ -559,7 +559,7 @@ class _ProductTileState extends State<_ProductTile>
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Nombre
+
         Text(
           widget.product.name,
           maxLines: 1,
@@ -570,8 +570,8 @@ class _ProductTileState extends State<_ProductTile>
           ),
         ),
         const SizedBox(height: 4),
-        
-        // Marca
+
+
         if (widget.product.brand != null &&
             widget.product.brand!.isNotEmpty)
           Text(

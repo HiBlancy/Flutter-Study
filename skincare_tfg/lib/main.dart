@@ -39,29 +39,29 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
-          
-          // 🎨 Temas - CORREGIDO (solo un theme, un darkTheme)
+
+
           theme: AppThemes.lightTheme,
           darkTheme: AppThemes.darkTheme,
           themeMode: themeProvider.themeMode,
-          
-          // 🌍 Internacionalización
+
+
           locale: localeProvider.locale,
           supportedLocales: const [
-            Locale('es', ''), // Español
-            Locale('en', ''), // Inglés
-            Locale('ru', ''), // Ruso
+            Locale('es', ''),
+            Locale('en', ''),
+            Locale('ru', ''),
           ],
           localizationsDelegates: const [
-            // Aquí irán tus delegates de traducción
+
             AppLocalizations.delegate,
-            // Por ahora usamos los básicos
+
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          
-          // Rutas
+
+
           initialRoute: AppConstants.routeLogin,
           routes: {
             AppConstants.routeRegister: (context) => const RegisterScreen(),

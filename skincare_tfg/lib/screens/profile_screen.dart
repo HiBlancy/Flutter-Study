@@ -13,31 +13,35 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final Map<String, List<Map<String, dynamic>>> _stashData = {
     'Facial': [
-      {'name': 'Limpiador', 'icon': Icons.water_drop_outlined},
-      {'name': 'Tónico', 'icon': Icons.opacity},
-      {'name': 'Sérum', 'icon': Icons.science_outlined},
-      {'name': 'Hidratante', 'icon': Icons.spa_outlined},
-      {'name': 'Contorno', 'icon': Icons.visibility_outlined},
-      {'name': 'Solar', 'icon': Icons.wb_sunny_outlined},
+      {'name': 'Limpieza', 'icon': Icons.water_drop_outlined},
+      {'name': 'Sérums', 'icon': Icons.science_outlined},
+      {'name': 'Hidratación', 'icon': Icons.spa_outlined},
+      {'name': 'Tratamientos', 'icon': Icons.auto_fix_high_outlined},
+      {'name': 'Protección', 'icon': Icons.wb_sunny_outlined},
     ],
     'Corporal': [
-      {'name': 'Gel', 'icon': Icons.shower_outlined},
-      {'name': 'Exfoliante', 'icon': Icons.grain},
+      {'name': 'Gel exfoliante', 'icon': Icons.grain},
       {'name': 'Crema', 'icon': Icons.clean_hands_outlined},
       {'name': 'Manos', 'icon': Icons.front_hand_outlined},
-      {'name': 'Desodorante', 'icon': Icons.air},
+      {'name': 'Desodorante', 'icon': Icons.air_outlined},
     ],
     'Capilar': [
       {'name': 'Champú', 'icon': Icons.wash_outlined},
-      {'name': 'Acondicionador', 'icon': Icons.water_outlined},
       {'name': 'Mascarilla', 'icon': Icons.face_retouching_natural},
-      {'name': 'Aceite', 'icon': Icons.liquor_outlined},
+      {'name': 'Acondicionador', 'icon': Icons.water_outlined},
+      {'name': 'Sérum capilar', 'icon': Icons.spa_outlined},
     ],
     'Maquillaje': [
-      {'name': 'Base', 'icon': Icons.brush_outlined},
-      {'name': 'Corrector', 'icon': Icons.edit_outlined},
+      {'name': 'Rostro', 'icon': Icons.brush_outlined},
       {'name': 'Ojos', 'icon': Icons.remove_red_eye_outlined},
       {'name': 'Labios', 'icon': Icons.face_4_outlined},
+      {'name': 'Cejas', 'icon': Icons.auto_awesome_outlined},
+    ],
+    'Otros': [
+      {'name': 'Uñas', 'icon': Icons.back_hand_outlined},
+      {'name': 'Fragancia', 'icon': Icons.local_florist_outlined},
+      {'name': 'Higiene íntima', 'icon': Icons.sanitizer_outlined},
+      {'name': 'Solares corporales', 'icon': Icons.sunny},
     ],
   };
 
@@ -68,12 +72,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         showBackButton: false,
         child: Column(
           children: [
-            // Pestaña mejorada
             _buildTabBar(theme, tabs, isDark),
-            
+
             Expanded(
               child: TabBarView(
-                children: tabs.map((tab) => _buildTabContent(tab, theme, isDark)).toList(),
+                children: tabs
+                    .map((tab) => _buildTabContent(tab, theme, isDark))
+                    .toList(),
               ),
             ),
           ],
@@ -89,11 +94,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           TabBar(
             isScrollable: true,
+            tabAlignment: TabAlignment.center,
             indicatorColor: theme.colorScheme.primary,
             indicatorSize: TabBarIndicatorSize.label,
             indicatorWeight: 3,
             labelColor: theme.colorScheme.primary,
-            unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            unselectedLabelColor: theme.colorScheme.onSurface.withValues(
+              alpha: 0.5,
+            ),
             labelStyle: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
@@ -101,13 +109,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             unselectedLabelStyle: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w500,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            tabs: tabs.map((tab) => Tab(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(tab),
-              ),
-            )).toList(),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            tabs: tabs
+                .map(
+                  (tab) => Tab(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(tab),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
           Divider(
             height: 1,
@@ -127,10 +139,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Selector de subcategorías
-          _buildSubcategorySelector(categoryName, subcategories, selectedSub, theme, isDark),
+          _buildSubcategorySelector(
+            categoryName,
+            subcategories,
+            selectedSub,
+            theme,
+            isDark,
+          ),
 
-          // Zona central - Mostrará los productos
           _buildEmptyState(selectedSub, subcategories, theme, isDark),
         ],
       ),
@@ -145,29 +161,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
     bool isDark,
   ) {
     return Container(
-      height: 130,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: subcategories.length,
-        itemBuilder: (context, index) {
-          final sub = subcategories[index];
-          final isSelected = sub['name'] == selectedSub;
+      padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 520;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: GestureDetector(
-              onTap: () {
-                setState(() => _selectedSubcategories[categoryName] = sub['name']);
-              },
-              child: _buildSubcategoryCard(
-                sub,
-                isSelected,
-                theme,
-                isDark,
+          final cards = subcategories.map((sub) {
+            final isSelected = sub['name'] == selectedSub;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: GestureDetector(
+                onTap: () {
+                  setState(
+                    () => _selectedSubcategories[categoryName] = sub['name'],
+                  );
+                },
+                child: _buildSubcategoryCard(sub, isSelected, theme, isDark),
               ),
-            ),
+            );
+          }).toList();
+
+          if (isSmallScreen) {
+            return SizedBox(
+              height: 132,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(mainAxisSize: MainAxisSize.min, children: cards),
+              ),
+            );
+          }
+
+          return Center(
+            child: Wrap(alignment: WrapAlignment.center, children: cards),
           );
         },
       ),
@@ -183,7 +208,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Círculo animado
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: 60,
@@ -193,14 +217,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: isSelected
                 ? theme.colorScheme.primary.withValues(alpha: 0.2)
                 : isDark
-                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
-                    : theme.colorScheme.primary.withValues(alpha: 0.05),
+                ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                : theme.colorScheme.primary.withValues(alpha: 0.05),
             border: Border.all(
               color: isSelected
                   ? theme.colorScheme.primary
                   : isDark
-                      ? theme.colorScheme.outline.withValues(alpha: 0.2)
-                      : theme.colorScheme.outline.withValues(alpha: 0.15),
+                  ? theme.colorScheme.outline.withValues(alpha: 0.2)
+                  : theme.colorScheme.outline.withValues(alpha: 0.15),
               width: isSelected ? 2.5 : 1.5,
             ),
             boxShadow: isSelected
@@ -222,9 +246,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        // Etiqueta con ellipsis si es muy largo
+
         SizedBox(
-          width: 80,
+          width: 92,
           child: Text(
             sub['name'] as String,
             textAlign: TextAlign.center,
@@ -275,7 +299,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Icono grande con fondo circular
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -290,7 +313,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 28),
 
-          // Título
           Text(
             AppLocalizations.of(context)!.yourProductsOf(selectedSub),
             textAlign: TextAlign.center,
@@ -301,7 +323,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Descripción
           Text(
             AppLocalizations.of(context)!.noCategorizedProductsSection,
             textAlign: TextAlign.center,
@@ -312,13 +333,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 32),
 
-          // Botón de acción
           SizedBox(
             width: double.infinity,
             child: CustomButton(
               text: AppLocalizations.of(context)!.addProduct,
               onPressed: () {
-                // TODO: Navegar a búsqueda o agregar producto
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Row(
@@ -328,7 +347,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: Text(
                             AppLocalizations.of(context)!.featureInDevelopment,
-                            style: TextStyle(color: theme.colorScheme.onPrimary),
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimary,
+                            ),
                           ),
                         ),
                       ],

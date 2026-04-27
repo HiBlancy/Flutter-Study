@@ -22,7 +22,7 @@ class AboutScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icono principal con el estilo de tu marca
+
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -30,14 +30,14 @@ class AboutScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.spa, // Encaja perfecto con Skincare
-                  size: 80, 
+                  Icons.spa,
+                  size: 80,
                   color: theme.colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 24),
-              
-              // Título de la App (DueGlow)
+
+
               Text(
                 AppConstants.appName,
                 style: theme.textTheme.headlineMedium?.copyWith(
@@ -47,8 +47,8 @@ class AboutScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              
-              // Versión
+
+
               Text(
                 l10n.versionLabel('1.0.0'),
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -56,8 +56,8 @@ class AboutScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              
-              // Descripción
+
+
               Text(
                 l10n.aboutDescription,
                 textAlign: TextAlign.center,
@@ -66,10 +66,10 @@ class AboutScreen extends StatelessWidget {
                   height: 1.5,
                 ),
               ),
-              
+
               const SizedBox(height: 48),
-              
-              // Footer / Copyright
+
+
               Text(
                 '© ${DateTime.now().year} ${AppConstants.appName}',
                 style: theme.textTheme.bodySmall?.copyWith(

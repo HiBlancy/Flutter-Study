@@ -105,7 +105,7 @@ class CustomAppBar extends StatelessWidget {
             child: Text(
               'Versión ${AppConstants.version}',
               style: TextStyle(
-                fontSize: 12, 
+                fontSize: 12,
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
@@ -130,7 +130,7 @@ class CustomAppBar extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary, // ✅ Ciruela oscuro en Light / Blanco hueso en Dark
+            color: theme.colorScheme.primary,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +153,7 @@ class CustomAppBar extends StatelessWidget {
               Text(
                 userName,
                 style: TextStyle(
-                  color: theme.colorScheme.onPrimary, // ✅ Texto blanco en Light / Negro en Dark
+                  color: theme.colorScheme.onPrimary,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Sora',
@@ -163,7 +163,7 @@ class CustomAppBar extends StatelessWidget {
               Text(
                 userEmail,
                 style: TextStyle(
-                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.8), // ✅ Email legible
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                   fontSize: 12,
                   fontFamily: 'Lato',
                 ),
@@ -179,9 +179,9 @@ class CustomAppBar extends StatelessWidget {
     final authService = AuthService();
     final name = await authService.getUserName();
     final email = await authService.getUserEmail();
-    final profileImage = await authService.getUserProfileImage(); 
+    final profileImage = await authService.getUserProfileImage();
     return {
-      'name': name, 
+      'name': name,
       'email': email,
       'profileImage': profileImage
       };
@@ -196,14 +196,14 @@ class CustomAppBar extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     final authService = AuthService();
-    
-    // ✅ Color dinámico para los items del menú
+
+
     final Color itemColor = isLogout ? theme.colorScheme.error : theme.colorScheme.onSurface;
 
     return ListTile(
       leading: Icon(icon, color: itemColor),
       title: Text(
-        title, 
+        title,
         style: TextStyle(
           color: itemColor,
           fontFamily: 'Lato',

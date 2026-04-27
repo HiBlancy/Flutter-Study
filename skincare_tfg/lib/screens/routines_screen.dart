@@ -1,4 +1,4 @@
-// lib/screens/routines_screen.dart
+
 import 'package:flutter/material.dart';
 import '../models/routine_model.dart';
 import '../services/routine_service.dart';
@@ -127,7 +127,7 @@ class _RoutinesScreenState extends State<RoutinesScreen>
         children: [
           Column(
             children: [
-              // Tab bar
+
               Container(
                 margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 decoration: BoxDecoration(
@@ -174,7 +174,7 @@ class _RoutinesScreenState extends State<RoutinesScreen>
               ),
               const SizedBox(height: 8),
 
-              // Content
+
               Expanded(
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
@@ -189,7 +189,7 @@ class _RoutinesScreenState extends State<RoutinesScreen>
             ],
           ),
 
-          // FAB flotante dentro del child
+
           Positioned(
             bottom: 20,
             right: 20,
@@ -315,7 +315,7 @@ class _RoutinesScreenState extends State<RoutinesScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
+
                 Row(
                   children: [
                     Container(
@@ -366,7 +366,7 @@ class _RoutinesScreenState extends State<RoutinesScreen>
                   ],
                 ),
 
-                // Days selector (read-only display)
+
                 const SizedBox(height: 14),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -401,7 +401,7 @@ class _RoutinesScreenState extends State<RoutinesScreen>
                   }).toList(),
                 ),
 
-                // Products preview
+
                 if (routine.products.isNotEmpty) ...[
                   const SizedBox(height: 14),
                   SizedBox(

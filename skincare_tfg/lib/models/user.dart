@@ -1,4 +1,4 @@
-// lib/models/user.dart
+
 class User {
   final String id;
   final String name;
@@ -28,16 +28,16 @@ class User {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'],
-      birthDate: json['birthDate'] != null 
-        ? DateTime.parse(json['birthDate']) // ← API envía ISO string
+      birthDate: json['birthDate'] != null
+        ? DateTime.parse(json['birthDate'])
         : null,
       profileImage: json['profileImage'],
       isActive: json['isActive'] ?? true,
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt']) 
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
     );
   }

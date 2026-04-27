@@ -1,4 +1,4 @@
-// lib/screens/my_products_screen.dart
+
 import 'package:flutter/material.dart';
 import '../models/beauty_product.dart';
 import '../models/product_list_type.dart';
@@ -28,7 +28,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
 
   final ScrollController _scrollController = ScrollController();
   int _currentPage = 1;
-  bool _isMoreLoading = false; // Para el spinner al final de la lista
+  bool _isMoreLoading = false;
   bool _hasMore = true;
 
   @override
@@ -43,9 +43,9 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     _selectedListType = widget.initialListType;
     _refreshProducts();
 
-    // Escuchamos el scroll
+
     _scrollController.addListener(() {
-      // Si llegamos casi al final (200px antes) y no estamos cargando ya...
+
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
         if (!_isMoreLoading && _hasMore && !_isLoading) {
@@ -60,7 +60,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       setState(() {
         _isLoading = true;
         _currentPage = 1;
-        _allProducts = []; // Limpiamos para empezar de cero
+        _allProducts = [];
         _hasMore = true;
       });
     } else {
@@ -68,7 +68,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     }
 
     try {
-      // IMPORTANTE: Pasamos page, limit y el filtro al backend
+
       final response = await _productService.getProducts(
         page: _currentPage,
         limit: 12,
@@ -79,11 +79,11 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
         setState(() {
           _allProducts.addAll(
             response.products,
-          ); // Añadimos los nuevos a los que ya había
+          );
           _filteredProducts = _allProducts;
           _currentPage++;
 
-          // Comprobamos si el backend dice que no hay más
+
           if (response.currentPage >= response.totalPages) {
             _hasMore = false;
           }
@@ -154,7 +154,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
             ProductScreen(product: product, isFromSearch: false),
       ),
     );
-    await _refreshProducts(); // Refrescar al volver
+    await _refreshProducts();
   }
 
   String _getTitle() {
@@ -211,10 +211,10 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
       showDrawer: true,
       child: Column(
         children: [
-          // Filter Chips Section
+
           _buildFilterChips(theme),
 
-          // Title and Count Section
+
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
             child: Row(
@@ -258,7 +258,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
             ),
           ),
 
-          // Products List
+
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshProducts,
@@ -471,3 +471,4 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     );
   }
 }
+
