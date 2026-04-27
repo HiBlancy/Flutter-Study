@@ -55,14 +55,17 @@ export class UpdateProductDto {
 
   @IsOptional()
   @Transform(({ value }) => {
-    if (!value) return undefined;
+    if (value === null) return null;
+    // Permite limpiar la fecha enviando string vacío desde frontend.
+    if (value === '') return null;
+    if (value === undefined) return undefined;
     const date = new Date(value);
     // Normalizar a UTC medianoche
     return new Date(
       Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
     );
   })
-  expirationDate?: Date | string; // ✅ Permitir null (para limpiar)
+  expirationDate?: Date | string | null; // ✅ Permitir null (para limpiar)
 
   @IsOptional()
   @Transform(({ value }) => {

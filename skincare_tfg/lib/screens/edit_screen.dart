@@ -85,7 +85,10 @@ class _EditScreenState extends State<EditScreen> {
     final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: const TextStyle(color: Colors.white)),
+        content: Text(
+          message,
+          style: TextStyle(color: isError ? theme.colorScheme.onError : theme.colorScheme.onPrimary),
+        ),
         backgroundColor: isError
             ? theme.colorScheme.error
             : theme.colorScheme.primary,
@@ -138,13 +141,13 @@ class _EditScreenState extends State<EditScreen> {
                 ),
                 if (_selectedImage != null || _currentProfileImageUrl != null)
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.delete_outline,
-                      color: Colors.red,
+                      color: Theme.of(context).colorScheme.error,
                     ),
-                    title: const Text(
+                    title: Text(
                       'Eliminar foto',
-                      style: TextStyle(color: Colors.red),
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -531,12 +534,12 @@ class _EditScreenState extends State<EditScreen> {
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
           child: _isSaving
-              ? const SizedBox(
+              ? SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 )
               : Row(

@@ -97,6 +97,14 @@ export class ProductService {
       if (!product) {
         throw new NotFoundException(`Producto ${id} no encontrado`);
       }
+      // Permite limpiar fechas cuando frontend envía string vacío.
+      if ((updateProductDto as any).expirationDate === '') {
+        (updateProductDto as any).expirationDate = null;
+      }
+      if ((updateProductDto as any).openedDate === '') {
+        (updateProductDto as any).openedDate = null;
+      }
+
       const updateData = Object.fromEntries(
         Object.entries(updateProductDto).filter(([_, v]) => v !== undefined),
       );
@@ -123,7 +131,11 @@ export class ProductService {
 
   private applyBusinessRules(product: Product, updateData: any): void {
     // Si el producto ya está abierto y cambia el PAO, recalcular caducidad.
-    if (product.isOpened && updateData.periodAfterOpening !== undefined) {
+    if (
+      product.isOpened &&
+      updateData.periodAfterOpening !== undefined &&
+      updateData.expirationDate !== null
+    ) {
       const newExpiration = this.calculateExpirationDate(
         updateData.openedDate || product.openedDate,
         updateData.periodAfterOpening || product.periodAfterOpening,

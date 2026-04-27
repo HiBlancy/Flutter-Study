@@ -103,7 +103,7 @@ class _NotificationTileState extends State<_NotificationTile> {
             SnackBar(
               content: Text(
                 value ? l10n.notificationsEnabled : l10n.notificationsDisabled,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: theme.colorScheme.onPrimary),
               ),
               backgroundColor: theme.colorScheme.primary,
               behavior: SnackBarBehavior.floating,

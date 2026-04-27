@@ -363,10 +363,11 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
+    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
+        backgroundColor: isError ? theme.colorScheme.error : theme.colorScheme.primary,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),

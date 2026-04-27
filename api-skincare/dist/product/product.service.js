@@ -117,6 +117,12 @@ let ProductService = class ProductService {
             if (!product) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
             }
+            if (updateProductDto.expirationDate === '') {
+                updateProductDto.expirationDate = null;
+            }
+            if (updateProductDto.openedDate === '') {
+                updateProductDto.openedDate = null;
+            }
             const updateData = Object.fromEntries(Object.entries(updateProductDto).filter(([_, v]) => v !== undefined));
             this.applyBusinessRules(product, updateData);
             const updated = await this.productModel
@@ -135,7 +141,9 @@ let ProductService = class ProductService {
         }
     }
     applyBusinessRules(product, updateData) {
-        if (product.isOpened && updateData.periodAfterOpening !== undefined) {
+        if (product.isOpened &&
+            updateData.periodAfterOpening !== undefined &&
+            updateData.expirationDate !== null) {
             const newExpiration = this.calculateExpirationDate(updateData.openedDate || product.openedDate, updateData.periodAfterOpening || product.periodAfterOpening, updateData.expirationDate !== undefined
                 ? updateData.expirationDate
                 : product.expirationDate);

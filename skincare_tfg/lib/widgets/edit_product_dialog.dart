@@ -114,8 +114,14 @@ class _EditProductDialogState extends State<EditProductDialog> {
                 ),
                 if (_currentImageUrl != null || _selectedImageFile != null)
                   ListTile(
-                    leading: const Icon(Icons.delete_outline, color: Colors.red),
-                    title: Text(AppLocalizations.of(context)!.deleteImage, style: const TextStyle(color: Colors.red)),
+                    leading: Icon(
+                      Icons.delete_outline,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    title: Text(
+                      AppLocalizations.of(context)!.deleteImage,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       _deleteImage();
@@ -196,10 +202,11 @@ class _EditProductDialogState extends State<EditProductDialog> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
+    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
+        backgroundColor: isError ? theme.colorScheme.error : theme.colorScheme.primary,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),
@@ -515,7 +522,7 @@ class _EditProductDialogState extends State<EditProductDialog> {
     final isDark = theme.brightness == Brightness.dark;
 
     final bgColor = isDark ? theme.colorScheme.surface : theme.colorScheme.primary;
-    final fgColor = isDark ? const Color(0xfff4add8) : theme.colorScheme.onPrimary;
+    final fgColor = isDark ? theme.colorScheme.primary : theme.colorScheme.onPrimary;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -711,40 +718,47 @@ class _EditProductDialogState extends State<EditProductDialog> {
     final theme = Theme.of(context);
     final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        decoration: BoxDecoration(
-          border: Border.all(color: borderColor),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: iconColor),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: isActive
-                      ? theme.colorScheme.onSurface
-                      : subtleText,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: iconColor),
+          const SizedBox(width: 12),
+          Expanded(
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: isActive
+                        ? theme.colorScheme.onSurface
+                        : subtleText,
+                  ),
                 ),
               ),
             ),
-            if (isActive)
-              IconButton(
-                icon: Icon(Icons.clear, size: 20, color: theme.colorScheme.error),
-                onPressed: onClear,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                tooltip: AppLocalizations.of(context)!.deleteDateTooltip,
-              ),
-            Icon(Icons.calendar_today, color: subtleText),
-          ],
-        ),
+          ),
+          if (isActive)
+            IconButton(
+              icon: Icon(Icons.clear, size: 20, color: theme.colorScheme.error),
+              onPressed: onClear,
+              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              tooltip: AppLocalizations.of(context)!.deleteDateTooltip,
+            ),
+          IconButton(
+            icon: Icon(Icons.calendar_today, color: subtleText),
+            onPressed: onTap,
+            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+            tooltip: AppLocalizations.of(context)!.expirationDate,
+          ),
+        ],
       ),
     );
   }

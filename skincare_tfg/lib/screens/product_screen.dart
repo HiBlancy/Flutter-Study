@@ -72,8 +72,8 @@ class _ProductScreenState extends State<ProductScreen> {
               Expanded(
                 child: Text(
                   message,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: theme.colorScheme.onPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -438,7 +438,6 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final isProductSaved = _currentProduct.id != null;
     final showAddButton = widget.isFromSearch || !isProductSaved;
     final currentListType = isProductSaved
@@ -449,12 +448,8 @@ class _ProductScreenState extends State<ProductScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: isDark
-            ? const Color(0xff3a1a2f)
-            : theme.colorScheme.surface,
-        foregroundColor: isDark
-            ? const Color(0xfff4add8)
-            : theme.colorScheme.primary,
+        backgroundColor: theme.colorScheme.surface,
+        foregroundColor: theme.colorScheme.primary,
         title: Text(
           'DueGlow',
           maxLines: 1,
@@ -463,7 +458,7 @@ class _ProductScreenState extends State<ProductScreen> {
             fontSize: 30,
             fontWeight: FontWeight.w600,
             fontStyle: FontStyle.italic,
-            color: isDark ? const Color(0xfff4add8) : theme.colorScheme.primary,
+            color: theme.colorScheme.primary,
           ),
         ),
         actions: [
@@ -472,9 +467,7 @@ class _ProductScreenState extends State<ProductScreen> {
               icon: const Icon(Icons.edit),
               onPressed: _isLoading('editing') ? null : _editProduct,
               tooltip: AppLocalizations.of(context)!.editProductTooltip,
-              color: isDark
-                  ? const Color(0xfff4add8)
-                  : theme.colorScheme.primary,
+              color: theme.colorScheme.primary,
             ),
         ],
       ),

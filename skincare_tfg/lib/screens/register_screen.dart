@@ -63,7 +63,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Expanded(
                   child: Text(
                     l10n.accountCreatedSuccess,
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: theme.colorScheme.onPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -141,23 +144,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: isDark
-            ? Color(0xff1a1419)
-            : theme.colorScheme.surface,
-        foregroundColor: isDark
-            ? Color(0xfff4add8)
-            : theme.colorScheme.onPrimary,
+        backgroundColor: theme.colorScheme.surface,
+        foregroundColor: theme.colorScheme.primary,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDark
-                ? Color(0xfff4add8)
-                : theme.colorScheme.primary,
+            color: theme.colorScheme.primary,
           ),
           onPressed: () => Navigator.pushReplacementNamed(context, '/'),
         ),
@@ -172,11 +168,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 20),
-                  _buildHeader(theme, isDark),
+                  _buildHeader(theme),
                   const SizedBox(height: 32),
                   _buildFormSection(theme),
                   const SizedBox(height: 24),
-                  _buildTermsCheckbox(theme, isDark),
+                  _buildTermsCheckbox(theme),
                   const SizedBox(height: 28),
                   _buildRegisterButton(theme),
                   const SizedBox(height: 30),
@@ -192,7 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildHeader(ThemeData theme, bool isDark) => Container(
+  Widget _buildHeader(ThemeData theme) => Container(
   child: Column(
     mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.center,
@@ -301,21 +297,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ],
   );
 
-  Widget _buildTermsCheckbox(ThemeData theme, bool isDark) {
+  Widget _buildTermsCheckbox(ThemeData theme) {
     final textColor = theme.colorScheme.onSurface.withValues(alpha: 0.7);
     final linkColor = theme.colorScheme.primary;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark
-            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.1)
-            : theme.colorScheme.primaryContainer.withValues(alpha: 0.08),
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark
-              ? theme.colorScheme.primary.withValues(alpha: 0.2)
-              : theme.colorScheme.primary.withValues(alpha: 0.15),
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
         ),
       ),
       child: Row(

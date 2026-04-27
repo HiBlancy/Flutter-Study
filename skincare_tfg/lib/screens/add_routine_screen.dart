@@ -63,10 +63,11 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDays.isEmpty) {
       if (!mounted) return;
+      final theme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.selectAtLeastOneDay),
-          backgroundColor: Colors.red,
+          backgroundColor: theme.colorScheme.error,
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2),
         ),
@@ -87,10 +88,11 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
       await _routineService.createRoutine(routine);
 
       if (mounted) {
+        final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!.routineCreatedSuccess),
-            backgroundColor: Colors.green,
+            backgroundColor: theme.colorScheme.primary,
             behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
           ),
@@ -99,10 +101,11 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final theme = Theme.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!.routineCreateError),
-            backgroundColor: Colors.red,
+            backgroundColor: theme.colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
         );

@@ -7,7 +7,7 @@ export declare class UpdateProductDto {
     notes?: string | null;
     rating?: number | null;
     listType?: string;
-    expirationDate?: Date | string;
+    expirationDate?: Date | string | null;
     periodAfterOpening?: string;
     openedDate?: Date | string | null;
     isOpened?: boolean | null;

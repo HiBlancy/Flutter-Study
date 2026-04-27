@@ -75,7 +75,11 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Transform)(({ value }) => {
-        if (!value)
+        if (value === null)
+            return null;
+        if (value === '')
+            return null;
+        if (value === undefined)
             return undefined;
         const date = new Date(value);
         return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));

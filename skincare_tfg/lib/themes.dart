@@ -81,81 +81,98 @@ class AppThemes {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      brightness: colorScheme.brightness,
 
       textTheme: TextTheme(
         displayLarge: GoogleFonts.crimsonText(
-          fontSize: 48,
+          fontSize: 40,
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
+        ),
+        displayMedium: GoogleFonts.crimsonText(
+          fontSize: 34,
+          fontWeight: FontWeight.w700,
           color: colorScheme.onSurface,
         ),
         displaySmall: GoogleFonts.crimsonText(
-          fontSize: 30,
+          fontSize: 28,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurface,
+        ),
+        headlineLarge: GoogleFonts.sora(
+          fontSize: 26,
+          fontWeight: FontWeight.w700,
           color: colorScheme.onSurface,
         ),
         headlineMedium: GoogleFonts.sora(
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
         ),
         headlineSmall: GoogleFonts.sora(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: colorScheme.primary,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurface,
         ),
         titleLarge: GoogleFonts.sora(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
         ),
-        titleMedium: GoogleFonts.literata(
-          fontSize: 24,
-          fontWeight: FontWeight.w500,
-          color: colorScheme.primary,
+        titleMedium: GoogleFonts.sora(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurface,
+        ),
+        titleSmall: GoogleFonts.sora(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurface,
         ),
         bodyLarge: GoogleFonts.lato(
-          fontSize: 16,
+          fontSize: 17,
           color: colorScheme.onSurface,
-          height: 1.5,
+          height: 1.55,
         ),
         bodyMedium: GoogleFonts.lato(
-          fontSize: 14,
+          fontSize: 15,
           color: colorScheme.onSurface,
           height: 1.5,
         ),
         bodySmall: GoogleFonts.lato(
-          fontSize: 12,
+          fontSize: 13,
           color: colorScheme.onSurfaceVariant,
-          height: 1.4,
+          height: 1.45,
         ),
         labelLarge: GoogleFonts.lato(
-          fontSize: 14,
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: colorScheme.onSurface,
+        ),
+        labelMedium: GoogleFonts.lato(
+          fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: colorScheme.primary,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        labelSmall: GoogleFonts.lato(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
 
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
-
-        backgroundColor: colorScheme.brightness == Brightness.light
-            ? Color(0xfffff8f9)
-            : Color(0xff3a1a2f),
-        foregroundColor: colorScheme.brightness == Brightness.light
-            ? colorScheme.primary
-            : Color(0xfff4add8),
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.primary,
         titleTextStyle: GoogleFonts.crimsonText(
           fontSize: 30,
           fontWeight: FontWeight.w600,
           fontStyle: FontStyle.italic,
-          color: colorScheme.brightness == Brightness.light
-              ? colorScheme.primary
-              : Color(0xfff4add8),
+          color: colorScheme.primary,
         ),
-        iconTheme: IconThemeData(
-          color: colorScheme.brightness == Brightness.light
-              ? colorScheme.primary
-              : Color(0xfff4add8),
-        ),
+        iconTheme: IconThemeData(color: colorScheme.primary),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -170,12 +187,60 @@ class AppThemes {
       ),
 
       scaffoldBackgroundColor: colorScheme.surface,
+      dividerColor: colorScheme.outlineVariant.withValues(alpha: 0.35),
 
       cardTheme: CardThemeData(
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: colorScheme.surface,
+        color: colorScheme.surfaceContainerLow,
         margin: const EdgeInsets.all(8),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.22),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant.withValues(alpha: 0.8)),
+        prefixIconColor: colorScheme.onSurfaceVariant,
+        suffixIconColor: colorScheme.onSurfaceVariant,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.8),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.error, width: 1.8),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.error, width: 2.2),
+        ),
+      ),
+
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colorScheme.inverseSurface,
+        contentTextStyle: TextStyle(
+          color: colorScheme.onInverseSurface,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: colorScheme.surface,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: colorScheme.onSurfaceVariant,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
       ),
     );
   }

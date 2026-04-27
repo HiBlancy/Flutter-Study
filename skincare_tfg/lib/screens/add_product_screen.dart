@@ -94,8 +94,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ),
                 if (_selectedImageFile != null)
                   ListTile(
-                    leading: const Icon(Icons.delete_outline, color: Colors.red),
-                    title: Text(AppLocalizations.of(context)!.deleteImage, style: const TextStyle(color: Colors.red)),
+                    leading: Icon(
+                      Icons.delete_outline,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    title: Text(
+                      AppLocalizations.of(context)!.deleteImage,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       setState(() => _selectedImageFile = null);
@@ -247,10 +253,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
+    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
+        backgroundColor: isError ? theme.colorScheme.error : theme.colorScheme.primary,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),
