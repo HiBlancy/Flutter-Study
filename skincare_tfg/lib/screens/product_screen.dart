@@ -478,118 +478,152 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProductHeader(theme),
-            const SizedBox(height: 24),
-            if (isProductSaved) ...[
-              _buildProductListSection(theme, currentListType),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildProductHeader(theme),
               const SizedBox(height: 24),
+              if (isProductSaved) ...[
+                _buildProductListSection(theme, currentListType),
+                const SizedBox(height: 24),
+              ],
+              _buildProductInfo(theme),
+              const SizedBox(height: 24),
+              if (_currentProduct.categories?.isNotEmpty == true)
+                _buildCategories(theme),
+              const SizedBox(height: 24),
+              _buildScrollableButtons(isProductSaved, showAddButton),
             ],
-            _buildProductInfo(theme),
-            const SizedBox(height: 24),
-            if (_currentProduct.categories?.isNotEmpty == true)
-              _buildCategories(theme),
-            const SizedBox(height: 24),
-            _buildScrollableButtons(isProductSaved, showAddButton),
-            const SizedBox(height: 128),
-            if (isProductSaved)
-              SizedBox(
-                width: double.infinity,
-                child: CustomButton(
-                  text: AppLocalizations.of(context)!.deleteProduct,
-                  onPressed: _isLoading('deleting') ? () {} : _deleteProduct,
-                  type: ButtonType.danger,
-                  size: ButtonSize.full,
-                  icon: Icons.delete_outline,
-                  isLoading: _isLoading('deleting'),
-                  isEnabled: !_isLoading('deleting'),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
+      bottomNavigationBar: isProductSaved
+          ? SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  border: Border(
+                    top: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
+                  ),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                    text: AppLocalizations.of(context)!.deleteProduct,
+                    onPressed: _isLoading('deleting') ? () {} : _deleteProduct,
+                    type: ButtonType.danger,
+                    size: ButtonSize.full,
+                    icon: Icons.delete_outline,
+                    isLoading: _isLoading('deleting'),
+                    isEnabled: !_isLoading('deleting'),
+                  ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 
   Widget _buildProductHeader(ThemeData theme) {
-    return Row(
-      children: [
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: theme.colorScheme.outline.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child:
-              _currentProduct.imageUrl != null &&
-                  _currentProduct.imageUrl!.isNotEmpty
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.network(
-                    _currentProduct.imageUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => const _PlaceholderImage(),
-                  ),
-                )
-              : const _PlaceholderImage(),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary.withValues(alpha: 0.12),
+            theme.colorScheme.primary.withValues(alpha: 0.03),
+          ],
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _currentProduct.name,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 112,
+            height: 112,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                width: 1,
               ),
-              const SizedBox(height: 8),
-              if (_currentProduct.brand?.isNotEmpty == true)
-                Text(
-                  _currentProduct.brand!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
+            ),
+            child:
+                _currentProduct.imageUrl != null &&
+                    _currentProduct.imageUrl!.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      _currentProduct.imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => const _PlaceholderImage(),
+                    ),
+                  )
+                : const _PlaceholderImage(),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            _currentProduct.name,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (_currentProduct.brand?.isNotEmpty == true) ...[
+            const SizedBox(height: 6),
+            Text(
+              _currentProduct.brand!,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+          if (_currentProduct.rating != null) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 6,
+              children: [
+                ...List.generate(
+                  5,
+                  (index) => Icon(
+                    index < _currentProduct.rating!
+                        ? Icons.star
+                        : Icons.star_border,
+                    color: Colors.amber,
+                    size: 16,
                   ),
                 ),
-              if (_currentProduct.rating != null) ...[
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    ...List.generate(
-                      5,
-                      (index) => Icon(
-                        index < _currentProduct.rating!
-                            ? Icons.star
-                            : Icons.star_border,
-                        color: Colors.amber,
-                        size: 16,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_currentProduct.rating}/5',
-                      style: theme.textTheme.labelSmall,
-                    ),
-                  ],
+                Text(
+                  '${_currentProduct.rating}/5',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -656,6 +690,7 @@ class _ProductScreenState extends State<ProductScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.28),
         border: Border.all(
           color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
