@@ -2,7 +2,7 @@
 
 > Aplicación móvil para el seguimiento de productos de belleza y autocuidado: gestión de caducidades, listas personalizadas, rutinas y resumen anual al estilo Spotify Wrapped.
 
-- [Backend (NestJS)](./api-skincare/README.md)
+- [Backend (NestJS)](./backend/README.md)
 - [Frontend (Flutter)](./dueglow_app/README.md)
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
@@ -155,7 +155,7 @@ El servidor arrancará en `http://localhost:3000`
 
 ```bash
 # Volver a la raíz y entrar en la app
-cd ../app
+cd ../dueglow_app
 
 # Obtener dependencias de Flutter
 flutter pub get
@@ -176,19 +176,6 @@ mongodb://localhost:27017/[nombre-base-de-datos]
 O si usas Atlas:
 ```
 mongodb+srv://[usuario]:[password]@cluster.mongodb.net/[nombre-bd]
-```
-
----
-
-## 📱 Uso
-
-[Describe aquí cómo usar la aplicación paso a paso. Puedes añadir capturas de pantalla.]
-
-```
-1. Abre la app en tu dispositivo
-2. Regístrate o inicia sesión
-3. [Paso 3...]
-4. [Paso 4...]
 ```
 
 ---
