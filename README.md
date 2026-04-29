@@ -2,6 +2,9 @@
 
 > Aplicación móvil para el seguimiento de productos de belleza y autocuidado: gestión de caducidades, listas personalizadas, rutinas y resumen anual al estilo Spotify Wrapped.
 
+- [Backend (NestJS)](./api-skincare/README.md)
+- [Frontend (Flutter)](./skincare_tfg/README.md)
+
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
 ![NestJS](https://img.shields.io/badge/NestJS-10.x-E0234E?logo=nestjs)
 ![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-7.x-47A248?logo=mongodb)
@@ -19,10 +22,9 @@
 - [Arquitectura](#-arquitectura)
 - [Requisitos previos](#-requisitos-previos)
 - [Instalación y configuración](#-instalación-y-configuración)
-- [Ejecutar el proyecto](#-ejecutar-el-proyecto)
-- [Usar el backend en la nube (Render)](#-usar-el-backend-en-la-nube-render)
-- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Variables de entorno](#-variables-de-entorno)
 - [Autor](#-autor)
+- [Licencia](#-licencia)
 
 ---
 
@@ -102,8 +104,6 @@ El proyecto sigue una arquitectura **cliente-servidor** desacoplada:
 │   Visualización: MongoDB Compass (cualquier equipo)     │
 └─────────────────────────────────────────────────────────┘
 ```
-
-> Para más detalle ver [`/docs/arquitectura.md`](./docs/arquitectura.md)
 
 ---
 
@@ -193,57 +193,6 @@ mongodb+srv://[usuario]:[password]@cluster.mongodb.net/[nombre-bd]
 
 ---
 
-## 📁 Estructura del proyecto
-
-```
-dueglow/
-│
-├── app/                                # Proyecto Flutter (cliente móvil)
-│   ├── lib/
-│   │   ├── core/                       # Configuración global, temas, constantes
-│   │   │   ├── constants/              # URLs de API, colores, strings
-│   │   │   ├── theme/                  # Tema visual de DueGlow
-│   │   │   └── network/                # Cliente HTTP (Dio)
-│   │   ├── data/                       # Modelos, repositorios, datasources
-│   │   │   ├── models/                 # Product, Routine, User, ProjectPan...
-│   │   │   └── repositories/
-│   │   └── presentation/               # Pantallas y widgets
-│   │       ├── home/
-│   │       ├── products/               # Listado, detalle, añadir producto
-│   │       ├── scanner/                # Escáner de código de barras
-│   │       ├── routines/               # Crear y ver rutinas
-│   │       ├── lists/                  # Tengo · Quiero · Favoritos · Usados
-│   │       ├── project_pan/            # Resumen mensual y anual
-│   │       └── profile/
-│   ├── test/
-│   └── pubspec.yaml
-│
-├── backend/                            # Proyecto NestJS (API)
-│   ├── src/
-│   │   ├── auth/                       # Registro, login, JWT
-│   │   ├── users/                      # Gestión de usuarios
-│   │   ├── products/                   # CRUD de productos del usuario
-│   │   ├── categories/                 # Skincare, haircare, maquillaje...
-│   │   ├── lists/                      # Tengo · Quiero · Favoritos · Usados
-│   │   ├── routines/                   # Rutinas y pasos
-│   │   ├── project-pan/                # Resumen de productos terminados
-│   │   ├── barcode/                    # Integración con API externa de cosméticos
-│   │   ├── notifications/              # Alertas de caducidad
-│   │   ├── common/                     # Guards, interceptors, filtros
-│   │   └── main.ts
-│   └── package.json
-│
-├── docs/                               # Documentación extendida
-│   ├── arquitectura.md
-│   ├── api.md
-│   ├── decisiones-tecnicas.md
-│   └── guia-desarrollo.md
-│
-└── README.md
-```
-
----
-
 ## 🔐 Variables de entorno
 
 ### Backend (`backend/.env`)
@@ -269,7 +218,7 @@ JWT_EXPIRES_IN=7d
 
 ## 👤 Autor
 
-**[Tu nombre]**
+**Ieva Rituma**
 
 - 📧 Email: [ievarituma9877@gmail.com]
 - 🐙 GitHub: [@HiBlancy](https://github.com/HiBlancy)
