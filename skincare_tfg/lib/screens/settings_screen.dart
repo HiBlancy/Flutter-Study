@@ -172,7 +172,7 @@ class _LanguageTile extends StatelessWidget {
         ListTile(
           leading: Icon(Icons.translate, color: theme.colorScheme.primary),
           title: Text(l10n.spanish),
-          subtitle: Text(l10n.english, style: TextStyle(color: subtleText)),
+          subtitle: Text('Español', style: TextStyle(color: subtleText)),
           trailing: currentLocale == 'es'
               ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
               : null,
@@ -185,7 +185,7 @@ class _LanguageTile extends StatelessWidget {
         ListTile(
           leading: Icon(Icons.translate, color: theme.colorScheme.primary),
           title: Text(l10n.english),
-          subtitle: Text(l10n.spanish, style: TextStyle(color: subtleText)),
+          subtitle: Text('English', style: TextStyle(color: subtleText)),
           trailing: currentLocale == 'en'
               ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
               : null,
@@ -198,7 +198,7 @@ class _LanguageTile extends StatelessWidget {
         ListTile(
           leading: Icon(Icons.translate, color: theme.colorScheme.primary),
           title: Text(l10n.russian),
-          subtitle: Text(l10n.english, style: TextStyle(color: subtleText)),
+          subtitle: Text('Русский', style: TextStyle(color: subtleText)),
           trailing: currentLocale == 'ru'
               ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
               : null,

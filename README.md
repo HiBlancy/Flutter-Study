@@ -4,7 +4,9 @@
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
 ![NestJS](https://img.shields.io/badge/NestJS-10.x-E0234E?logo=nestjs)
-![MongoDB](https://img.shields.io/badge/MongoDB-7.x-47A248?logo=mongodb)
+![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-7.x-47A248?logo=mongodb)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?logo=cloudinary)
+![Render](https://img.shields.io/badge/Render-46E3B7?logo=render)
 ![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)
 ![TFG](https://img.shields.io/badge/TFG-2024--2025-blue)
 
@@ -17,11 +19,9 @@
 - [Arquitectura](#-arquitectura)
 - [Requisitos previos](#-requisitos-previos)
 - [Instalación y configuración](#-instalación-y-configuración)
-- [Uso](#-uso)
+- [Ejecutar el proyecto](#-ejecutar-el-proyecto)
+- [Usar el backend en la nube (Render)](#-usar-el-backend-en-la-nube-render)
 - [Estructura del proyecto](#-estructura-del-proyecto)
-- [API Reference](#-api-reference)
-- [Variables de entorno](#-variables-de-entorno)
-- [Estado del proyecto](#-estado-del-proyecto)
 - [Autor](#-autor)
 
 ---
@@ -36,27 +36,41 @@ Además de la gestión de productos, DueGlow incluye un módulo de rutinas donde
 - 📦 Gestión de productos por categoría (skincare, bodycare, haircare, maquillaje)
 - ⏰ Control de fechas de caducidad con alertas y notificaciones
 - 📷 Escaneo de código de barras con integración a API de cosméticos
-- 📋 Listas: tengo · quiero · favoritos · ya usados
+- 📋 Listas: tengo · quiero · ya usados
 - ✨ Project Pan — resumen mensual y anual de productos terminados
-- 🧴 Módulo de rutinas con pasos, comentarios y visibilidad pública
+- 🧴 Módulo de rutinas con pasos
 - 🔒 Sin red social — solo se pueden ver las rutinas públicas de otros usuarios
 
 ---
 
 ## 🛠 Tecnologías
 
-| Capa | Tecnología | Versión | Uso |
-|------|-----------|---------|-----|
-| **Frontend / App** | Flutter | 3.x | Aplicación móvil multiplataforma (Android / iOS) |
-| **Backend** | NestJS | 10.x | API REST con arquitectura modular |
-| **Base de datos** | MongoDB | 7.x | Almacenamiento de datos NoSQL |
-| **ODM** | Mongoose | 8.x | Modelado de datos para MongoDB |
-| **Visualización BD** | MongoDB Compass | Latest | Exploración y gestión visual de la base de datos |
-| **Gestión de estado** | [Provider / Riverpod / Bloc] | x.x | Estado global en Flutter |
-| **Escaneo de barras** | mobile_scanner | x.x | Lectura de códigos de barras por cámara |
-| **API de cosméticos** | Open Beauty Facts / [otra] | - | Base de datos de productos por código de barras |
-| **Notificaciones** | flutter_local_notifications | x.x | Alertas de caducidad de productos |
-| **Autenticación** | JWT + NestJS Passport | - | Gestión de sesiones de usuario |
+| Capa | Tecnología | Versión exacta usada |
+|------|-----------|----------------------|
+| **Frontend (Flutter)** | SDK Dart | `^3.11.3` |
+| | Flutter Framework | `3.27.4` (estable) |
+| | Provider (estado) | `^6.1.1` |
+| | HTTP client | `^1.2.0` |
+| | Escáner de barras | `mobile_scanner ^5.0.0` |
+| | Almacenamiento seguro | `flutter_secure_storage ^10.0.0` |
+| | Imágenes (picker) | `image_picker ^1.0.4` |
+| | Procesamiento de imágenes | `image ^4.5.4`, `mime ^1.0.4` |
+| | Logging | `logger ^2.0.2+1` |
+| **Backend (NestJS)** | NestJS core | `^11.0.1` |
+| | Node.js (entorno) | `22.10.7` (tipos) |
+| | MongoDB ODM | `mongoose ^9.3.3` |
+| | Mongoose para Nest | `@nestjs/mongoose ^11.0.4` |
+| | Autenticación | `@nestjs/jwt ^11.0.2`, `passport-jwt ^4.0.1` |
+| | Cloudinary SDK | `cloudinary ^2.9.0` |
+| | Validación DTO | `class-validator ^0.15.1`, `class-transformer ^0.5.1` |
+| | Programación tareas | `@nestjs/schedule ^6.1.3` |
+| | Procesamiento imágenes | `sharp ^0.34.5` |
+| | Variables entorno | `@nestjs/config ^4.0.3` |
+| **Bases de datos** | MongoDB Atlas | Cluster compartido (compatible Mongoose 9) |
+| **Almacenamiento** | Cloudinary | API v1.29+ |
+| **Despliegue backend** | Render | Plataforma (despliegue continuo) |
+
+> ⚠️ **Compatibilidad**: Este proyecto ha sido desarrollado con las versiones exactas listadas arriba. Si usas versiones más recientes, puede funcionar igual, pero se recomienda seguir las versiones del `pubspec.yaml` y `package.json` para evitar errores.
 
 ---
 
@@ -95,13 +109,15 @@ El proyecto sigue una arquitectura **cliente-servidor** desacoplada:
 
 ## ✅ Requisitos previos
 
-Antes de instalar el proyecto, asegúrate de tener instalado:
+Para ejecutar el proyecto **completamente en local** necesitas:
 
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) (versión 3.x o superior)
-- [Node.js](https://nodejs.org/) (versión 18.x o superior)
-- [MongoDB](https://www.mongodb.com/try/download/community) en local **o** una cadena de conexión de [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-- [MongoDB Compass](https://www.mongodb.com/products/compass) (opcional, para visualizar los datos)
-- Un emulador Android / dispositivo físico con depuración USB activada
+- **Flutter SDK** (compatible con Dart `^3.11.3`) – [Instalar Flutter](https://flutter.dev/docs/get-started/install)
+- **Node.js** versión `20.x` o superior (se recomienda `22.10.7`)
+- **npm**
+- **MongoDB Compass** (opcional, para visualizar datos)
+- Un emulador Android/iOS o dispositivo físico con depuración USB
+
+Si solo quieres probar la app **sin montar el backend local**, puedes conectar el frontend al backend ya desplegado en Render (ver sección más abajo). En ese caso solo necesitas Flutter.
 
 ---
 
@@ -228,60 +244,6 @@ dueglow/
 
 ---
 
-## 📡 API Reference
-
-> Documentación completa en [`/docs/api.md`](./docs/api.md)
-
-### Base URL
-```
-http://localhost:3000/api/v1
-```
-
-### Autenticación
-```http
-POST /auth/register
-POST /auth/login
-```
-
-### Productos
-```http
-GET    /products              # Todos los productos del usuario
-POST   /products              # Crear producto manualmente
-GET    /products/:id          # Detalle de un producto
-PATCH  /products/:id          # Actualizar producto
-DELETE /products/:id          # Eliminar producto
-GET    /products/expiring     # Productos próximos a caducar
-```
-
-### Escaneo de código de barras
-```http
-GET    /barcode/:code         # Buscar producto por código en API externa
-```
-
-### Listas
-```http
-GET    /lists/:type           # Obtener lista (have | want | favorites | used)
-POST   /lists/:type/:productId  # Añadir producto a una lista
-DELETE /lists/:type/:productId  # Quitar producto de una lista
-```
-
-### Rutinas
-```http
-GET    /routines              # Rutinas propias del usuario
-POST   /routines              # Crear rutina
-PATCH  /routines/:id          # Actualizar rutina
-DELETE /routines/:id          # Eliminar rutina
-GET    /routines/public       # Ver rutinas públicas de otros usuarios
-```
-
-### Project Pan
-```http
-GET    /project-pan/monthly   # Resumen mensual de productos usados
-GET    /project-pan/yearly    # Resumen anual (Wrapped)
-```
-
----
-
 ## 🔐 Variables de entorno
 
 ### Backend (`backend/.env`)
@@ -305,31 +267,14 @@ JWT_EXPIRES_IN=7d
 
 ---
 
-## 📊 Estado del proyecto
-
-| Módulo | Estado |
-|--------|--------|
-| Autenticación (registro y login) | 🔄 En desarrollo |
-| Gestión de productos y categorías | 🔄 En desarrollo |
-| Control de caducidades | ⏳ Pendiente |
-| Escaneo de código de barras | ⏳ Pendiente |
-| Listas (tengo / quiero / favoritos / usados) | ⏳ Pendiente |
-| Project Pan (resumen mensual y anual) | ⏳ Pendiente |
-| Módulo de rutinas | ⏳ Pendiente |
-| Rutinas públicas | ⏳ Pendiente |
-| Notificaciones de caducidad | ⏳ Pendiente |
-| Publicación en Play Store | ⏳ Pendiente |
-
----
-
 ## 👤 Autor
 
 **[Tu nombre]**
 
-- 📧 Email: [tu-email@ejemplo.com]
-- 🐙 GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- 🎓 Centro: [Nombre de tu universidad / escuela]
-- 📚 TFG — [Año académico]
+- 📧 Email: [ievarituma9877@gmail.com]
+- 🐙 GitHub: [@HiBlancy](https://github.com/HiBlancy)
+- 🎓 Centro: Digitech Valencia (Progresa)
+- 📚 TFG — Curso 2024 - 2026
 
 ---
 

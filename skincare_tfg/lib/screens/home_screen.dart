@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final hour = DateTime.now().hour;
     final name = _userName;
 
-    if (hour < 12) {
+    if (hour < 14) {
       return AppLocalizations.of(context)!.morningGreeting(name).toUpperCase();
     } else if (hour < 18) {
       return AppLocalizations.of(context)!.afternoonGreeting(name).toUpperCase();
