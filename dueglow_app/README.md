@@ -45,3 +45,96 @@ cd app
 ```bash
 flutter pub get
 ```
+
+### 4. Configurar la URL del backend
+La app necesita saber a qué backend conectarse. Elige una opción:
+
+Opción A: Backend local (desarrollo)
+Crea un archivo .env en la raíz de app/ con:
+
+```bash
+API_URL=http://localhost:3000
+```
+
+>⚠️ Asegúrate de que el backend NestJS esté corriendo en http://localhost:3000.
+
+Opción B: Backend desplegado en Render
+
+```bash
+API_URL=https://dueglow-api.onrender.com   # cambia por tu URL real
+```
+
+### 5. Ejecutar la app
+Con dispositivo conectado o emulador encendido:
+
+```bash
+flutter run
+```
+
+### Generar APK (Android)
+
+```bash
+flutter build apk --release
+```
+
+El APK se generará en:
+build/app/outputs/flutter-apk/app-release.apk
+
+Para generar un AAB (Google Play):
+
+```bash
+flutter build appbundle
+```
+
+### 🧩 Estructura del proyecto (carpeta lib/)
+
+```
+lib/
+├── constants/                       #
+│   └── app_constants/               #
+├── l10n/                            #
+│   ├── models/                      
+│   └── repositories/
+├── models/   
+│   ├── beauty_product.dart
+│   ├── product_list_type.dart    
+│   ├── routine_model.dart
+│   └── user.dart               
+├── provides/                        # Proveedores
+│   ├── locale_provider.dart
+│   └── theme_provider.dart
+├── screens/                         # Pantallas
+│   ├── about_Screen.dart
+│   ├── add_product_screen.dart
+│   ├── add_routine_screen.dart
+│   ├── edit_screen.dart
+│   ├── home_screen.dart
+│   ├── login_screen.dart
+│   ├── my_products_screen.dart
+│   ├── product_screen.dart
+│   ├── profile_screen.dart
+│   ├── register_screen.dart
+│   ├── routine_screen.dart
+│   ├── scan_screen.dart
+│   ├── search_screen.dart
+│   └── settings_screen.dart
+├── services/                        # Servicios
+│   ├── api_config.dart              # Configuracion general de la Api      
+│   ├── auth_services.dart           # Servicio de autentificacion 
+│   ├── beauty_api_service.dart      #
+│   ├── cleanup_service.dart
+│   ├── image_service.dart
+│   ├── product_service.dart
+│   └── routine_Service.dart
+├── widgets/                         # Widgets
+│   ├── bottom_app_bar.dart
+│   ├── custom_button.dart
+│   ├── custom_text_field.dart
+│   ├── edit_product_dialog.dart
+│   ├── main_toolbar.dart
+│   ├── product_card.dart
+│   └── warning_dialog.dart
+├── themes.dart                      # Colores y tipografias de la app
+└── main.dart                        # Punto de entrada
+```
+
