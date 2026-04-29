@@ -96,6 +96,113 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings => 'Configuración';
 
   @override
+  String get editProfile => 'Editar perfil';
+
+  @override
+  String get phone => 'Teléfono';
+
+  @override
+  String get phoneHint => '+34 123 456 789';
+
+  @override
+  String get birthDate => 'Fecha de nacimiento';
+
+  @override
+  String get birthDateHint => 'DD/MM/AAAA';
+
+  @override
+  String get changePasswordOptional => 'Cambiar contraseña (opcional)';
+
+  @override
+  String get newPassword => 'Nueva contraseña';
+
+  @override
+  String get saveChanges => 'Guardar cambios';
+
+  @override
+  String get selectBirthDate => 'Selecciona tu fecha de nacimiento';
+
+  @override
+  String get selectProfilePhotoTitle => 'Seleccionar foto de perfil';
+
+  @override
+  String get deletePhoto => 'Eliminar foto';
+
+  @override
+  String get photoMarkedForDeletion => 'Foto marcada para eliminar al guardar';
+
+  @override
+  String get deletePhotoError => 'Error al eliminar la foto';
+
+  @override
+  String get uploadPhotoError => 'Error al subir la nueva foto';
+
+  @override
+  String get profileUpdatedSuccess => 'Perfil actualizado correctamente';
+
+  @override
+  String get profileUpdateError => 'Error al actualizar el perfil';
+
+  @override
+  String get nextRoutineTitle => 'Próxima rutina';
+
+  @override
+  String get routinesTitle => 'Rutinas';
+
+  @override
+  String get createFirstRoutineHomeHint =>
+      'Crea tu primera rutina para verla aquí.';
+
+  @override
+  String routineProductsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# productos',
+      one: '# producto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slotTodayMorning => 'Hoy mañana';
+
+  @override
+  String get slotTodayNight => 'Hoy noche';
+
+  @override
+  String get slotTomorrowMorning => 'Mañana mañana';
+
+  @override
+  String get slotTomorrowNight => 'Mañana noche';
+
+  @override
+  String slotInDaysMorning(int days) {
+    return 'En $days días (mañana)';
+  }
+
+  @override
+  String slotInDaysNight(int days) {
+    return 'En $days días (noche)';
+  }
+
+  @override
+  String get monthlyUsageTitle => 'Uso mensual';
+
+  @override
+  String get monthlyUsageDescription =>
+      'Productos terminados en los ultimos meses.';
+
+  @override
+  String get thisMonthLabel => 'Este mes';
+
+  @override
+  String get twelveMonthsLabel => '12 meses';
+
+  @override
+  String get noUsageHistory => 'Aun no hay historial de productos usados.';
+
+  @override
   String get general => 'General';
 
   @override

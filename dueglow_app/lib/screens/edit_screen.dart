@@ -109,6 +109,7 @@ class _EditScreenState extends State<EditScreen> {
 
 
   void _showImagePickerOptions() {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -127,13 +128,13 @@ class _EditScreenState extends State<EditScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    'Seleccionar foto de perfil',
+                    l10n.selectProfilePhotoTitle,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
                 ListTile(
                   leading: const Icon(Icons.photo_camera),
-                  title: const Text('Tomar foto'),
+                  title: Text(l10n.takePhoto),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImageFromCamera();
@@ -141,7 +142,7 @@ class _EditScreenState extends State<EditScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.photo_library),
-                  title: const Text('Seleccionar de galería'),
+                  title: Text(l10n.chooseFromGallery),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImageFromGallery();
@@ -154,7 +155,7 @@ class _EditScreenState extends State<EditScreen> {
                       color: Theme.of(context).colorScheme.error,
                     ),
                     title: Text(
-                      'Eliminar foto',
+                      l10n.deletePhoto,
                       style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                     onTap: () {
@@ -165,7 +166,7 @@ class _EditScreenState extends State<EditScreen> {
                         _currentProfileImageUrl = null;
                       });
                       _showCustomSnackBar(
-                        'Foto marcada para eliminar al guardar',
+                        l10n.photoMarkedForDeletion,
                       );
                     },
                   ),
@@ -180,19 +181,20 @@ class _EditScreenState extends State<EditScreen> {
 
 
   Future<void> _pickImageFromCamera() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isUploadingImage = true);
 
     final imageFile = await _imageService.takePhotoWithCamera();
 
     if (imageFile != null) {
       setState(() => _selectedImage = imageFile);
-      _showCustomSnackBar('Foto capturada correctamente');
+      _showCustomSnackBar(l10n.imageCapturedSuccess);
 
 
       final info = await _imageService.getImageInfo(imageFile);
       print('📸 Info de imagen: $info');
     } else {
-      _showCustomSnackBar('No se pudo capturar la foto', isError: true);
+      _showCustomSnackBar(l10n.imageCaptureError, isError: true);
     }
 
     setState(() => _isUploadingImage = false);
@@ -200,19 +202,20 @@ class _EditScreenState extends State<EditScreen> {
 
 
   Future<void> _pickImageFromGallery() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isUploadingImage = true);
 
     final imageFile = await _imageService.pickImageFromGallery();
 
     if (imageFile != null) {
       setState(() => _selectedImage = imageFile);
-      _showCustomSnackBar('Imagen seleccionada correctamente');
+      _showCustomSnackBar(l10n.imageSelectedSuccess);
 
 
       final info = await _imageService.getImageInfo(imageFile);
       print('🖼️ Info de imagen: $info');
     } else {
-      _showCustomSnackBar('No se pudo seleccionar la imagen', isError: true);
+      _showCustomSnackBar(l10n.imageSelectError, isError: true);
     }
 
     setState(() => _isUploadingImage = false);
@@ -240,7 +243,7 @@ class _EditScreenState extends State<EditScreen> {
         finalProfileImageUrl = null;
         _shouldDeleteImage = false;
       } else {
-        _showCustomSnackBar('Error al eliminar la foto', isError: true);
+        _showCustomSnackBar(l10n.deletePhotoError, isError: true);
         setState(() => _isSaving = false);
         return;
       }
@@ -252,7 +255,7 @@ class _EditScreenState extends State<EditScreen> {
       if (uploaded != null && uploaded['profileImage'] != null) {
         finalProfileImageUrl = uploaded['profileImage'];
       } else {
-        _showCustomSnackBar('Error al subir la nueva foto', isError: true);
+        _showCustomSnackBar(l10n.uploadPhotoError, isError: true);
         setState(() => _isSaving = false);
         return;
       }
@@ -274,14 +277,14 @@ class _EditScreenState extends State<EditScreen> {
 
     if (updateResult != null && mounted) {
       await _authService.getProfile();
-      _showCustomSnackBar('Perfil actualizado correctamente');
+      _showCustomSnackBar(l10n.profileUpdatedSuccess);
       Navigator.pop(context, true);
     } else {
-      _showCustomSnackBar('Error al actualizar el perfil', isError: true);
+      _showCustomSnackBar(l10n.profileUpdateError, isError: true);
     }
   } catch (e) {
     print('❌ Error en _saveChanges: $e');
-    _showCustomSnackBar('Error al guardar los cambios', isError: true);
+    _showCustomSnackBar(l10n.saveChangesError, isError: true);
   } finally {
     if (mounted) setState(() => _isSaving = false);
   }
@@ -312,7 +315,7 @@ class _EditScreenState extends State<EditScreen> {
       initialDate: initialDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
-      helpText: 'Selecciona tu fecha de nacimiento',
+      helpText: AppLocalizations.of(context)!.selectBirthDate,
     );
 
     if (picked != null) {
@@ -360,7 +363,7 @@ class _EditScreenState extends State<EditScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return CustomAppBar(
-      title: 'Editar Perfil',
+      title: l10n.editProfile,
       showDrawer: true,
       showBackButton: true,
       child: _isLoading
@@ -379,12 +382,12 @@ class _EditScreenState extends State<EditScreen> {
                   const SizedBox(height: 32),
                   CustomTextField(
                     controller: _nameController,
-                    label: 'Nombre',
+                    label: l10n.fullName,
                     prefixIcon: Icons.person,
-                    hint: 'Tu nombre',
+                    hint: l10n.enterName,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'El nombre es requerido';
+                        return l10n.nameRequiredError;
                       }
                       return null;
                     },
@@ -392,9 +395,9 @@ class _EditScreenState extends State<EditScreen> {
                   const SizedBox(height: 16),
                   CustomTextField(
                     controller: _phoneController,
-                    label: 'Teléfono',
+                    label: l10n.phone,
                     prefixIcon: Icons.phone,
-                    hint: '+34 123 456 789',
+                    hint: l10n.phoneHint,
                     keyboardType: TextInputType.phone,
                   ),
                   const SizedBox(height: 16),
@@ -403,9 +406,9 @@ class _EditScreenState extends State<EditScreen> {
                     child: AbsorbPointer(
                       child: CustomTextField(
                         controller: _birthDateController,
-                        label: 'Fecha de nacimiento',
+                        label: l10n.birthDate,
                         prefixIcon: Icons.cake,
-                        hint: 'DD/MM/AAAA',
+                        hint: l10n.birthDateHint,
                       ),
                     ),
                   ),
@@ -415,7 +418,7 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Cambiar contraseña (opcional)',
+                    l10n.changePasswordOptional,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -423,7 +426,7 @@ class _EditScreenState extends State<EditScreen> {
                   const SizedBox(height: 16),
                   CustomTextField(
                     controller: _passwordController,
-                    label: 'Nueva contraseña',
+                    label: l10n.newPassword,
                     prefixIcon: Icons.lock,
                     obscureText: _obscurePassword,
                     showVisibilityToggle: true,
@@ -447,7 +450,7 @@ class _EditScreenState extends State<EditScreen> {
                   const SizedBox(height: 16),
                   CustomTextField(
                     controller: _confirmPasswordController,
-                    label: 'Confirmar contraseña',
+                    label: l10n.confirmPassword,
                     prefixIcon: Icons.lock_outline,
                     obscureText: _obscureConfirmPassword,
                     showVisibilityToggle: true,
@@ -459,7 +462,7 @@ class _EditScreenState extends State<EditScreen> {
                     validator: (value) {
                       if (_passwordController.text.isNotEmpty &&
                           value != _passwordController.text) {
-                        return 'Las contraseñas no coinciden';
+                        return l10n.passwordsDontMatch;
                       }
                       return null;
                     },
@@ -564,7 +567,7 @@ class _EditScreenState extends State<EditScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Guardar Cambios',
+                      AppLocalizations.of(context)!.saveChanges,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                       ),

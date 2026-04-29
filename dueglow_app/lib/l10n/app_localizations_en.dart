@@ -96,6 +96,112 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get phoneHint => '+34 123 456 789';
+
+  @override
+  String get birthDate => 'Birth date';
+
+  @override
+  String get birthDateHint => 'DD/MM/YYYY';
+
+  @override
+  String get changePasswordOptional => 'Change password (optional)';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get selectBirthDate => 'Select your birth date';
+
+  @override
+  String get selectProfilePhotoTitle => 'Select profile photo';
+
+  @override
+  String get deletePhoto => 'Delete photo';
+
+  @override
+  String get photoMarkedForDeletion => 'Photo marked for deletion on save';
+
+  @override
+  String get deletePhotoError => 'Error deleting photo';
+
+  @override
+  String get uploadPhotoError => 'Error uploading the new photo';
+
+  @override
+  String get profileUpdatedSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateError => 'Error updating profile';
+
+  @override
+  String get nextRoutineTitle => 'Next routine';
+
+  @override
+  String get routinesTitle => 'Routines';
+
+  @override
+  String get createFirstRoutineHomeHint =>
+      'Create your first routine to see it here.';
+
+  @override
+  String routineProductsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# products',
+      one: '# product',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slotTodayMorning => 'Today morning';
+
+  @override
+  String get slotTodayNight => 'Today night';
+
+  @override
+  String get slotTomorrowMorning => 'Tomorrow morning';
+
+  @override
+  String get slotTomorrowNight => 'Tomorrow night';
+
+  @override
+  String slotInDaysMorning(int days) {
+    return 'In $days days (morning)';
+  }
+
+  @override
+  String slotInDaysNight(int days) {
+    return 'In $days days (night)';
+  }
+
+  @override
+  String get monthlyUsageTitle => 'Monthly usage';
+
+  @override
+  String get monthlyUsageDescription => 'Products finished in recent months.';
+
+  @override
+  String get thisMonthLabel => 'This month';
+
+  @override
+  String get twelveMonthsLabel => '12 months';
+
+  @override
+  String get noUsageHistory => 'There is no finished products history yet.';
+
+  @override
   String get general => 'General';
 
   @override

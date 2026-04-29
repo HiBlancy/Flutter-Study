@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../constants/app_constants.dart';
+import '../l10n/app_localizations.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String title;
@@ -62,6 +63,7 @@ class CustomAppBar extends StatelessWidget {
 
   Widget _buildDrawer(BuildContext context) {
   final theme = Theme.of(context);
+  final l10n = AppLocalizations.of(context)!;
   return Drawer(
     backgroundColor: theme.colorScheme.surface,
     child: SafeArea(
@@ -74,26 +76,26 @@ class CustomAppBar extends StatelessWidget {
                 _buildDrawerItem(
                   context,
                   Icons.settings,
-                  'Configuración',
+                  l10n.settings,
                   AppConstants.routeSettings,
                 ),
                 _buildDrawerItem(
                   context,
                   Icons.edit,
-                  'Editar Perfil',
+                  l10n.editProfile,
                   AppConstants.routeEdit,
                 ),
                 _buildDrawerItem(
                   context,
                   Icons.info,
-                  'Acerca de',
+                  l10n.about,
                   AppConstants.routeAbout,
                 ),
                 const Divider(),
                 _buildDrawerItem(
                   context,
                   Icons.logout,
-                  'Cerrar sesión',
+                  l10n.logout,
                   null,
                   isLogout: true,
                 ),
@@ -103,7 +105,7 @@ class CustomAppBar extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Versión ${AppConstants.version}',
+              l10n.versionLabel(AppConstants.version),
               style: TextStyle(
                 fontSize: 12,
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -122,7 +124,8 @@ class CustomAppBar extends StatelessWidget {
     return FutureBuilder<Map<String, String?>>(
       future: _getUserData(),
       builder: (context, snapshot) {
-        final userName = snapshot.data?['name'] ?? 'Usuario';
+        final l10n = AppLocalizations.of(context)!;
+        final userName = snapshot.data?['name'] ?? l10n.defaultUserName;
         final userEmail = snapshot.data?['email'] ?? '';
         final profileImage = snapshot.data?['profileImage'];
 

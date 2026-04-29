@@ -96,6 +96,116 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings => 'Настройки';
 
   @override
+  String get editProfile => 'Редактировать профиль';
+
+  @override
+  String get phone => 'Телефон';
+
+  @override
+  String get phoneHint => '+34 123 456 789';
+
+  @override
+  String get birthDate => 'Дата рождения';
+
+  @override
+  String get birthDateHint => 'ДД/ММ/ГГГГ';
+
+  @override
+  String get changePasswordOptional => 'Изменить пароль (необязательно)';
+
+  @override
+  String get newPassword => 'Новый пароль';
+
+  @override
+  String get saveChanges => 'Сохранить изменения';
+
+  @override
+  String get selectBirthDate => 'Выберите дату рождения';
+
+  @override
+  String get selectProfilePhotoTitle => 'Выбрать фото профиля';
+
+  @override
+  String get deletePhoto => 'Удалить фото';
+
+  @override
+  String get photoMarkedForDeletion =>
+      'Фото отмечено для удаления при сохранении';
+
+  @override
+  String get deletePhotoError => 'Ошибка при удалении фото';
+
+  @override
+  String get uploadPhotoError => 'Ошибка при загрузке нового фото';
+
+  @override
+  String get profileUpdatedSuccess => 'Профиль успешно обновлен';
+
+  @override
+  String get profileUpdateError => 'Ошибка при обновлении профиля';
+
+  @override
+  String get nextRoutineTitle => 'Следующая рутина';
+
+  @override
+  String get routinesTitle => 'Рутины';
+
+  @override
+  String get createFirstRoutineHomeHint =>
+      'Создайте первую рутину, чтобы увидеть ее здесь.';
+
+  @override
+  String routineProductsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# продукта',
+      many: '# продуктов',
+      few: '# продукта',
+      one: '# продукт',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get slotTodayMorning => 'Сегодня утром';
+
+  @override
+  String get slotTodayNight => 'Сегодня вечером';
+
+  @override
+  String get slotTomorrowMorning => 'Завтра утром';
+
+  @override
+  String get slotTomorrowNight => 'Завтра вечером';
+
+  @override
+  String slotInDaysMorning(int days) {
+    return 'Через $days дней (утром)';
+  }
+
+  @override
+  String slotInDaysNight(int days) {
+    return 'Через $days дней (вечером)';
+  }
+
+  @override
+  String get monthlyUsageTitle => 'Ежемесячное использование';
+
+  @override
+  String get monthlyUsageDescription =>
+      'Продукты, завершенные за последние месяцы.';
+
+  @override
+  String get thisMonthLabel => 'Этот месяц';
+
+  @override
+  String get twelveMonthsLabel => '12 месяцев';
+
+  @override
+  String get noUsageHistory => 'Пока нет истории завершенных продуктов.';
+
+  @override
   String get general => 'Общие';
 
   @override

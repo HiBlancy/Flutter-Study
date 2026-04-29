@@ -35,6 +35,58 @@
   "camera": "Камера",
   "aimBarcode": "Наведите на штрихкод",
   "settings": "Настройки",
+  "editProfile": "Редактировать профиль",
+  "phone": "Телефон",
+  "phoneHint": "+34 123 456 789",
+  "birthDate": "Дата рождения",
+  "birthDateHint": "ДД/ММ/ГГГГ",
+  "changePasswordOptional": "Изменить пароль (необязательно)",
+  "newPassword": "Новый пароль",
+  "saveChanges": "Сохранить изменения",
+  "selectBirthDate": "Выберите дату рождения",
+  "selectProfilePhotoTitle": "Выбрать фото профиля",
+  "deletePhoto": "Удалить фото",
+  "photoMarkedForDeletion": "Фото отмечено для удаления при сохранении",
+  "deletePhotoError": "Ошибка при удалении фото",
+  "uploadPhotoError": "Ошибка при загрузке нового фото",
+  "profileUpdatedSuccess": "Профиль успешно обновлен",
+  "profileUpdateError": "Ошибка при обновлении профиля",
+  "nextRoutineTitle": "Следующая рутина",
+  "routinesTitle": "Рутины",
+  "createFirstRoutineHomeHint": "Создайте первую рутину, чтобы увидеть ее здесь.",
+  "routineProductsCount": "{count, plural, =1{# продукт} few{# продукта} many{# продуктов} other{# продукта}}",
+  "@routineProductsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotTodayMorning": "Сегодня утром",
+  "slotTodayNight": "Сегодня вечером",
+  "slotTomorrowMorning": "Завтра утром",
+  "slotTomorrowNight": "Завтра вечером",
+  "slotInDaysMorning": "Через {days} дней (утром)",
+  "@slotInDaysMorning": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "slotInDaysNight": "Через {days} дней (вечером)",
+  "@slotInDaysNight": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyUsageTitle": "Ежемесячное использование",
+  "monthlyUsageDescription": "Продукты, завершенные за последние месяцы.",
+  "thisMonthLabel": "Этот месяц",
+  "twelveMonthsLabel": "12 месяцев",
+  "noUsageHistory": "Пока нет истории завершенных продуктов.",
   "general": "Общие",
   "notifications": "Уведомления",
   "notifText": "Получать уведомления и обновления",

@@ -35,6 +35,58 @@
   "camera": "Camera",
   "aimBarcode": "Aim at the barcode",
   "settings": "Settings",
+  "editProfile": "Edit profile",
+  "phone": "Phone",
+  "phoneHint": "+34 123 456 789",
+  "birthDate": "Birth date",
+  "birthDateHint": "DD/MM/YYYY",
+  "changePasswordOptional": "Change password (optional)",
+  "newPassword": "New password",
+  "saveChanges": "Save changes",
+  "selectBirthDate": "Select your birth date",
+  "selectProfilePhotoTitle": "Select profile photo",
+  "deletePhoto": "Delete photo",
+  "photoMarkedForDeletion": "Photo marked for deletion on save",
+  "deletePhotoError": "Error deleting photo",
+  "uploadPhotoError": "Error uploading the new photo",
+  "profileUpdatedSuccess": "Profile updated successfully",
+  "profileUpdateError": "Error updating profile",
+  "nextRoutineTitle": "Next routine",
+  "routinesTitle": "Routines",
+  "createFirstRoutineHomeHint": "Create your first routine to see it here.",
+  "routineProductsCount": "{count, plural, =1{# product} other{# products}}",
+  "@routineProductsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotTodayMorning": "Today morning",
+  "slotTodayNight": "Today night",
+  "slotTomorrowMorning": "Tomorrow morning",
+  "slotTomorrowNight": "Tomorrow night",
+  "slotInDaysMorning": "In {days} days (morning)",
+  "@slotInDaysMorning": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "slotInDaysNight": "In {days} days (night)",
+  "@slotInDaysNight": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyUsageTitle": "Monthly usage",
+  "monthlyUsageDescription": "Products finished in recent months.",
+  "thisMonthLabel": "This month",
+  "twelveMonthsLabel": "12 months",
+  "noUsageHistory": "There is no finished products history yet.",
   "general": "General",
   "notifications": "Notifications",
   "notifText": "Receive alerts and updates",

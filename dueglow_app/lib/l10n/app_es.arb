@@ -36,6 +36,58 @@
   "camera": "Cámara",
   "aimBarcode": "Apunta al código de barras",
   "settings": "Configuración",
+  "editProfile": "Editar perfil",
+  "phone": "Teléfono",
+  "phoneHint": "+34 123 456 789",
+  "birthDate": "Fecha de nacimiento",
+  "birthDateHint": "DD/MM/AAAA",
+  "changePasswordOptional": "Cambiar contraseña (opcional)",
+  "newPassword": "Nueva contraseña",
+  "saveChanges": "Guardar cambios",
+  "selectBirthDate": "Selecciona tu fecha de nacimiento",
+  "selectProfilePhotoTitle": "Seleccionar foto de perfil",
+  "deletePhoto": "Eliminar foto",
+  "photoMarkedForDeletion": "Foto marcada para eliminar al guardar",
+  "deletePhotoError": "Error al eliminar la foto",
+  "uploadPhotoError": "Error al subir la nueva foto",
+  "profileUpdatedSuccess": "Perfil actualizado correctamente",
+  "profileUpdateError": "Error al actualizar el perfil",
+  "nextRoutineTitle": "Próxima rutina",
+  "routinesTitle": "Rutinas",
+  "createFirstRoutineHomeHint": "Crea tu primera rutina para verla aquí.",
+  "routineProductsCount": "{count, plural, =1{# producto} other{# productos}}",
+  "@routineProductsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "slotTodayMorning": "Hoy mañana",
+  "slotTodayNight": "Hoy noche",
+  "slotTomorrowMorning": "Mañana mañana",
+  "slotTomorrowNight": "Mañana noche",
+  "slotInDaysMorning": "En {days} días (mañana)",
+  "@slotInDaysMorning": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "slotInDaysNight": "En {days} días (noche)",
+  "@slotInDaysNight": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyUsageTitle": "Uso mensual",
+  "monthlyUsageDescription": "Productos terminados en los ultimos meses.",
+  "thisMonthLabel": "Este mes",
+  "twelveMonthsLabel": "12 meses",
+  "noUsageHistory": "Aun no hay historial de productos usados.",
   "general": "General",
   "notifications": "Notificaciones",
   "notifText": "Recibir alertas y actualizaciones",

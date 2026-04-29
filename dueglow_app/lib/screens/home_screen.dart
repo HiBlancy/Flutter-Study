@@ -238,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Próxima rutina',
+                              AppLocalizations.of(context)!.nextRoutineTitle,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -254,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${nextRoutine.slotLabel} • ${routine.products.length} producto${routine.products.length == 1 ? '' : 's'}',
+                              '${nextRoutine.slotLabel} • ${AppLocalizations.of(context)!.routineProductsCount(routine.products.length)}',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -272,14 +272,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Rutinas',
+                        AppLocalizations.of(context)!.routinesTitle,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Crea tu primera rutina para verla aquí.',
+                        AppLocalizations.of(context)!.createFirstRoutineHomeHint,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -338,15 +338,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _buildSlotLabel(int dayOffset, RoutineType slot) {
+    final l10n = AppLocalizations.of(context)!;
     if (dayOffset == 0) {
-      return slot == RoutineType.morning ? 'Hoy mañana' : 'Hoy noche';
+      return slot == RoutineType.morning
+          ? l10n.slotTodayMorning
+          : l10n.slotTodayNight;
     }
     if (dayOffset == 1) {
-      return slot == RoutineType.morning ? 'Mañana mañana' : 'Mañana noche';
+      return slot == RoutineType.morning
+          ? l10n.slotTomorrowMorning
+          : l10n.slotTomorrowNight;
     }
     return slot == RoutineType.morning
-        ? 'En $dayOffset días (mañana)'
-        : 'En $dayOffset días (noche)';
+        ? l10n.slotInDaysMorning(dayOffset)
+        : l10n.slotInDaysNight(dayOffset);
   }
 
  Widget _buildExpiringSoonProducts(bool isDark) {
@@ -446,14 +451,14 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Uso mensual',
+              AppLocalizations.of(context)!.monthlyUsageTitle,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              'Productos terminados en los ultimos meses.',
+              AppLocalizations.of(context)!.monthlyUsageDescription,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -463,7 +468,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _buildMetricChip(
                   icon: Icons.calendar_month_outlined,
-                  label: 'Este mes',
+                  label: AppLocalizations.of(context)!.thisMonthLabel,
                   value: '$currentMonthCount',
                   theme: theme,
                   isDark: isDark,
@@ -471,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 8),
                 _buildMetricChip(
                   icon: Icons.bar_chart_rounded,
-                  label: '12 meses',
+                  label: AppLocalizations.of(context)!.twelveMonthsLabel,
                   value: '${_yearlyOverview.total}',
                   theme: theme,
                   isDark: isDark,
@@ -481,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
             if (latestSix.isEmpty)
               Text(
-                'Aun no hay historial de productos usados.',
+                AppLocalizations.of(context)!.noUsageHistory,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

@@ -268,6 +268,192 @@ abstract class AppLocalizations {
   /// **'Configuración'**
   String get settings;
 
+  /// No description provided for @editProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar perfil'**
+  String get editProfile;
+
+  /// No description provided for @phone.
+  ///
+  /// In es, this message translates to:
+  /// **'Teléfono'**
+  String get phone;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In es, this message translates to:
+  /// **'+34 123 456 789'**
+  String get phoneHint;
+
+  /// No description provided for @birthDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de nacimiento'**
+  String get birthDate;
+
+  /// No description provided for @birthDateHint.
+  ///
+  /// In es, this message translates to:
+  /// **'DD/MM/AAAA'**
+  String get birthDateHint;
+
+  /// No description provided for @changePasswordOptional.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar contraseña (opcional)'**
+  String get changePasswordOptional;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña'**
+  String get newPassword;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar cambios'**
+  String get saveChanges;
+
+  /// No description provided for @selectBirthDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona tu fecha de nacimiento'**
+  String get selectBirthDate;
+
+  /// No description provided for @selectProfilePhotoTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar foto de perfil'**
+  String get selectProfilePhotoTitle;
+
+  /// No description provided for @deletePhoto.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar foto'**
+  String get deletePhoto;
+
+  /// No description provided for @photoMarkedForDeletion.
+  ///
+  /// In es, this message translates to:
+  /// **'Foto marcada para eliminar al guardar'**
+  String get photoMarkedForDeletion;
+
+  /// No description provided for @deletePhotoError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al eliminar la foto'**
+  String get deletePhotoError;
+
+  /// No description provided for @uploadPhotoError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al subir la nueva foto'**
+  String get uploadPhotoError;
+
+  /// No description provided for @profileUpdatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil actualizado correctamente'**
+  String get profileUpdatedSuccess;
+
+  /// No description provided for @profileUpdateError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al actualizar el perfil'**
+  String get profileUpdateError;
+
+  /// No description provided for @nextRoutineTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima rutina'**
+  String get nextRoutineTitle;
+
+  /// No description provided for @routinesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Rutinas'**
+  String get routinesTitle;
+
+  /// No description provided for @createFirstRoutineHomeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea tu primera rutina para verla aquí.'**
+  String get createFirstRoutineHomeHint;
+
+  /// No description provided for @routineProductsCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{# producto} other{# productos}}'**
+  String routineProductsCount(int count);
+
+  /// No description provided for @slotTodayMorning.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy mañana'**
+  String get slotTodayMorning;
+
+  /// No description provided for @slotTodayNight.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy noche'**
+  String get slotTodayNight;
+
+  /// No description provided for @slotTomorrowMorning.
+  ///
+  /// In es, this message translates to:
+  /// **'Mañana mañana'**
+  String get slotTomorrowMorning;
+
+  /// No description provided for @slotTomorrowNight.
+  ///
+  /// In es, this message translates to:
+  /// **'Mañana noche'**
+  String get slotTomorrowNight;
+
+  /// No description provided for @slotInDaysMorning.
+  ///
+  /// In es, this message translates to:
+  /// **'En {days} días (mañana)'**
+  String slotInDaysMorning(int days);
+
+  /// No description provided for @slotInDaysNight.
+  ///
+  /// In es, this message translates to:
+  /// **'En {days} días (noche)'**
+  String slotInDaysNight(int days);
+
+  /// No description provided for @monthlyUsageTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Uso mensual'**
+  String get monthlyUsageTitle;
+
+  /// No description provided for @monthlyUsageDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Productos terminados en los ultimos meses.'**
+  String get monthlyUsageDescription;
+
+  /// No description provided for @thisMonthLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Este mes'**
+  String get thisMonthLabel;
+
+  /// No description provided for @twelveMonthsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'12 meses'**
+  String get twelveMonthsLabel;
+
+  /// No description provided for @noUsageHistory.
+  ///
+  /// In es, this message translates to:
+  /// **'Aun no hay historial de productos usados.'**
+  String get noUsageHistory;
+
   /// No description provided for @general.
   ///
   /// In es, this message translates to:
