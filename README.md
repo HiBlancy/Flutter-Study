@@ -216,4 +216,4 @@ JWT_EXPIRES_IN=7d
 
 ## 📄 Licencia
 
-Este proyecto ha sido desarrollado como Trabajo de Fin de Grado y su uso está restringido a fines académicos. Ver [`LICENSE`](./LICENSE) para más información.
+Este proyecto ha sido desarrollado como Trabajo de Fin de Grado y su uso está restringido a fines académicos.

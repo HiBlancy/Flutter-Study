@@ -5,6 +5,7 @@ import '../widgets/custom_text_field.dart';
 import '../widgets/main_toolbar.dart';
 import '../services/auth_service.dart';
 import '../services/image_service.dart';
+import '../l10n/app_localizations.dart';
 
 class EditScreen extends StatefulWidget {
   const EditScreen({super.key});
@@ -34,6 +35,13 @@ class _EditScreenState extends State<EditScreen> {
   bool _shouldDeleteImage = false;
   File? _selectedImage;
   String? _currentProfileImageUrl;
+
+  bool _isStrongPassword(String password) {
+    final strongPasswordRegex = RegExp(
+      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$',
+    );
+    return strongPasswordRegex.hasMatch(password);
+  }
 
   @override
   void initState() {
@@ -211,11 +219,12 @@ class _EditScreenState extends State<EditScreen> {
   }
 
  Future<void> _saveChanges() async {
+  final l10n = AppLocalizations.of(context)!;
   if (!_formKey.currentState!.validate()) return;
 
   if (_passwordController.text.isNotEmpty &&
       _passwordController.text != _confirmPasswordController.text) {
-    _showCustomSnackBar('Las contraseñas no coinciden', isError: true);
+    _showCustomSnackBar(l10n.passwordsDontMatch, isError: true);
     return;
   }
 
@@ -348,6 +357,7 @@ class _EditScreenState extends State<EditScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return CustomAppBar(
       title: 'Editar Perfil',
@@ -423,10 +433,13 @@ class _EditScreenState extends State<EditScreen> {
                       });
                     },
                     validator: (value) {
+                      if (value != null && value.isNotEmpty && value.length < 8) {
+                        return l10n.pass8Char;
+                      }
                       if (value != null &&
                           value.isNotEmpty &&
-                          value.length < 6) {
-                        return 'La contraseña debe tener al menos 6 caracteres';
+                          !_isStrongPassword(value)) {
+                        return l10n.strongPasswordHint;
                       }
                       return null;
                     },

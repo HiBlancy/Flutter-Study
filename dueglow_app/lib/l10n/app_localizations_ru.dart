@@ -44,6 +44,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pass6Char => 'Минимум 6 символов';
 
   @override
+  String get pass8Char => 'Минимум 8 символов';
+
+  @override
+  String get strongPasswordHint =>
+      'Должен содержать заглавную, строчную букву, цифру и символ';
+
+  @override
   String get myProducts => 'Мои продукты';
 
   @override
@@ -57,6 +64,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get expiringSoon => 'Скоро истекает срок';
+
+  @override
+  String get expiredLabel => 'Просрочено';
 
   @override
   String get days => 'дней';
@@ -361,7 +371,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get aboutDescription =>
-      'Приложение для ухода за кожей\nи отслеживания ваших бьюти-рутин.';
+      'DueGlow — это приложение для организации косметических продуктов, отслеживания сроков годности и создания персональных рутин ухода.\n\nПроект создан как выпускная работа (TFG) в рамках программы разработки мультиплатформенных приложений (DAM).\n\nЦель: помочь поддерживать привычки ухода за собой простым, удобным и наглядным способом.';
 
   @override
   String get vanity => 'Мой шкафчик';

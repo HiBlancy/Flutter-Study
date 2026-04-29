@@ -249,6 +249,37 @@ Future<List<BeautyProduct>> getExpiringSoon({int days = 30}) async {
   }
 }
 
+Future<List<BeautyProduct>> getExpiredProducts() async {
+  try {
+    final token = await _authService.getToken();
+    if (token == null) return [];
+
+    final response = await http.get(
+      Uri.parse(ApiConfig.getExpiredProductsUrl()),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data['status'] == true && data['data'] != null) {
+        final productsList = data['data']['products'] as List?;
+        if (productsList != null) {
+          return productsList
+              .map((json) => BeautyProduct.fromBackend(json))
+              .toList();
+        }
+      }
+    }
+    return [];
+  } catch (e) {
+    print('❌ Error en getExpiredProducts: $e');
+    return [];
+  }
+}
+
   Future<BeautyProduct?> moveProduct(String id, String targetList) async {
     try {
       final token = await _authService.getToken();

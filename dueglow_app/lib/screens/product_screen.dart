@@ -675,6 +675,7 @@ class _ProductScreenState extends State<ProductScreen> {
     final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
     final isReallyOpened =
         _currentProduct.isOpened == true && _currentProduct.openedDate != null;
+    final isExpired = _isCurrentProductExpired();
     final hasExpirationInfo =
         _currentProduct.expirationDate != null ||
         (_currentProduct.periodAfterOpening?.isNotEmpty == true);
@@ -691,6 +692,10 @@ class _ProductScreenState extends State<ProductScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (isExpired) ...[
+            _buildExpiredWarning(theme),
+            const SizedBox(height: 12),
+          ],
           if (_currentProduct.addedAt != null) ...[
             _InfoRow(
               icon: Icons.calendar_today,
@@ -739,6 +744,52 @@ class _ProductScreenState extends State<ProductScreen> {
             const SizedBox(height: 8),
             Text(_currentProduct.notes!, style: theme.textTheme.bodyMedium),
           ],
+        ],
+      ),
+    );
+  }
+
+  bool _isCurrentProductExpired() {
+    final expirationDate = _currentProduct.expirationDate;
+    if (expirationDate == null) return false;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final productDate = DateTime(
+      expirationDate.year,
+      expirationDate.month,
+      expirationDate.day,
+    );
+
+    return productDate.isBefore(today);
+  }
+
+  Widget _buildExpiredWarning(ThemeData theme) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            size: 18,
+            color: theme.colorScheme.onErrorContainer,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            AppLocalizations.of(context)!.expiredLabel,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onErrorContainer,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ],
       ),
     );

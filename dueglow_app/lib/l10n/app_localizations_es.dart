@@ -44,6 +44,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pass6Char => 'Mínimo 6 caracteres';
 
   @override
+  String get pass8Char => 'Mínimo 8 caracteres';
+
+  @override
+  String get strongPasswordHint =>
+      'Debe incluir mayúscula, minúscula, número y símbolo';
+
+  @override
   String get myProducts => 'Mis productos';
 
   @override
@@ -57,6 +64,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get expiringSoon => 'Próximos a caducar';
+
+  @override
+  String get expiredLabel => 'Caducado';
 
   @override
   String get days => 'días';
@@ -359,7 +369,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get aboutDescription =>
-      'Aplicación para el cuidado de la piel y \nseguimiento de tus rutinas de belleza.';
+      'DueGlow es una app para organizar productos de belleza, controlar fechas de caducidad y crear rutinas de cuidado personal.\n\nEste proyecto fue creado como Trabajo de Fin de Grado (TFG) del ciclo de Desarrollo de Aplicaciones Multiplataforma (DAM).\n\nObjetivo: ayudar a mantener hábitos de autocuidado de forma simple, práctica y visual.';
 
   @override
   String get vanity => 'Mi Tocador';

@@ -162,12 +162,11 @@ let UsersService = class UsersService {
         const compressedBuffer = await this.imageCompressionService.compressProfileImage(fileBuffer, mimeType);
         const imageUrl = await this.cloudinaryService.uploadImage(compressedBuffer, `${userId}_profile_${Date.now()}`, 'user-profiles');
         const currentUser = await this.findById(userId);
-        await this.deleteCloudinaryImageByUrl(currentUser?.profileImage, '🗑️ Imagen anterior eliminada');
+        await this.deleteCloudinaryImageByUrl(currentUser?.profileImage);
         const updatedUser = await this.update(userId, { profileImage: imageUrl });
         if (!updatedUser) {
             throw new common_1.NotFoundException(`Usuario ${userId} no encontrado`);
         }
-        console.log(`✅ Imagen de perfil actualizada para usuario ${userId}`);
         return updatedUser;
     }
 };

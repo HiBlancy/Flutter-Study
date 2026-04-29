@@ -25,6 +25,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _acceptTerms = false;
 
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    return emailRegex.hasMatch(email);
+  }
+
+  bool _isStrongPassword(String password) {
+    final strongPasswordRegex = RegExp(
+      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$',
+    );
+    return strongPasswordRegex.hasMatch(password);
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -248,8 +260,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         prefixIcon: Icons.email_outlined,
         keyboardType: TextInputType.emailAddress,
         validator: (value) {
-          if (value?.isEmpty ?? true) return AppLocalizations.of(context)!.enterEmailAddress;
-          if (!value!.contains('@') || !value.contains('.')) {
+          final email = value?.trim() ?? '';
+          if (email.isEmpty) return AppLocalizations.of(context)!.enterEmailAddress;
+          if (!_isValidEmail(email)) {
             return AppLocalizations.of(context)!.invalidAddress;
           }
           return null;
@@ -269,7 +282,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
         validator: (value) {
           if (value?.isEmpty ?? true) return AppLocalizations.of(context)!.enterPass;
-          if (value!.length < 6) return AppLocalizations.of(context)!.pass6Char;
+          if (value!.length < 8) return AppLocalizations.of(context)!.pass8Char;
+          if (!_isStrongPassword(value)) return AppLocalizations.of(context)!.strongPasswordHint;
           return null;
         },
       ),

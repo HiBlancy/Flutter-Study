@@ -1,9 +1,11 @@
 
 import 'package:flutter/material.dart';
 import '../models/beauty_product.dart';
+import '../l10n/app_localizations.dart';
 
 class ProductCard extends StatefulWidget {
   final BeautyProduct product;
+  final bool isExpired;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final VoidCallback? onDelete;
@@ -12,6 +14,7 @@ class ProductCard extends StatefulWidget {
   const ProductCard({
     super.key,
     required this.product,
+    this.isExpired = false,
     this.onTap,
     this.onLongPress,
     this.onDelete,
@@ -104,6 +107,26 @@ class _ProductCardState extends State<ProductCard> with SingleTickerProviderStat
                           color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
+                      if (widget.isExpired) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            AppLocalizations.of(context)!.expiredLabel,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onErrorContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

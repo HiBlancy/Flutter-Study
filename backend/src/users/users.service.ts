@@ -166,13 +166,11 @@ export class UsersService {
     const currentUser = await this.findById(userId);
     await this.deleteCloudinaryImageByUrl(
       currentUser?.profileImage,
-      '🗑️ Imagen anterior eliminada',
     );
     const updatedUser = await this.update(userId, { profileImage: imageUrl });
     if (!updatedUser) {
       throw new NotFoundException(`Usuario ${userId} no encontrado`);
     }
-    console.log(`✅ Imagen de perfil actualizada para usuario ${userId}`);
     return updatedUser;
   }
 }

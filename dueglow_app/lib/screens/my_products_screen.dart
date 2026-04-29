@@ -23,6 +23,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   ProductListType? _selectedListType;
   List<BeautyProduct> _allProducts = [];
   List<BeautyProduct> _filteredProducts = [];
+  Set<String> _expiredProductIds = {};
   bool _isLoading = true;
   String? _error;
 
@@ -68,6 +69,13 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     }
 
     try {
+      if (reset) {
+        final expiredProducts = await _productService.getExpiredProducts();
+        _expiredProductIds = expiredProducts
+            .map((p) => p.id)
+            .whereType<String>()
+            .toSet();
+      }
 
       final response = await _productService.getProducts(
         page: _currentPage,
@@ -99,6 +107,25 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
         _isMoreLoading = false;
       });
     }
+  }
+
+  bool _isProductExpired(BeautyProduct product) {
+    final id = product.id;
+    if (id != null && _expiredProductIds.contains(id)) {
+      return true;
+    }
+
+    final expirationDate = product.expirationDate;
+    if (expirationDate == null) return false;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final productDate = DateTime(
+      expirationDate.year,
+      expirationDate.month,
+      expirationDate.day,
+    );
+    return productDate.isBefore(today);
   }
 
   Widget _buildInfoMessage(ThemeData theme) {
@@ -456,6 +483,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
                 final product = _filteredProducts[index];
                 return ProductCard(
                   product: product,
+                  isExpired: _isProductExpired(product),
                   onTap: () => _navigateToProduct(product),
                 );
               } else {
