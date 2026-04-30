@@ -17,6 +17,7 @@ const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
 const image_compression_service_1 = require("../services/image-compression.service");
 const cleanup_service_1 = require("../monthly-stats/services/cleanup.service");
 const monthly_stats_schema_1 = require("../monthly-stats/schemas/monthly-stats.schema");
+const routine_schema_1 = require("../routines/schemas/routine.schema");
 let ProductModule = class ProductModule {
 };
 exports.ProductModule = ProductModule;
@@ -30,12 +31,17 @@ exports.ProductModule = ProductModule = __decorate([
                     collection: 'products',
                 },
                 {
+                    name: 'Routine',
+                    schema: routine_schema_1.RoutineSchema,
+                    collection: 'routines'
+                },
+                {
                     name: 'MonthlyStats',
                     schema: monthly_stats_schema_1.MonthlyStatsSchema,
                     collection: 'monthly_stats',
                 },
             ]),
-            users_module_1.UserModule,
+            users_module_1.UserModule
         ],
         controllers: [product_controller_1.ProductController],
         providers: [
@@ -44,7 +50,7 @@ exports.ProductModule = ProductModule = __decorate([
             image_compression_service_1.ImageCompressionService,
             cleanup_service_1.CleanupService,
         ],
-        exports: [product_service_1.ProductService],
+        exports: [product_service_1.ProductService, mongoose_1.MongooseModule],
     })
 ], ProductModule);
 //# sourceMappingURL=product.module.js.map

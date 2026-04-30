@@ -53,11 +53,13 @@ const cloudinary_service_1 = require("../cloudinary/cloudinary.service");
 const image_compression_service_1 = require("../services/image-compression.service");
 let ProductService = class ProductService {
     productModel;
+    routineModel;
     monthlyStatsModel;
     cloudinaryService;
     imageCompressionService;
-    constructor(productModel, monthlyStatsModel, cloudinaryService, imageCompressionService) {
+    constructor(productModel, routineModel, monthlyStatsModel, cloudinaryService, imageCompressionService) {
         this.productModel = productModel;
+        this.routineModel = routineModel;
         this.monthlyStatsModel = monthlyStatsModel;
         this.cloudinaryService = cloudinaryService;
         this.imageCompressionService = imageCompressionService;
@@ -166,15 +168,31 @@ let ProductService = class ProductService {
             if (!product) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado`);
             }
-            await this.deleteCloudinaryImageByUrl(product.imageUrl, '🗑️ Imagen eliminada de Cloudinary al borrar producto');
+            await this.deleteCloudinaryImageByUrl(product.imageUrl);
+            await this.routineModel.updateMany({ userId, 'products.productId': id }, { $pull: { products: { productId: id } } }).exec();
             const deleted = await this.productModel.findByIdAndDelete(id).exec();
             if (!deleted) {
                 throw new common_1.NotFoundException(`Producto ${id} no encontrado después de eliminar`);
             }
+            await this.reorderRoutinesProductsAfterDeletion(userId, id);
             return deleted;
         }
         catch (error) {
             throw new common_1.NotFoundException(error, `Producto ${id} no encontrado`);
+        }
+    }
+    async reorderRoutinesProductsAfterDeletion(userId, productId) {
+        const routines = await this.routineModel.find({ userId }).exec();
+        for (const routine of routines) {
+            const remainingProducts = routine.products.filter((p) => p.productId.toString() !== productId);
+            const reordered = remainingProducts.map((p, idx) => ({
+                productId: p.productId,
+                order: idx,
+            }));
+            if (reordered.length !== routine.products.length) {
+                routine.products = reordered;
+                await routine.save();
+            }
         }
     }
     async moveToList(id, userId, targetList) {
@@ -509,8 +527,10 @@ exports.ProductService = ProductService;
 exports.ProductService = ProductService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)('Product')),
-    __param(1, (0, mongoose_1.InjectModel)('MonthlyStats')),
+    __param(1, (0, mongoose_1.InjectModel)('Routine')),
+    __param(2, (0, mongoose_1.InjectModel)('MonthlyStats')),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
         mongoose_2.Model,
         cloudinary_service_1.CloudinaryService,
         image_compression_service_1.ImageCompressionService])

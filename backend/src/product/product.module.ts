@@ -8,6 +8,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ImageCompressionService } from '../services/image-compression.service';
 import { CleanupService } from '../monthly-stats/services/cleanup.service';
 import { MonthlyStatsSchema } from '../monthly-stats/schemas/monthly-stats.schema';
+import { RoutineSchema } from 'src/routines/schemas/routine.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -16,13 +17,18 @@ import { MonthlyStatsSchema } from '../monthly-stats/schemas/monthly-stats.schem
         schema: ProductSchema,
         collection: 'products',
       },
+      { 
+        name: 'Routine', 
+        schema: RoutineSchema,
+        collection: 'routines'
+      }, 
       {
         name: 'MonthlyStats',
         schema: MonthlyStatsSchema,
         collection: 'monthly_stats',
       },
     ]),
-    UserModule,
+    UserModule
   ],
   controllers: [ProductController],
   providers: [
@@ -31,6 +37,6 @@ import { MonthlyStatsSchema } from '../monthly-stats/schemas/monthly-stats.schem
     ImageCompressionService,
     CleanupService,
   ],
-  exports: [ProductService],
+  exports: [ProductService, MongooseModule],
 })
 export class ProductModule {}

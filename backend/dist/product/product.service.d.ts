@@ -6,12 +6,14 @@ import { PaginationDto } from '../pagination/pagination.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ImageCompressionService } from 'src/services/image-compression.service';
 import { MonthlyStats } from '../monthly-stats/interfaces/monthly-stats.interface';
+import { Routine } from 'src/routines/interfaces/routine.interface';
 export declare class ProductService {
     private readonly productModel;
+    private readonly routineModel;
     private readonly monthlyStatsModel;
     private readonly cloudinaryService;
     private readonly imageCompressionService;
-    constructor(productModel: Model<Product>, monthlyStatsModel: Model<MonthlyStats>, cloudinaryService: CloudinaryService, imageCompressionService: ImageCompressionService);
+    constructor(productModel: Model<Product>, routineModel: Model<Routine>, monthlyStatsModel: Model<MonthlyStats>, cloudinaryService: CloudinaryService, imageCompressionService: ImageCompressionService);
     private deleteCloudinaryImageByUrl;
     create(userId: string, createProductDto: CreateProductDto): Promise<Product>;
     findAllByUserPaginated(userId: string, paginationDto: PaginationDto, listType?: string): Promise<{
@@ -33,6 +35,7 @@ export declare class ProductService {
     update(id: string, userId: string, updateProductDto: UpdateProductDto): Promise<Product>;
     private applyBusinessRules;
     delete(id: string, userId: string): Promise<Product>;
+    private reorderRoutinesProductsAfterDeletion;
     moveToList(id: string, userId: string, targetList: string): Promise<Product>;
     markAsOpened(id: string, userId: string, customOpenedDate?: Date): Promise<Product>;
     markAsClosed(id: string, userId: string): Promise<Product>;

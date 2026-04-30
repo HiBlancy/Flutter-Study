@@ -13,7 +13,7 @@ const routine_controller_1 = require("./routine.controller");
 const routine_service_1 = require("./routine.service");
 const routine_schema_1 = require("./schemas/routine.schema");
 const users_module_1 = require("../users/users.module");
-const product_schema_1 = require("../product/schemas/product.schema");
+const product_module_1 = require("../product/product.module");
 let RoutineModule = class RoutineModule {
 };
 exports.RoutineModule = RoutineModule;
@@ -26,17 +26,12 @@ exports.RoutineModule = RoutineModule = __decorate([
                     schema: routine_schema_1.RoutineSchema,
                     collection: 'routine',
                 },
-                {
-                    name: 'Product',
-                    schema: product_schema_1.ProductSchema,
-                    collection: 'products'
-                },
             ]),
-            users_module_1.UserModule,
+            users_module_1.UserModule, product_module_1.ProductModule
         ],
         controllers: [routine_controller_1.RoutineController],
         providers: [routine_service_1.RoutineService],
-        exports: [routine_service_1.RoutineService],
+        exports: [routine_service_1.RoutineService, mongoose_1.MongooseModule],
     })
 ], RoutineModule);
 //# sourceMappingURL=routine.module.js.map

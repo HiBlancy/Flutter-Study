@@ -13,11 +13,13 @@ import { PaginationDto } from '../pagination/pagination.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { ImageCompressionService } from 'src/services/image-compression.service';
 import { MonthlyStats } from '../monthly-stats/interfaces/monthly-stats.interface';
+import { Routine } from 'src/routines/interfaces/routine.interface';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<Product>,
+    @InjectModel('Routine') private readonly routineModel: Model<Routine>,
     @InjectModel('MonthlyStats')
     private readonly monthlyStatsModel: Model<MonthlyStats>,
     private readonly cloudinaryService: CloudinaryService,
@@ -170,11 +172,14 @@ export class ProductService {
         throw new NotFoundException(`Producto ${id} no encontrado`);
       }
 
-      // Eliminar imagen de Cloudinary (si existe)
       await this.deleteCloudinaryImageByUrl(
         product.imageUrl,
-        '🗑️ Imagen eliminada de Cloudinary al borrar producto',
       );
+
+      await this.routineModel.updateMany(
+        { userId, 'products.productId': id },
+        { $pull: { products: { productId: id } } }
+      ).exec();
 
       const deleted = await this.productModel.findByIdAndDelete(id).exec();
       if (!deleted) {
@@ -182,11 +187,32 @@ export class ProductService {
           `Producto ${id} no encontrado después de eliminar`,
         );
       }
+
+      await this.reorderRoutinesProductsAfterDeletion(userId, id);
+
       return deleted;
     } catch (error) {
       throw new NotFoundException(error, `Producto ${id} no encontrado`);
     }
   }
+
+  // si elimino un producto y este estaba en una rutina, reordenar la rutina cubriendo el hueco vacio
+  private async reorderRoutinesProductsAfterDeletion(userId: string, productId: string): Promise<void> {
+  const routines = await this.routineModel.find({ userId }).exec();
+  for (const routine of routines) {
+    const remainingProducts = routine.products.filter(
+      (p) => p.productId.toString() !== productId
+    );
+    const reordered = remainingProducts.map((p, idx) => ({
+      productId: p.productId,
+      order: idx,
+    }));
+    if (reordered.length !== routine.products.length) {
+      routine.products = reordered;
+      await routine.save();
+    }
+  }
+}
 
   // cambiar el producto de lista
   async moveToList(
@@ -293,7 +319,7 @@ export class ProductService {
     return updated;
   }
 
-// helper para determinar si la caducidad viene del PAO
+  // helper para determinar si la caducidad viene del PAO
   private isExpirationFromPAO(product: Product): boolean {
     if (!product.expirationDate) return false;
     if (!product.periodAfterOpening) return false;

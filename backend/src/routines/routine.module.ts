@@ -5,6 +5,7 @@ import { RoutineService } from './routine.service';
 import { RoutineSchema } from './schemas/routine.schema';
 import { UserModule } from '../users/users.module';
 import { ProductSchema } from '../product/schemas/product.schema';
+import { ProductModule } from 'src/product/product.module';
 
 @Module({
   imports: [
@@ -14,15 +15,11 @@ import { ProductSchema } from '../product/schemas/product.schema';
         schema: RoutineSchema,
         collection: 'routine',
       },
-      {
-        name: 'Product',
-        schema: ProductSchema,
-        collection: 'products' },
     ]),
-    UserModule,
+    UserModule, ProductModule
   ],
   controllers: [RoutineController],
   providers: [RoutineService],
-  exports: [RoutineService],
+  exports: [RoutineService, MongooseModule],
 })
 export class RoutineModule {}
