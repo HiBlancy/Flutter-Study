@@ -252,8 +252,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Text(
             sub['name'] as String,
             textAlign: TextAlign.center,
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
+            softWrap: false,
             style: theme.textTheme.labelSmall?.copyWith(
               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               color: isSelected

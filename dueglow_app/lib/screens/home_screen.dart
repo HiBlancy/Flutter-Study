@@ -498,7 +498,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: latestSix.map((item) {
                     final ratio = item.productsUsedCount / (maxValue == 0 ? 1 : maxValue);
-                    final barHeight = 20 + (ratio * 70);
+                    final barHeight = 18 + (ratio * 62);
                     final shortMonth = item.monthName.length >= 3
                         ? item.monthName.substring(0, 3)
                         : item.monthName;
@@ -511,11 +511,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Text(
                               '${item.productsUsedCount}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 4),
                             Container(
                               height: barHeight,
                               width: 18,
@@ -526,9 +529,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 4),
                             Text(
                               shortMonth,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
