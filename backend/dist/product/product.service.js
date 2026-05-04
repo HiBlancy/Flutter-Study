@@ -144,8 +144,16 @@ let ProductService = class ProductService {
     }
     applyBusinessRules(product, updateData) {
         if (product.isOpened &&
-            updateData.periodAfterOpening !== undefined &&
-            updateData.expirationDate !== null) {
+            updateData.periodAfterOpening !== undefined) {
+            const newExpiration = this.calculateExpirationDate(updateData.openedDate || product.openedDate, updateData.periodAfterOpening || product.periodAfterOpening, updateData.expirationDate !== undefined
+                ? updateData.expirationDate
+                : product.expirationDate);
+            if (newExpiration)
+                updateData.expirationDate = newExpiration;
+        }
+        if (product.isOpened &&
+            updateData.openedDate !== undefined &&
+            (updateData.periodAfterOpening || product.periodAfterOpening)) {
             const newExpiration = this.calculateExpirationDate(updateData.openedDate || product.openedDate, updateData.periodAfterOpening || product.periodAfterOpening, updateData.expirationDate !== undefined
                 ? updateData.expirationDate
                 : product.expirationDate);

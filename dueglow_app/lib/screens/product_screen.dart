@@ -256,6 +256,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   Future<void> _editProduct() async {
+    final previousProduct = _currentProduct;
     final editedProduct = await showDialog<BeautyProduct>(
       context: context,
       builder: (context) => EditProductDialog(
@@ -288,6 +289,10 @@ class _ProductScreenState extends State<ProductScreen> {
         successMessage: AppLocalizations.of(context)!.productUpdatedSuccess,
         loadingKey: 'editing',
       );
+
+      if (_hasExpirationInputsChanged(previousProduct, _currentProduct)) {
+        await _autoCalculateExpirationIfNeeded();
+      }
     }
   }
 
@@ -422,6 +427,8 @@ class _ProductScreenState extends State<ProductScreen> {
       successMessage: AppLocalizations.of(context)!.productMarkedOpened,
       loadingKey: 'opening',
     );
+
+    await _autoCalculateExpirationIfNeeded();
   }
 
   Future<void> _markAsClosed() async {
@@ -432,12 +439,38 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  Future<void> _calculateExpiration() async {
-    await _executeAction(
-      action: () => _productService.calculateExpiration(_currentProduct.id!),
-      successMessage: AppLocalizations.of(context)!.expirationCalculated,
-      loadingKey: 'calculating',
-    );
+  bool _hasExpirationInputsChanged(
+    BeautyProduct previous,
+    BeautyProduct current,
+  ) {
+    final previousOpened = previous.openedDate?.toIso8601String();
+    final currentOpened = current.openedDate?.toIso8601String();
+    final previousExpiration = previous.expirationDate?.toIso8601String();
+    final currentExpiration = current.expirationDate?.toIso8601String();
+    final previousPao = (previous.periodAfterOpening ?? '').trim();
+    final currentPao = (current.periodAfterOpening ?? '').trim();
+
+    return previousOpened != currentOpened ||
+        previousExpiration != currentExpiration ||
+        previousPao != currentPao;
+  }
+
+  bool _shouldAutoCalculateExpiration(BeautyProduct product) {
+    final hasOpenedDate = product.openedDate != null;
+    final hasPao = (product.periodAfterOpening ?? '').trim().isNotEmpty;
+    final hasManualExpiration = product.expirationDate != null;
+    return hasOpenedDate && hasPao && !hasManualExpiration;
+  }
+
+  Future<void> _autoCalculateExpirationIfNeeded() async {
+    final product = _currentProduct;
+    final id = product.id;
+    if (id == null || !_shouldAutoCalculateExpiration(product)) return;
+
+    final recalculated = await _productService.calculateExpiration(id);
+    if (recalculated != null && mounted) {
+      setState(() => _currentProduct = recalculated);
+    }
   }
 
   @override
@@ -888,10 +921,6 @@ class _ProductScreenState extends State<ProductScreen> {
     final isInFinishedList =
         ProductListType.fromNullable(_currentProduct.listType) ==
         ProductListType.used;
-    final canCalculateExpiration =
-        isReallyOpened &&
-        _currentProduct.periodAfterOpening?.isNotEmpty == true &&
-        _currentProduct.expirationDate == null;
 
     return Column(
       children: [
@@ -928,18 +957,6 @@ class _ProductScreenState extends State<ProductScreen> {
             icon: Icons.close,
             isLoading: _isLoading('closing'),
             isEnabled: !_isLoading('closing') && !_isLoading('editing'),
-          ),
-          const SizedBox(height: 12),
-        ],
-        if (canCalculateExpiration) ...[
-          CustomButton(
-            text: AppLocalizations.of(context)!.calculateExpiration,
-            onPressed: _isLoading('calculating') ? () {} : _calculateExpiration,
-            type: ButtonType.secondary,
-            size: ButtonSize.full,
-            icon: Icons.calculate,
-            isLoading: _isLoading('calculating'),
-            isEnabled: !_isLoading('calculating') && !_isLoading('editing'),
           ),
           const SizedBox(height: 12),
         ],

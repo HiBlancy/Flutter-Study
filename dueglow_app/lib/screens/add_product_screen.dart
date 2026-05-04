@@ -201,6 +201,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
       var addedProduct = await _productService.addProductToHave(newProduct);
 
       if (addedProduct != null && mounted) {
+        final shouldAutoCalculateExpiration =
+            addedProduct.id != null &&
+            addedProduct.openedDate != null &&
+            (addedProduct.periodAfterOpening ?? '').trim().isNotEmpty &&
+            addedProduct.expirationDate == null;
+
+        if (shouldAutoCalculateExpiration) {
+          final recalculated = await _productService.calculateExpiration(
+            addedProduct.id!,
+          );
+          if (recalculated != null) {
+            addedProduct = recalculated;
+          }
+        }
+
         if (_selectedImageFile != null) {
           setState(() => _isUploadingImage = true);
 

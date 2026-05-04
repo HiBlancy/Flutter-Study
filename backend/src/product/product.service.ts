@@ -135,8 +135,24 @@ export class ProductService {
     // Si el producto ya está abierto y cambia el PAO, recalcular caducidad.
     if (
       product.isOpened &&
-      updateData.periodAfterOpening !== undefined &&
-      updateData.expirationDate !== null
+      updateData.periodAfterOpening !== undefined
+    ) {
+      const newExpiration = this.calculateExpirationDate(
+        updateData.openedDate || product.openedDate,
+        updateData.periodAfterOpening || product.periodAfterOpening,
+        updateData.expirationDate !== undefined
+          ? updateData.expirationDate
+          : product.expirationDate,
+      );
+      if (newExpiration) updateData.expirationDate = newExpiration;
+    }
+
+    // Si el producto está abierto y cambia la fecha de apertura,
+    // volver a calcular usando el PAO existente (si lo hay).
+    if (
+      product.isOpened &&
+      updateData.openedDate !== undefined &&
+      (updateData.periodAfterOpening || product.periodAfterOpening)
     ) {
       const newExpiration = this.calculateExpirationDate(
         updateData.openedDate || product.openedDate,

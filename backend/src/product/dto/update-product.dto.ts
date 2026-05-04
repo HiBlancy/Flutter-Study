@@ -69,8 +69,9 @@ export class UpdateProductDto {
 
   @IsOptional()
   @Transform(({ value }) => {
-    // Si no hay valor, retornamos undefined
-    if (value === null || value === undefined) return undefined;
+    // Permitir limpiar PAO enviando null o string vacío.
+    if (value === null || value === '') return null;
+    if (value === undefined) return undefined;
 
     // Convertir a número (si es string numérico o número)
     const num = typeof value === 'number' ? value : parseInt(value, 10);
@@ -85,7 +86,7 @@ export class UpdateProductDto {
   @Matches(/^\d+M$/, {
     message: 'El período debe ser un número positivo seguido de M (ej: 12M)',
   })
-  periodAfterOpening?: string;
+  periodAfterOpening?: string | null;
 
   @IsOptional()
   @Type(() => Date)

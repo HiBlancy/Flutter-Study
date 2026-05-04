@@ -89,7 +89,9 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Transform)(({ value }) => {
-        if (value === null || value === undefined)
+        if (value === null || value === '')
+            return null;
+        if (value === undefined)
             return undefined;
         const num = typeof value === 'number' ? value : parseInt(value, 10);
         if (isNaN(num))
@@ -100,7 +102,7 @@ __decorate([
     (0, class_validator_1.Matches)(/^\d+M$/, {
         message: 'El período debe ser un número positivo seguido de M (ej: 12M)',
     }),
-    __metadata("design:type", String)
+    __metadata("design:type", Object)
 ], UpdateProductDto.prototype, "periodAfterOpening", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
