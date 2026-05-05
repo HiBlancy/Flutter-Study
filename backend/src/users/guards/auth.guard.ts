@@ -41,7 +41,6 @@ export class AuthGuard implements CanActivate {
   throw new UnauthorizedException('Token malformado');
 }
 
-  // Fuera del try-catch para que los errores de Mongoose se vean reales
   const user = await this.usersService.findById(payload._id);
 
   if (!user) {

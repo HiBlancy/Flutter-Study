@@ -11,13 +11,22 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.URL as string),
-    JwtModule.register({
-      secret:
-        process.env.JWT_SECRET || 'mi_clave_secreta_temporal_para_desarrollo',
-      signOptions: { expiresIn: '3h' },
+    ConfigModule.forRoot({
+      isGlobal: true, 
     }),
+
+    MongooseModule.forRootAsync({
+      useFactory: () => ({
+        uri: process.env.URL,
+      }),
+    }),
+
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '24h' },
+    }),
+
     ScheduleModule.forRoot(),
     UserModule,
     ProductModule,
