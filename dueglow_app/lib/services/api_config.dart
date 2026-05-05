@@ -2,8 +2,7 @@ import 'package:flutter/foundation.dart';
 
 class ApiConfig {
 
-
-  static const String _baseUrlWeb = 'http://localhost:3000';
+  static const String _baseUrlWeb = 'https://backend-dueglow.onrender.com';
   static const String _baseUrlMobile = 'http://192.168.1.21:3000';
 
   static String get baseUrl {
@@ -11,10 +10,8 @@ class ApiConfig {
     if (kIsWeb) {
       return _baseUrlWeb;
     }
-
     return _baseUrlMobile;
   }
-
 
   static String getRegisterUrl() => '$baseUrl/users/register';
   static String getLoginUrl() => '$baseUrl/users/login';
@@ -31,6 +28,5 @@ class ApiConfig {
   static String getYearlyOverviewUrl() => '$baseUrl/products/stats/yearly-overview';
   static String getCurrentMonthStatsUrl() => '$baseUrl/products/stats/current-month';
 
-
-    static String getRoutinesUrl() => '$baseUrl/routines';
+  static String getRoutinesUrl() => '$baseUrl/routines';
 }
