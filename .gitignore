@@ -13,3 +13,12 @@ $RECYCLE.BIN/
 
 # Node modules form api
 **/node_modules/
+
+# Archivos compilados (esto es lo que se genera al hacer 'npm run build')
+**/dist/
+
+# Credenciales (esto evita que subas tus contraseñas)
+**/.env
+
+# Otros
+**/.DS_Store
