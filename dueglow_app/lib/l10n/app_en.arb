@@ -210,6 +210,16 @@
   "reorderProductsError": "Failed to reorder products",
   "productAddedToRoutine": "Product added to routine",
   "productAddError": "Failed to add product",
+  "addToRoutine": "Add to routine",
+  "productAlreadyInRoutine": "This product is already added to this routine.",
+  "productAddedToRoutineNamed": "Product added to routine: {routineName}",
+  "@productAddedToRoutineNamed": {
+    "placeholders": {
+      "routineName": {
+        "type": "String"
+      }
+    }
+  },
   "home": "Home",
   "products": "Products",
   "newTab": "New",

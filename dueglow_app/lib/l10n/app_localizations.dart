@@ -964,6 +964,24 @@ abstract class AppLocalizations {
   /// **'Error al añadir producto'**
   String get productAddError;
 
+  /// No description provided for @addToRoutine.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir a rutina'**
+  String get addToRoutine;
+
+  /// No description provided for @productAlreadyInRoutine.
+  ///
+  /// In es, this message translates to:
+  /// **'Este producto ya está añadido a esta rutina.'**
+  String get productAlreadyInRoutine;
+
+  /// No description provided for @productAddedToRoutineNamed.
+  ///
+  /// In es, this message translates to:
+  /// **'Producto añadido a la rutina: {routineName}'**
+  String productAddedToRoutineNamed(String routineName);
+
   /// No description provided for @home.
   ///
   /// In es, this message translates to:

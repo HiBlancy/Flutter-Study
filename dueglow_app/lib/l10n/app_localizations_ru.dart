@@ -480,6 +480,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get productAddError => 'Не удалось добавить продукт';
 
   @override
+  String get addToRoutine => 'Добавить в рутину';
+
+  @override
+  String get productAlreadyInRoutine =>
+      'Этот продукт уже добавлен в эту рутину.';
+
+  @override
+  String productAddedToRoutineNamed(String routineName) {
+    return 'Продукт добавлен в рутину: $routineName';
+  }
+
+  @override
   String get home => 'Главная';
 
   @override

@@ -210,6 +210,16 @@
   "reorderProductsError": "Не удалось изменить порядок продуктов",
   "productAddedToRoutine": "Продукт добавлен в рутину",
   "productAddError": "Не удалось добавить продукт",
+  "addToRoutine": "Добавить в рутину",
+  "productAlreadyInRoutine": "Этот продукт уже добавлен в эту рутину.",
+  "productAddedToRoutineNamed": "Продукт добавлен в рутину: {routineName}",
+  "@productAddedToRoutineNamed": {
+    "placeholders": {
+      "routineName": {
+        "type": "String"
+      }
+    }
+  },
   "home": "Главная",
   "newTab": "Новый",
   "profile": "Профиль",

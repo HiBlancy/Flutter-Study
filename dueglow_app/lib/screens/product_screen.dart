@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/beauty_product.dart';
 import '../models/product_list_type.dart';
+import '../models/routine_model.dart';
 import '../services/product_service.dart';
+import '../services/routine_service.dart';
 import '../widgets/edit_product_dialog.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/warning_dialog.dart';
@@ -24,6 +26,7 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   final ProductService _productService = ProductService();
+  final RoutineService _routineService = RoutineService();
   late BeautyProduct _currentProduct;
 
   final Map<String, bool> _loadingStates = {
@@ -35,6 +38,7 @@ class _ProductScreenState extends State<ProductScreen> {
     'calculating': false,
     'finishing': false,
     'changingList': false,
+    'addingToRoutine': false,
   };
 
   @override
@@ -446,6 +450,203 @@ class _ProductScreenState extends State<ProductScreen> {
       successMessage: AppLocalizations.of(context)!.productMarkedClosed,
       loadingKey: 'closing',
     );
+  }
+
+  bool _routineContainsProduct(Routine routine, String productId) {
+    return routine.products.any((product) => product.productId == productId);
+  }
+
+  Future<void> _showAddToRoutineSheet() async {
+    final productId = _currentProduct.id;
+    if (productId == null) {
+      await _showMessage(
+        AppLocalizations.of(context)!.errorPerformingOperation,
+        isError: true,
+      );
+      return;
+    }
+
+    _setLoading('addingToRoutine', true);
+    List<Routine> routines = [];
+    try {
+      routines = await _routineService.getRoutines();
+    } catch (_) {
+      _setLoading('addingToRoutine', false);
+      await _showMessage(AppLocalizations.of(context)!.routinesLoadError, isError: true);
+      return;
+    }
+    _setLoading('addingToRoutine', false);
+
+    if (!mounted) return;
+
+    String searchQuery = '';
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            final theme = Theme.of(ctx);
+            final filteredRoutines = routines.where((routine) {
+              final query = searchQuery.trim().toLowerCase();
+              if (query.isEmpty) return true;
+              return routine.name.toLowerCase().contains(query);
+            }).toList();
+
+            return Container(
+              height: MediaQuery.of(ctx).size.height * 0.65,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.addToRoutine,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                    child: TextField(
+                      onChanged: (value) => setModalState(() => searchQuery = value),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.searchNameBrand,
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  Expanded(
+                    child: routines.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(28),
+                              child: Text(
+                                AppLocalizations.of(context)!.createFirstRoutineHomeHint,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                ),
+                              ),
+                            ),
+                          )
+                        : filteredRoutines.isEmpty
+                        ? Center(
+                            child: Text(
+                              AppLocalizations.of(context)!.searchNoResults,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                            ),
+                          )
+                        : ListView.separated(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                            itemCount: filteredRoutines.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 8),
+                            itemBuilder: (_, index) {
+                              final routine = filteredRoutines[index];
+                              final alreadyAdded = _routineContainsProduct(routine, productId);
+                              return ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  side: BorderSide(
+                                    color: theme.colorScheme.outlineVariant.withValues(
+                                      alpha: 0.4,
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  routine.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                  routine.type == RoutineType.morning
+                                      ? AppLocalizations.of(context)!.morningRoutineLabel
+                                      : AppLocalizations.of(context)!.nightRoutineLabel,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                trailing: Icon(
+                                  alreadyAdded ? Icons.check_circle : Icons.add_circle_outline,
+                                  color: alreadyAdded
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.primary,
+                                ),
+                                onTap: () async {
+                                  if (alreadyAdded) {
+                                    Navigator.pop(sheetContext);
+                                    await _showMessage(
+                                      AppLocalizations.of(context)!.productAlreadyInRoutine,
+                                    );
+                                    return;
+                                  }
+
+                                  Navigator.pop(sheetContext);
+                                  await _addProductToRoutine(routine, productId);
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _addProductToRoutine(Routine routine, String productId) async {
+    final routineId = routine.id;
+    if (routineId == null) {
+      await _showMessage(AppLocalizations.of(context)!.productAddError, isError: true);
+      return;
+    }
+
+    _setLoading('addingToRoutine', true);
+    try {
+      await _routineService.addProduct(routineId, productId);
+      await _showMessage(
+        AppLocalizations.of(context)!.productAddedToRoutineNamed(routine.name),
+      );
+    } catch (_) {
+      await _showMessage(AppLocalizations.of(context)!.productAddError, isError: true);
+    } finally {
+      _setLoading('addingToRoutine', false);
+    }
   }
 
   bool _hasExpirationInputsChanged(
@@ -981,6 +1182,19 @@ class _ProductScreenState extends State<ProductScreen> {
             icon: Icons.check_circle_outline,
             isLoading: _isLoading('finishing'),
             isEnabled: !_isLoading('finishing') && !_isLoading('editing'),
+          ),
+          const SizedBox(height: 12),
+        ],
+        if (isProductSaved) ...[
+          const SizedBox(height: 24),
+          CustomButton(
+            text: AppLocalizations.of(context)!.addToRoutine,
+            onPressed: _isLoading('addingToRoutine') ? () {} : _showAddToRoutineSheet,
+            type: ButtonType.outlined,
+            size: ButtonSize.full,
+            icon: Icons.playlist_add,
+            isLoading: _isLoading('addingToRoutine'),
+            isEnabled: !_isLoading('addingToRoutine'),
           ),
           const SizedBox(height: 12),
         ],

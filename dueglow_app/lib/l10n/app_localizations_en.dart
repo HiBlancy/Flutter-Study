@@ -473,6 +473,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productAddError => 'Failed to add product';
 
   @override
+  String get addToRoutine => 'Add to routine';
+
+  @override
+  String get productAlreadyInRoutine =>
+      'This product is already added to this routine.';
+
+  @override
+  String productAddedToRoutineNamed(String routineName) {
+    return 'Product added to routine: $routineName';
+  }
+
+  @override
   String get home => 'Home';
 
   @override

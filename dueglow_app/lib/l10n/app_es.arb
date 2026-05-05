@@ -211,6 +211,16 @@
   "reorderProductsError": "Error al reordenar productos",
   "productAddedToRoutine": "Producto añadido a la rutina",
   "productAddError": "Error al añadir producto",
+  "addToRoutine": "Añadir a rutina",
+  "productAlreadyInRoutine": "Este producto ya está añadido a esta rutina.",
+  "productAddedToRoutineNamed": "Producto añadido a la rutina: {routineName}",
+  "@productAddedToRoutineNamed": {
+    "placeholders": {
+      "routineName": {
+        "type": "String"
+      }
+    }
+  },
   "home": "Inicio",
   "products": "Productos",
   "newTab": "Nuevo",
