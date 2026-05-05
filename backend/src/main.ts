@@ -12,11 +12,24 @@ async function bootstrap() {
     .setTitle('API de Cosmética y Rutinas')
     .setDescription('Documentación de la API para gestión de productos y rutinas')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Introduce el token JWT en formato: Bearer <token>',
+      },
+      'JWT-auth',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api/docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+    customSiteTitle: 'DueGlow API Docs',
+  });
   // --------------------------------
 
   // limite img y archivos grandes

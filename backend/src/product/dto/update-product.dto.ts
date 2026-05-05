@@ -14,45 +14,67 @@ import {
   Matches,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateProductDto {
+  @ApiPropertyOptional({ example: 'Serum Vitamina C', description: 'Nombre del producto' })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   name?: string;
 
+  @ApiPropertyOptional({ example: 'La Roche-Posay', description: 'Marca del producto', nullable: true })
   @IsOptional()
   @IsString()
   @IsNotEmpty()
   brand?: string | null; // ✅ Permitir null
 
+  @ApiPropertyOptional({
+    example: 'https://example.com/product.jpg',
+    description: 'URL de la imagen del producto',
+    nullable: true,
+  })
   @IsOptional()
   @IsUrl()
   imageUrl?: string | null; // ✅ Permitir null
 
+  @ApiPropertyOptional({ example: '1234567890123', description: 'Codigo de barras', nullable: true })
   @IsOptional()
   @IsString()
   barcode?: string | null; // ✅ Permitir null
 
+  @ApiPropertyOptional({
+    example: ['serum', 'vitamina-c'],
+    description: 'Categorias del producto',
+    nullable: true,
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   categories?: string[] | null; // ✅ Permitir null
 
+  @ApiPropertyOptional({ example: 'Ideal para piel sensible', description: 'Notas', nullable: true })
   @IsOptional()
   @IsString()
   notes?: string | null; // ✅ Permitir null (para limpiar)
 
+  @ApiPropertyOptional({ example: 4, description: 'Valoracion de 1 a 5', nullable: true })
   @IsOptional()
   @IsNumber()
   @Min(1)
   @Max(5)
   rating?: number | null; // ✅ Permitir null (para limpiar)
 
+  @ApiPropertyOptional({ example: 'have', enum: ['wishlist', 'have', 'used'], description: 'Lista destino' })
   @IsOptional()
   @IsIn(['wishlist', 'have', 'used'])
   listType?: string;
 
+  @ApiPropertyOptional({
+    example: '2026-12-31',
+    description: 'Fecha de caducidad (YYYY-MM-DD)',
+    nullable: true,
+  })
   @IsOptional()
   @Transform(({ value }) => {
     if (value === null) return null;
@@ -67,6 +89,11 @@ export class UpdateProductDto {
   })
   expirationDate?: Date | string | null; // ✅ Permitir null (para limpiar)
 
+  @ApiPropertyOptional({
+    example: '12M',
+    description: 'Periodo tras apertura en formato nM (ej: 12M)',
+    nullable: true,
+  })
   @IsOptional()
   @Transform(({ value }) => {
     // Permitir limpiar PAO enviando null o string vacío.
@@ -88,11 +115,17 @@ export class UpdateProductDto {
   })
   periodAfterOpening?: string | null;
 
+  @ApiPropertyOptional({
+    example: '2026-05-01T00:00:00.000Z',
+    description: 'Fecha de apertura',
+    nullable: true,
+  })
   @IsOptional()
   @Type(() => Date)
   @IsDate()
   openedDate?: Date | string | null; // ✅ Permitir null (para limpiar)
 
+  @ApiPropertyOptional({ example: true, description: 'Indica si el producto esta abierto', nullable: true })
   @IsOptional()
   @IsBoolean()
   isOpened?: boolean | null; // ✅ Permitir null

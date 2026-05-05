@@ -15,7 +15,10 @@ import { CreateRoutineDto } from './dto/create-routine.dto';
 import { UpdateRoutineDto } from './dto/update-routine.dto';
 import { ReorderProductsDto } from './dto/reorder-products.dto';
 import { AuthGuard } from '../users/guards/auth.guard';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Rutinas')
+@ApiBearerAuth('JWT-auth')
 @Controller('routines')
 @UseGuards(AuthGuard)
 export class RoutineController {
@@ -26,6 +29,7 @@ export class RoutineController {
   }
 
   // Crea una rutina (opcionalmente con productos).
+  @ApiOperation({ summary: 'Crear una rutina' })
   @Post()
   async create(@Req() req, @Body() createRoutineDto: CreateRoutineDto) {
     const routine = await this.routineService.create(
@@ -36,6 +40,7 @@ export class RoutineController {
   }
 
   // Lista rutinas del usuario.
+  @ApiOperation({ summary: 'Listar rutinas del usuario autenticado' })
   @Get()
   async findAll(@Req() req) {
     const routines = await this.routineService.findAllByUser(req.user._id);
@@ -46,6 +51,7 @@ export class RoutineController {
   }
 
   // Obtiene una rutina por id.
+  @ApiOperation({ summary: 'Obtener una rutina por id' })
   @Get(':id')
   async findOne(@Req() req, @Param('id') id: string) {
     const routine = await this.routineService.findById(id, req.user._id);
@@ -56,6 +62,7 @@ export class RoutineController {
   }
 
   // Actualiza nombre/tipo/productos de una rutina.
+  @ApiOperation({ summary: 'Actualizar una rutina' })
   @Patch(':id')
   async update(
     @Req() req,
@@ -71,6 +78,7 @@ export class RoutineController {
   }
 
   // Elimina una rutina.
+  @ApiOperation({ summary: 'Eliminar una rutina' })
   @Delete(':id')
   async delete(@Req() req, @Param('id') id: string) {
     const routine = await this.routineService.delete(id, req.user._id);
@@ -78,6 +86,7 @@ export class RoutineController {
   }
 
   // Reordena los productos de una rutina.
+  @ApiOperation({ summary: 'Reordenar productos de una rutina' })
   @Patch(':id/reorder')
   async reorderProducts(
     @Req() req,
@@ -93,6 +102,7 @@ export class RoutineController {
   }
 
   // Agrega un producto a una rutina.
+  @ApiOperation({ summary: 'Agregar producto a una rutina' })
   @Post(':id/products')
   async addProduct(
     @Req() req,
@@ -108,6 +118,7 @@ export class RoutineController {
   }
 
   // Elimina un producto de una rutina.
+  @ApiOperation({ summary: 'Eliminar producto de una rutina' })
   @Delete(':id/products/:productId')
   async removeProduct(
     @Req() req,

@@ -97,6 +97,7 @@ npm run start:dev
 ```
 
 API disponible en `http://localhost:3000`.
+Swagger disponible en `http://localhost:3000/api/docs`.
 
 ---
 

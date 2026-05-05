@@ -20,7 +20,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './guards/auth.guard';
 import { multerImageFilter } from '../common/multer.utils';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { LoginUserDto } from './dto/login-user.dto';
 
+@ApiTags('Usuarios')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -34,6 +43,8 @@ export class UsersController {
   }
 
   // registra -> crea usuario y devuelve token
+  @ApiOperation({ summary: 'Registrar un nuevo usuario' })
+  @ApiBody({ type: CreateUserDto })
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
     try {
@@ -59,8 +70,10 @@ export class UsersController {
   }
 
   // inicia sesion -> comprueba credenciales si coinciden (email y contra) y devuelve un token
+  @ApiOperation({ summary: 'Iniciar sesion y obtener token JWT' })
+  @ApiBody({ type: LoginUserDto })
   @Post('login')
-  async login(@Body() body: { email: string; password: string }) {
+  async login(@Body() body: LoginUserDto) {
     try {
       const user = await this.usersService.findOne({
         email: body.email.toLowerCase(),
@@ -83,6 +96,8 @@ export class UsersController {
   }
 
   // obtener informacion del usuario logeado
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Obtener perfil del usuario autenticado' })
   @UseGuards(AuthGuard)
   @Get('me')
   async getProfile(@Req() req) {
@@ -90,6 +105,8 @@ export class UsersController {
   }
 
   // actualizar informacion del usuario
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Actualizar perfil del usuario autenticado' })
   @UseGuards(AuthGuard)
   @Patch('me')
   async updateProfile(@Body() updateUserDto: UpdateUserDto, @Req() req) {
@@ -101,6 +118,9 @@ export class UsersController {
   }
 
   // sube foto de perfil, borrando la anterior y subiendola a Cloudinary
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Subir imagen de perfil' })
+  @ApiConsumes('multipart/form-data')
   @UseGuards(AuthGuard)
   @Patch('me/upload-image')
   @UseInterceptors(
@@ -124,6 +144,7 @@ export class UsersController {
   }
 
   // lista todos los usuarios
+  @ApiOperation({ summary: 'Listar usuarios' })
   @Get()
   async findAllUsers() {
     const users = await this.usersService.getAllUsers();
@@ -131,6 +152,8 @@ export class UsersController {
   }
 
   // elimina la cuenta del usuario
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Eliminar cuenta del usuario autenticado' })
   @UseGuards(AuthGuard)
   @Delete('me')
   async deleteMyAccount(@Req() req) {
@@ -140,6 +163,8 @@ export class UsersController {
   }
 
   // elimina la foto de perfil
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'Eliminar imagen de perfil del usuario autenticado' })
   @UseGuards(AuthGuard)
   @Delete('me/image')
   async deleteProfileImage(@Req() req) {
