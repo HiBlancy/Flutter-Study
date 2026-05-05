@@ -1,24 +1,25 @@
-### Windows
-# Windows thumbnail cache files
-Thumbs.db
+# --- General ---
+.DS_Store
+.env
+*.log
 
-# Folder config file
-[Dd]esktop.ini
+# --- NestJS (Carpeta 'back') ---
+backend/node_modules/
+backend/dist/
+backend/npm-debug.log
+backend/.env
+backend/.env.production
+backend/.env.template
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# --- Flutter (Carpeta 'front') ---
+dueglow_app/.dart_tool/
+dueglow_app/.flutter-plugins
+dueglow_app/.flutter-plugins-dependencies
+dueglow_app/.pub-cache
+dueglow_app/.packages
+dueglow_app/build/
 
-# Windows shortcuts
-*.lnk
-
-# Node modules form api
-**/node_modules/
-
-# Archivos compilados (esto es lo que se genera al hacer 'npm run build')
-**/dist/
-
-# Credenciales (esto evita que subas tus contraseñas)
-**/.env
-
-# Otros
-**/.DS_Store
+# Archivos de configuración de IDEs
+.vscode/
+.idea/
+*.iml
