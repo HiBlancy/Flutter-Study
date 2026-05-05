@@ -18,8 +18,9 @@ enum ProductSortOption {
 
 class MyProductsScreen extends StatefulWidget {
   final ProductListType? initialListType;
+  final HaveProductsFilter? initialHaveFilter;
 
-  const MyProductsScreen({super.key, this.initialListType});
+  const MyProductsScreen({super.key, this.initialListType, this.initialHaveFilter});
 
   @override
   State<MyProductsScreen> createState() => _MyProductsScreenState();
@@ -57,6 +58,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
   void initState() {
     super.initState();
     _selectedListType = widget.initialListType;
+    _haveProductsFilter = widget.initialHaveFilter ?? HaveProductsFilter.all;
     _refreshProducts();
 
 

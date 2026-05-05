@@ -8,6 +8,8 @@ import '../services/routine_service.dart';
 import '../widgets/main_toolbar.dart';
 import 'routine_detail.screen.dart';
 import 'product_screen.dart';
+import 'my_products_screen.dart';
+import '../models/product_list_type.dart';
 import '../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   List<BeautyProduct> _expiringSoonProducts = [];
   List<Routine> _routines = [];
+  int _expiredProductsCount = 0;
   YearlyOverviewStats _yearlyOverview = YearlyOverviewStats.empty();
   CurrentMonthStats? _currentMonthStats;
 
@@ -40,12 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final nameFuture = _authService.getUserName();
     final expiringProductsFuture = _productService.getExpiringSoon(days: 30);
     final routinesFuture = _routineService.getRoutines();
+    final expiredProductsFuture = _productService.getExpiredProducts();
     final yearlyOverviewFuture = _productService.getYearlyOverview();
     final currentMonthStatsFuture = _productService.getCurrentMonthStats();
     final name = await nameFuture;
     final expiringProducts = await expiringProductsFuture;
     final yearlyOverview = await yearlyOverviewFuture;
     final currentMonthStats = await currentMonthStatsFuture;
+    final expiredProducts = await expiredProductsFuture;
     List<Routine> routines = [];
     try {
       routines = await routinesFuture;
@@ -58,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _userName = name ?? AppLocalizations.of(context)!.defaultUserName;
         _expiringSoonProducts = expiringProducts;
         _routines = routines;
+        _expiredProductsCount = expiredProducts.length;
         _yearlyOverview = yearlyOverview;
         _currentMonthStats = currentMonthStats;
         _isLoading = false;
@@ -387,6 +393,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+                if (_expiredProductsCount > 0)
+                  InkWell(
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MyProductsScreen(
+                            initialListType: ProductListType.have,
+                            initialHaveFilter: HaveProductsFilter.expired,
+                          ),
+                        ),
+                      );
+                      await _loadUserData();
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Text(
+                        'Tienes $_expiredProductsCount productos caducados',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.error,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ],
@@ -634,7 +666,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildExpiringProductCardVertical(BeautyProduct product, bool isDark) {
   final theme = Theme.of(context);
-  final days = product.expirationDate!.difference(DateTime.now()).inDays;
+  final days = _daysUntilExpiration(product.expirationDate!);
   final isDanger = days <= 7;
   final l10n = AppLocalizations.of(context)!;
 
@@ -735,6 +767,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ),
   );
+}
+
+int _daysUntilExpiration(DateTime expirationDate) {
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final expiration = DateTime(
+    expirationDate.year,
+    expirationDate.month,
+    expirationDate.day,
+  );
+  return expiration.difference(today).inDays;
 }
 
 }

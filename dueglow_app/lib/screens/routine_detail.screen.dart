@@ -8,6 +8,7 @@ import '../widgets/main_toolbar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../l10n/app_localizations.dart';
+import 'product_screen.dart';
 
 class RoutineDetailScreen extends StatefulWidget {
   final Routine routine;
@@ -408,6 +409,47 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
       _showSnackBar(AppLocalizations.of(context)!.productAddError, isError: true);
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _openRoutineProductDetail(RoutineProduct routineProduct) async {
+    final data = routineProduct.productData ?? <String, dynamic>{};
+    final product = BeautyProduct(
+      id: routineProduct.productId,
+      barcode: (data['barcode'] ?? '').toString(),
+      name: (data['name'] ?? routineProduct.name).toString(),
+      brand: data['brand']?.toString() ?? routineProduct.brand,
+      imageUrl: data['imageUrl']?.toString(),
+      categories: (data['categories'] as List?)
+          ?.map((item) => item.toString())
+          .toList(),
+      notes: data['notes']?.toString(),
+      rating: (data['rating'] as num?)?.toInt(),
+      listType: data['listType']?.toString(),
+      expirationDate: data['expirationDate'] != null
+          ? DateTime.tryParse(data['expirationDate'].toString())
+          : null,
+      periodAfterOpening: data['periodAfterOpening']?.toString(),
+      openedDate: data['openedDate'] != null
+          ? DateTime.tryParse(data['openedDate'].toString())
+          : null,
+      addedAt: data['createdAt'] != null
+          ? DateTime.tryParse(data['createdAt'].toString())
+          : null,
+      isOpened: data['isOpened'] as bool?,
+    );
+
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProductScreen(product: product, isFromSearch: false),
+      ),
+    );
+
+    if (!mounted) return;
+    await _loadFreshRoutine();
+    if (result == true) {
+      setState(() => _hasChanges = true);
     }
   }
 
@@ -896,6 +938,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         ),
       ),
       child: ListTile(
+        onTap: () => _openRoutineProductDetail(p),
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         leading: Row(
           mainAxisSize: MainAxisSize.min,

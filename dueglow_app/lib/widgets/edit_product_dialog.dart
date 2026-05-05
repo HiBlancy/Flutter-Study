@@ -258,8 +258,6 @@ class _EditProductDialogState extends State<EditProductDialog> {
       );
       if (uploadedProduct != null) {
         imageUploaded = true;
-        widget.onProductUpdated(uploadedProduct);
-
         _currentImageUrl = uploadedProduct.imageUrl;
 
       } else {
@@ -301,7 +299,23 @@ class _EditProductDialogState extends State<EditProductDialog> {
 
 
       final finalProduct = imageUploaded && _currentImageUrl != null
-          ? result.copyWith(imageUrl: _currentImageUrl)
+          ? BeautyProduct(
+              id: result.id,
+              barcode: result.barcode,
+              name: result.name,
+              brand: result.brand,
+              imageUrl: _currentImageUrl,
+              categories: result.categories,
+              notes: result.notes,
+              rating: result.rating,
+              listType: result.listType,
+              expirationDate: result.expirationDate,
+              periodAfterOpening: result.periodAfterOpening,
+              openedDate: result.openedDate,
+              finishedDate: result.finishedDate,
+              addedAt: result.addedAt,
+              isOpened: result.isOpened,
+            )
           : result;
       widget.onProductUpdated(finalProduct);
       Navigator.pop(context, finalProduct);
