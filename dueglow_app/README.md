@@ -63,10 +63,11 @@ flutter analyze
 
 Actualmente la URL base se define en `lib/services/api_config.dart`:
 
+- Actualmente está conectada al backend desplegado en Render, la primera llamada genera error porque despierta al setvidor (esperar 1 min aprox) y ya se puede utilizar.
 - `_baseUrlWeb` para Flutter Web (por defecto `http://localhost:3000`)
 - `_baseUrlMobile` para Android/iOS (por defecto IP local)
 
-Para conectar con otro entorno (por ejemplo Render), cambia esos valores en `ApiConfig`.
+Para conectar con otro entorno (por ejemplo Local), cambia esos valores en `ApiConfig`.
 
 > Nota: este frontend no está usando `.env` para `API_URL` en su estado actual; la configuración activa está hardcodeada en `api_config.dart`.
 

@@ -5,7 +5,7 @@ Backend REST API de DueGlow para autenticación, gestión de usuarios, productos
 ![NestJS](https://img.shields.io/badge/NestJS-11.x-E0234E?logo=nestjs)
 ![Node](https://img.shields.io/badge/Node.js-20%2B-339933?logo=node.js)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb)
-![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)
+![Estado](https://img.shields.io/badge/Estado-Terminada-green)
 
 ---
 
@@ -98,6 +98,8 @@ npm run start:dev
 
 API disponible en `http://localhost:3000`.
 Swagger disponible en `http://localhost:3000/api/docs`.
+
+Como la API esta deplegada en Render, para levanatar el backend y visualizar el Swagger se puede acceder directamente a `https://backend-dueglow.onrender.com/api/docs#/`.
 
 ---
 

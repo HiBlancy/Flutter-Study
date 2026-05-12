@@ -126,8 +126,8 @@ Si solo quieres probar la app **sin montar el backend local**, puedes conectar e
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/[tu-usuario]/[nombre-repo].git
-cd [nombre-repo]
+git clone https://github.com/HiBlancy/TFG-Dueglow.git
+cd TFG-Dueglow
 ```
 
 ### 2. Configurar el Backend (NestJS)
@@ -169,14 +169,7 @@ flutter run
 
 ### 4. Conectar MongoDB Compass
 
-Abre MongoDB Compass e introduce tu cadena de conexión:
-```
-mongodb://localhost:27017/[nombre-base-de-datos]
-```
-O si usas Atlas:
-```
-mongodb+srv://[usuario]:[password]@cluster.mongodb.net/[nombre-bd]
-```
+Abre MongoDB Atlas y crea tu cluster
 
 ---
 
@@ -186,20 +179,17 @@ mongodb+srv://[usuario]:[password]@cluster.mongodb.net/[nombre-bd]
 
 ```env
 # Base de datos
-MONGODB_URI=mongodb://localhost:27017/[nombre-bd]
-
-# Servidor
-PORT=3000
-NODE_ENV=development
+URL=mongodb+srv://[usuario]:[password]@cluster.mongodb.net/[nombre-bd]
 
 # JWT (si usas autenticación con tokens)
 JWT_SECRET=tu_secreto_aqui
 JWT_EXPIRES_IN=7d
 
-# [Otras variables que necesites]
+# Otras variables que necesites
+CLOUDINARY_CLOUD_NAME= nombre_de_la_bbdd
+CLOUDINARY_API_KEY= api_key
+CLOUDINARY_API_SECRET= api_secret
 ```
-
-> ⚠️ **Nunca subas el archivo `.env` a Git.** Asegúrate de que está en `.gitignore`.
 
 ---
 
