@@ -4,7 +4,6 @@ import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
-import '../widgets/bottom_app_bar.dart';
 import '../l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -94,9 +93,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
         Future.delayed(const Duration(seconds: 1), () {
           if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const BottomNavBar()),
+            Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+              AppConstants.routeHome,
+              (route) => false,
             );
           }
         });

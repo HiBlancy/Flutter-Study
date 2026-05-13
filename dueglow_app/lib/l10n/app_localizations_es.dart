@@ -1012,4 +1012,34 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get subOtros => 'Otros';
+
+  @override
+  String get deleteAccountSectionTitle => 'Cuenta';
+
+  @override
+  String get deleteAccount => 'Borrar cuenta';
+
+  @override
+  String get deleteAccountSubtitle => 'Acción permanente e irreversible';
+
+  @override
+  String get deleteAccountDialogTitle => '¿Borrar tu cuenta?';
+
+  @override
+  String get deleteAccountDialogMessage =>
+      'Esta acción no se puede deshacer. Perderás todo de forma permanente: productos, rutinas, imágenes y cualquier dato asociado a tu cuenta.\n\nConfirma solo si estás seguro.';
+
+  @override
+  String get deleteAccountConfirmButton => 'Sí, borrar mi cuenta';
+
+  @override
+  String get deleteAccountDeleting => 'Borrando cuenta…';
+
+  @override
+  String get deleteAccountSuccess =>
+      'Cuenta eliminada. Se ha cerrado la sesión.';
+
+  @override
+  String get deleteAccountError =>
+      'No se pudo borrar la cuenta. Comprueba tu conexión o si el servidor ya tiene esta función disponible.';
 }

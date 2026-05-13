@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
+import '../constants/app_constants.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
-import '../widgets/bottom_app_bar.dart';
 import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -49,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
 
       if (authData != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+          AppConstants.routeHome,
+          (route) => false,
         );
       } else if (mounted) {
         _showErrorDialog();

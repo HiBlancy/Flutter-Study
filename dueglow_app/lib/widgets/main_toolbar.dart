@@ -42,6 +42,7 @@ class CustomAppBar extends StatelessWidget {
         backgroundColor: backgroundColor,
         scrolledUnderElevation: 0,
         iconTheme: IconThemeData(color: foregroundColor),
+        automaticallyImplyLeading: false,
         leading: showBackButton
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),

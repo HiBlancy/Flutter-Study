@@ -1010,4 +1010,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subOtros => 'Other';
+
+  @override
+  String get deleteAccountSectionTitle => 'Account';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountSubtitle => 'Permanent and irreversible';
+
+  @override
+  String get deleteAccountDialogTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountDialogMessage =>
+      'This cannot be undone. You will permanently lose everything: products, routines, images, and all data tied to your account.\n\nOnly confirm if you are sure.';
+
+  @override
+  String get deleteAccountConfirmButton => 'Yes, delete my account';
+
+  @override
+  String get deleteAccountDeleting => 'Deleting account…';
+
+  @override
+  String get deleteAccountSuccess =>
+      'Account removed. You have been signed out.';
+
+  @override
+  String get deleteAccountError =>
+      'Could not delete the account. Check your connection or whether the server supports this yet.';
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../constants/app_constants.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../services/auth_service.dart';
 import '../widgets/main_toolbar.dart';
 import '../l10n/app_localizations.dart';
 
@@ -52,6 +54,17 @@ class SettingsScreen extends StatelessWidget {
             children: [
             _AboutTile(),
           ]),
+
+          Divider(color: dividerColor, height: 1),
+
+          _SettingsSection(
+            title: AppLocalizations.of(context)!.deleteAccountSectionTitle,
+            children: [
+              const _DeleteAccountTile(),
+            ],
+          ),
+
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -240,6 +253,131 @@ class _AboutTile extends StatelessWidget {
 
         Navigator.pushNamed(context, '/about');
       },
+    );
+  }
+}
+
+
+class _DeleteAccountTile extends StatefulWidget {
+  const _DeleteAccountTile();
+
+  @override
+  State<_DeleteAccountTile> createState() => _DeleteAccountTileState();
+}
+
+class _DeleteAccountTileState extends State<_DeleteAccountTile> {
+  bool _busy = false;
+
+  Future<void> _confirmAndDelete() async {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          icon: Icon(
+            Icons.warning_amber_rounded,
+            color: theme.colorScheme.error,
+            size: 40,
+          ),
+          title: Text(l10n.deleteAccountDialogTitle),
+          content: SingleChildScrollView(
+            child: Text(l10n.deleteAccountDialogMessage),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.error,
+              ),
+              child: Text(l10n.deleteAccountConfirmButton),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _busy = true);
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(right: 20),
+                  child: SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(strokeWidth: 3),
+                  ),
+                ),
+                Expanded(child: Text(l10n.deleteAccountDeleting)),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    final ok = await AuthService().deleteAccount();
+
+    if (mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    if (!mounted) return;
+    setState(() => _busy = false);
+
+    if (ok) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppConstants.routeLogin,
+        (route) => false,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.deleteAccountError),
+          backgroundColor: theme.colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+
+    return ListTile(
+      enabled: !_busy,
+      leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),
+      title: Text(
+        l10n.deleteAccount,
+        style: TextStyle(
+          color: theme.colorScheme.error,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        l10n.deleteAccountSubtitle,
+        style: TextStyle(color: subtleText),
+      ),
+      onTap: _busy ? null : _confirmAndDelete,
     );
   }
 }

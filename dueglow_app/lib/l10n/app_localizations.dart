@@ -1971,6 +1971,60 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Otros'**
   String get subOtros;
+
+  /// No description provided for @deleteAccountSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta'**
+  String get deleteAccountSectionTitle;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar cuenta'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Acción permanente e irreversible'**
+  String get deleteAccountSubtitle;
+
+  /// No description provided for @deleteAccountDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Borrar tu cuenta?'**
+  String get deleteAccountDialogTitle;
+
+  /// No description provided for @deleteAccountDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta acción no se puede deshacer. Perderás todo de forma permanente: productos, rutinas, imágenes y cualquier dato asociado a tu cuenta.\n\nConfirma solo si estás seguro.'**
+  String get deleteAccountDialogMessage;
+
+  /// No description provided for @deleteAccountConfirmButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Sí, borrar mi cuenta'**
+  String get deleteAccountConfirmButton;
+
+  /// No description provided for @deleteAccountDeleting.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrando cuenta…'**
+  String get deleteAccountDeleting;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta eliminada. Se ha cerrado la sesión.'**
+  String get deleteAccountSuccess;
+
+  /// No description provided for @deleteAccountError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo borrar la cuenta. Comprueba tu conexión o si el servidor ya tiene esta función disponible.'**
+  String get deleteAccountError;
 }
 
 class _AppLocalizationsDelegate

@@ -476,5 +476,14 @@
   "subCacaoLabial": "Lip balm",
   "subHigieneIntima": "Intimate hygiene",
   "subSolaresCorporales": "Body sun care",
-  "subOtros": "Other"
+  "subOtros": "Other",
+  "deleteAccountSectionTitle": "Account",
+  "deleteAccount": "Delete account",
+  "deleteAccountSubtitle": "Permanent and irreversible",
+  "deleteAccountDialogTitle": "Delete your account?",
+  "deleteAccountDialogMessage": "This cannot be undone. You will permanently lose everything: products, routines, images, and all data tied to your account.\n\nOnly confirm if you are sure.",
+  "deleteAccountConfirmButton": "Yes, delete my account",
+  "deleteAccountDeleting": "Deleting account…",
+  "deleteAccountSuccess": "Account removed. You have been signed out.",
+  "deleteAccountError": "Could not delete the account. Check your connection or whether the server supports this yet."
 }

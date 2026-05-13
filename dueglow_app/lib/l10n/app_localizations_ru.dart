@@ -1017,4 +1017,33 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get subOtros => 'Другое';
+
+  @override
+  String get deleteAccountSectionTitle => 'Аккаунт';
+
+  @override
+  String get deleteAccount => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountSubtitle => 'Безвозвратное действие';
+
+  @override
+  String get deleteAccountDialogTitle => 'Удалить аккаунт?';
+
+  @override
+  String get deleteAccountDialogMessage =>
+      'Это действие нельзя отменить. Вы навсегда потеряете все данные: продукты, рутины, изображения и всё, что связано с аккаунтом.\n\nПодтверждайте только если вы уверены.';
+
+  @override
+  String get deleteAccountConfirmButton => 'Да, удалить мой аккаунт';
+
+  @override
+  String get deleteAccountDeleting => 'Удаление аккаунта…';
+
+  @override
+  String get deleteAccountSuccess => 'Аккаунт удалён. Вы вышли из системы.';
+
+  @override
+  String get deleteAccountError =>
+      'Не удалось удалить аккаунт. Проверьте соединение или поддерживает ли сервер эту функцию.';
 }

@@ -298,6 +298,51 @@ class AuthService {
   }
 
 
+  /// Solicita al servidor eliminar la cuenta y todos los datos asociados.
+  /// Si el backend responde correctamente, limpia la sesión local ([logout]).
+  /// El endpoint esperado es `DELETE /users/me` con el mismo formato de respuesta que el resto de la API (`status: true`) o `204`.
+  Future<bool> deleteAccount() async {
+    final token = await getToken();
+    if (token == null) return false;
+
+    try {
+      final response = await http
+          .delete(
+            Uri.parse(ApiConfig.getDeleteAccountUrl()),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 20));
+
+      if (response.statusCode == 204) {
+        await logout();
+        return true;
+      }
+
+      if (response.statusCode == 200) {
+        if (response.body.isEmpty || response.body.trim().isEmpty) {
+          await logout();
+          return true;
+        }
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic> && data['status'] == true) {
+          await logout();
+          return true;
+        }
+      }
+
+      print('❌ Borrar cuenta: ${response.statusCode} ${response.body}');
+      return false;
+    } catch (e) {
+      print('❌ Error al borrar cuenta: $e');
+      return false;
+    }
+  }
+
+
   Future<Map<String, dynamic>?> uploadProfileImage(File imageFile) async {
   final token = await getToken();
   if (token == null) return null;

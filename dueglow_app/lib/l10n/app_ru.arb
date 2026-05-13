@@ -475,5 +475,14 @@
   "subCacaoLabial": "Бальзам для губ",
   "subHigieneIntima": "Интимная гигиена",
   "subSolaresCorporales": "Солнцезащита для тела",
-  "subOtros": "Другое"
+  "subOtros": "Другое",
+  "deleteAccountSectionTitle": "Аккаунт",
+  "deleteAccount": "Удалить аккаунт",
+  "deleteAccountSubtitle": "Безвозвратное действие",
+  "deleteAccountDialogTitle": "Удалить аккаунт?",
+  "deleteAccountDialogMessage": "Это действие нельзя отменить. Вы навсегда потеряете все данные: продукты, рутины, изображения и всё, что связано с аккаунтом.\n\nПодтверждайте только если вы уверены.",
+  "deleteAccountConfirmButton": "Да, удалить мой аккаунт",
+  "deleteAccountDeleting": "Удаление аккаунта…",
+  "deleteAccountSuccess": "Аккаунт удалён. Вы вышли из системы.",
+  "deleteAccountError": "Не удалось удалить аккаунт. Проверьте соединение или поддерживает ли сервер эту функцию."
 }
