@@ -11,7 +11,7 @@
 ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?logo=cloudinary)
 ![Render](https://img.shields.io/badge/Render-46E3B7?logo=render)
 ![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)
-![TFG](https://img.shields.io/badge/TFG-2024--2025-blue)
+![TFG](https://img.shields.io/badge/TFG-2024--2026-blue)
 
 ---
 

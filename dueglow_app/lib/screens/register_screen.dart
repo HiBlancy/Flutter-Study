@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
@@ -168,7 +169,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Icons.arrow_back,
             color: theme.colorScheme.primary,
           ),
-          onPressed: () => Navigator.pushReplacementNamed(context, '/'),
+          onPressed: () => Navigator.pushReplacementNamed(
+            context,
+            AppConstants.routeLogin,
+          ),
         ),
       ),
       body: SafeArea(
@@ -475,7 +479,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         GestureDetector(
-          onTap: () => Navigator.pushReplacementNamed(context, '/'),
+          onTap: () => Navigator.pushReplacementNamed(
+            context,
+            AppConstants.routeLogin,
+          ),
           child: Text(
             AppLocalizations.of(context)!.signIn,
             style: theme.textTheme.bodyLarge?.copyWith(

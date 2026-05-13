@@ -38,6 +38,36 @@ class AuthService {
     return prefs.getString(_tokenKey);
   }
 
+  /// Returns the token's expiry date extracted from the JWT `exp` claim.
+  /// If the token is not a valid JWT or has no `exp`, returns null.
+  DateTime? getTokenExpiry(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+
+      final payload = parts[1];
+      final normalized = base64Url.normalize(payload);
+      final decoded = utf8.decode(base64Url.decode(normalized));
+      final json = jsonDecode(decoded);
+      if (json is! Map<String, dynamic>) return null;
+
+      final exp = json['exp'];
+      if (exp is! num) return null;
+      return DateTime.fromMillisecondsSinceEpoch(exp.toInt() * 1000, isUtc: true);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool isTokenValid(
+    String token, {
+    Duration clockSkew = const Duration(seconds: 30),
+  }) {
+    final expiryUtc = getTokenExpiry(token);
+    if (expiryUtc == null) return token.isNotEmpty;
+    return DateTime.now().toUtc().isBefore(expiryUtc.subtract(clockSkew));
+  }
+
 
   Future<String?> getUserName() async {
     final prefs = await _prefs;

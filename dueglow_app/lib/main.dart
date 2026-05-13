@@ -16,6 +16,7 @@ import 'themes.dart';
 import 'widgets/bottom_app_bar.dart';
 import 'constants/app_constants.dart';
 import '../l10n/app_localizations.dart';
+import 'screens/auth_gate_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,15 +41,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer2<ThemeProvider, LocaleProvider>(
       builder: (context, themeProvider, localeProvider, child) {
+
         return MaterialApp(
           title: AppConstants.appName,
           debugShowCheckedModeBanner: false,
 
-
           theme: AppThemes.lightTheme,
           darkTheme: AppThemes.darkTheme,
           themeMode: themeProvider.themeMode,
-
 
           locale: localeProvider.locale,
           supportedLocales: const [
@@ -66,9 +66,10 @@ class MyApp extends StatelessWidget {
           ],
 
 
-          initialRoute: AppConstants.routeLogin,
+          initialRoute: AppConstants.routeSplash,
           routes: {
             AppConstants.routeRegister: (context) => const RegisterScreen(),
+            AppConstants.routeSplash: (context) => const AuthGateScreen(),
             AppConstants.routeLogin: (context) => const LoginScreen(),
             AppConstants.routeHome: (context) => const BottomNavBar(),
             AppConstants.routeProfile: (context) => const BottomNavBar(initialIndex: 4),

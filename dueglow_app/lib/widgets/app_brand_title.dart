@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_constants.dart';
 
-/// App bar mark used on detail screens (matches product detail).
 class AppBrandTitle extends StatelessWidget {
   const AppBrandTitle({super.key});
 
