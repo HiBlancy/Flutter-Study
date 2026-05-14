@@ -555,5 +555,3 @@ Future<List<BeautyProduct>> getExpiredProducts() async {
     }
   }
 }
-
-

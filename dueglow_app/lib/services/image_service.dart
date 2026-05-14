@@ -1,7 +1,5 @@
-
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image/image.dart' as img;
@@ -83,7 +81,6 @@ class ImageService {
       await imageFile.writeAsBytes(encoded, flush: true);
       return imageFile;
     } catch (e) {
-      // If normalization fails, keep original image instead of blocking user flow.
       print('⚠️ Could not normalize image orientation: $e');
       return imageFile;
     }

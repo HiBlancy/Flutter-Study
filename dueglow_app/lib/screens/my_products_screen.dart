@@ -18,8 +18,16 @@ enum ProductSortOption {
 class MyProductsScreen extends StatefulWidget {
   final ProductListType? initialListType;
   final HaveProductsFilter? initialHaveFilter;
+  /// True when this screen is pushed on top of another (e.g. from Home), so the
+  /// app bar shows a back control. False when used as a bottom-tab root.
+  final bool showBackButton;
 
-  const MyProductsScreen({super.key, this.initialListType, this.initialHaveFilter});
+  const MyProductsScreen({
+    super.key,
+    this.initialListType,
+    this.initialHaveFilter,
+    this.showBackButton = false,
+  });
 
   @override
   State<MyProductsScreen> createState() => _MyProductsScreenState();
@@ -467,6 +475,7 @@ class _MyProductsScreenState extends State<MyProductsScreen> {
     return CustomAppBar(
       title: AppLocalizations.of(context)!.myProducts,
       showDrawer: true,
+      showBackButton: widget.showBackButton,
       child: Column(
         children: [
 

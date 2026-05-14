@@ -113,7 +113,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return CustomAppBar(
       title: AppLocalizations.of(context)!.searchProducts,
       showDrawer: true,
-      showBackButton: false,
+      showBackButton: true,
       child: Column(
         children: [
 

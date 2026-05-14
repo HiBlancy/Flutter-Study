@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -18,7 +17,6 @@ class RoutineService {
   Map<String, dynamic>? _extractDataObject(Map<String, dynamic> json) {
     final data = json['data'];
     if (data is Map<String, dynamic>) {
-
       final inner = data['data'];
       if (inner is Map<String, dynamic>) return inner;
       return data;
@@ -34,10 +32,8 @@ class RoutineService {
     };
   }
 
-
   Future<List<Routine>> getRoutines() async {
     final headers = await _getHeaders();
-    // API call
     final response = await http.get(
       Uri.parse(ApiConfig.getRoutinesUrl()),
       headers: headers,
@@ -53,25 +49,22 @@ class RoutineService {
     final List<dynamic> data = maybeData is Map<String, dynamic>
         ? (maybeData['data'] as List<dynamic>? ?? [])
         : (maybeData as List<dynamic>? ?? []);
-    final routines = data
-        .whereType<Map<String, dynamic>>()
-        .map((r) {
-          if (kDebugMode) {
-            final raw = r['type'] ??
-                r['routineType'] ??
-                r['moment'] ??
-                r['timeOfDay'] ??
-                r['isNight'] ??
-                r['night'] ??
-                r['isMorning'];
-            debugPrint('🧴 Routine ${r['_id']}: rawType=$raw');
-          }
-          return Routine.fromJson(r);
-        })
-        .toList();
+    final routines = data.whereType<Map<String, dynamic>>().map((r) {
+      if (kDebugMode) {
+        final raw =
+            r['type'] ??
+            r['routineType'] ??
+            r['moment'] ??
+            r['timeOfDay'] ??
+            r['isNight'] ??
+            r['night'] ??
+            r['isMorning'];
+        debugPrint('🧴 Routine ${r['_id']}: rawType=$raw');
+      }
+      return Routine.fromJson(r);
+    }).toList();
     return routines;
   }
-
 
   Future<Routine> createRoutine(Routine routine) async {
     final headers = await _getHeaders();
@@ -87,7 +80,6 @@ class RoutineService {
     bodyMap['isMorning'] = bodyMap['type'] == 'morning';
     bodyMap['message'] = bodyMap['name'];
 
-    // API call
     final response = await http.post(
       Uri.parse(ApiConfig.getRoutinesUrl()),
       headers: headers,
@@ -95,7 +87,9 @@ class RoutineService {
     );
 
     if (response.statusCode != 201 && response.statusCode != 200) {
-      throw Exception('Error al crear rutina (${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Error al crear rutina (${response.statusCode}): ${response.body}',
+      );
     }
 
     final json = _decodeJson(response);
@@ -105,7 +99,6 @@ class RoutineService {
     }
     return Routine.fromJson(dataObj);
   }
-
 
   Future<Routine> updateRoutine(String id, Map<String, dynamic> data) async {
     final headers = await _getHeaders();
@@ -127,7 +120,6 @@ class RoutineService {
       payload['message'] = payload['name'];
     }
 
-    // API call
     final response = await http.patch(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
       headers: headers,
@@ -135,35 +127,39 @@ class RoutineService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Error al actualizar rutina (${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Error al actualizar rutina (${response.statusCode}): ${response.body}',
+      );
     }
 
     final json = _decodeJson(response);
     final dataObj = _extractDataObject(json);
     if (dataObj == null) {
-      throw Exception('Respuesta inesperada al actualizar rutina: ${response.body}');
+      throw Exception(
+        'Respuesta inesperada al actualizar rutina: ${response.body}',
+      );
     }
     return Routine.fromJson(dataObj);
   }
 
-
   Future<void> deleteRoutine(String id) async {
     final headers = await _getHeaders();
-    // API call
+
     final response = await http.delete(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
       headers: headers,
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Error al eliminar rutina (${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Error al eliminar rutina (${response.statusCode}): ${response.body}',
+      );
     }
   }
 
-
   Future<Routine> addProduct(String routineId, String productId) async {
     final headers = await _getHeaders();
-    // API call
+
     final response = await http.post(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$routineId/products'),
       headers: headers,
@@ -171,45 +167,51 @@ class RoutineService {
     );
 
     if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Error al añadir producto (${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Error al añadir producto (${response.statusCode}): ${response.body}',
+      );
     }
 
     final json = _decodeJson(response);
     final dataObj = _extractDataObject(json);
     if (dataObj == null) {
-      throw Exception('Respuesta inesperada al añadir producto: ${response.body}');
+      throw Exception(
+        'Respuesta inesperada al añadir producto: ${response.body}',
+      );
     }
     return Routine.fromJson(dataObj);
   }
 
-
   Future<Routine> removeProduct(String routineId, String productId) async {
     final headers = await _getHeaders();
-    // API call
+
     final response = await http.delete(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$routineId/products/$productId'),
       headers: headers,
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Error al eliminar producto (${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Error al eliminar producto (${response.statusCode}): ${response.body}',
+      );
     }
 
     final json = _decodeJson(response);
     final dataObj = _extractDataObject(json);
     if (dataObj == null) {
-      throw Exception('Respuesta inesperada al eliminar producto: ${response.body}');
+      throw Exception(
+        'Respuesta inesperada al eliminar producto: ${response.body}',
+      );
     }
     return Routine.fromJson(dataObj);
   }
-
 
   Future<Routine> reorderProducts(
     String routineId,
     List<Map<String, dynamic>> products,
   ) async {
     final headers = await _getHeaders();
-    // API call
+
     final response = await http.patch(
       Uri.parse('${ApiConfig.getRoutinesUrl()}/$routineId/reorder'),
       headers: headers,
@@ -217,7 +219,9 @@ class RoutineService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Error al reordenar productos (${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Error al reordenar productos (${response.statusCode}): ${response.body}',
+      );
     }
 
     final json = _decodeJson(response);
@@ -228,20 +232,19 @@ class RoutineService {
     return Routine.fromJson(dataObj);
   }
 
+  Future<Routine?> getRoutineById(String id) async {
+    final headers = await _getHeaders();
 
-Future<Routine?> getRoutineById(String id) async {
-  final headers = await _getHeaders();
-  // API call
-  final response = await http.get(
-    Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
-    headers: headers,
-  );
+    final response = await http.get(
+      Uri.parse('${ApiConfig.getRoutinesUrl()}/$id'),
+      headers: headers,
+    );
 
-  if (response.statusCode != 200) return null;
+    if (response.statusCode != 200) return null;
 
-  final json = _decodeJson(response);
-  final dataObj = _extractDataObject(json);
-  if (dataObj == null) return null;
-  return Routine.fromJson(dataObj);
-}
+    final json = _decodeJson(response);
+    final dataObj = _extractDataObject(json);
+    if (dataObj == null) return null;
+    return Routine.fromJson(dataObj);
+  }
 }

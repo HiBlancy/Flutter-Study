@@ -99,7 +99,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return CustomAppBar(
       title: AppLocalizations.of(context)!.camera,
       showDrawer: true,
-      showBackButton: false,
+      showBackButton: true,
       child: Stack(
         children: [
           MobileScanner(

@@ -19,13 +19,11 @@ class _EditScreenState extends State<EditScreen> {
   final _imageService = ImageService();
   final _formKey = GlobalKey<FormState>();
 
-
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _birthDateController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
-
 
   bool _isLoading = true;
   bool _isSaving = false;
@@ -107,7 +105,6 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
-
   void _showImagePickerOptions() {
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
@@ -179,7 +176,6 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
-
   Future<void> _pickImageFromCamera() async {
     final l10n = AppLocalizations.of(context)!;
     setState(() => _isUploadingImage = true);
@@ -190,7 +186,6 @@ class _EditScreenState extends State<EditScreen> {
       setState(() => _selectedImage = imageFile);
       _showCustomSnackBar(l10n.imageCapturedSuccess);
 
-
       final info = await _imageService.getImageInfo(imageFile);
       print('📸 Info de imagen: $info');
     } else {
@@ -199,7 +194,6 @@ class _EditScreenState extends State<EditScreen> {
 
     setState(() => _isUploadingImage = false);
   }
-
 
   Future<void> _pickImageFromGallery() async {
     final l10n = AppLocalizations.of(context)!;
@@ -210,7 +204,6 @@ class _EditScreenState extends State<EditScreen> {
     if (imageFile != null) {
       setState(() => _selectedImage = imageFile);
       _showCustomSnackBar(l10n.imageSelectedSuccess);
-
 
       final info = await _imageService.getImageInfo(imageFile);
       print('🖼️ Info de imagen: $info');

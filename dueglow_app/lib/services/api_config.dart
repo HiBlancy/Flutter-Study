@@ -5,7 +5,6 @@ class ApiConfig {
   static String getRegisterUrl() => '$baseUrl/users/register';
   static String getLoginUrl() => '$baseUrl/users/login';
   static String getProfileUrl() => '$baseUrl/users/me';
-  /// [DELETE] Borra la cuenta del usuario (el backend debe implementarlo).
   static String getDeleteAccountUrl() => '$baseUrl/users/me';
   static String getUploadProfileImageUrl() => '$baseUrl/users/me/upload-image';
   static String getDeleteProfileImageUrl() => '$baseUrl/users/me/image';

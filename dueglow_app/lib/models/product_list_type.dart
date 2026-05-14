@@ -12,8 +12,6 @@ enum ProductListType {
 
   const ProductListType(this.value, this.label, this.icon, this.color);
 
-
-
   static ProductListType fromValue(String value) {
     try {
       return values.firstWhere((type) => type.value == value);
@@ -21,7 +19,6 @@ enum ProductListType {
       return have;
     }
   }
-
 
   static ProductListType fromNullable(String? value) {
     if (value == null || value.isEmpty) {

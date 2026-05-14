@@ -1,8 +1,7 @@
 class AppConstants {
   static const String appName = 'DueGlow';
-  static const String version = '1.0.0';
+  static const String version = '1.0.1';
 
-  /// Entry route. Decides between login and home.
   static const String routeSplash = '/';
   static const String routeLogin = '/login';
   static const String routeHome = '/home';

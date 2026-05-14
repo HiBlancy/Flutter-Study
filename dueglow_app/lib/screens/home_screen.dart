@@ -402,6 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (_) => const MyProductsScreen(
                             initialListType: ProductListType.have,
                             initialHaveFilter: HaveProductsFilter.expired,
+                            showBackButton: true,
                           ),
                         ),
                       );

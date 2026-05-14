@@ -43,7 +43,7 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.versionLabel('1.0.0'),
+              l10n.versionLabel(AppConstants.version),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: subtleText,
               ),

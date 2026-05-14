@@ -297,10 +297,6 @@ class AuthService {
     }
   }
 
-
-  /// Solicita al servidor eliminar la cuenta y todos los datos asociados.
-  /// Si el backend responde correctamente, limpia la sesión local ([logout]).
-  /// El endpoint esperado es `DELETE /users/me` con el mismo formato de respuesta que el resto de la API (`status: true`) o `204`.
   Future<bool> deleteAccount() async {
     final token = await getToken();
     if (token == null) return false;
