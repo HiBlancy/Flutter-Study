@@ -16,17 +16,25 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
 
   List<BeautyProduct> _results = [];
   bool _isLoading = false;
+  bool _isLoadingMore = false;
   bool _hasSearched = false;
+  bool _hasMore = false;
+  int _currentPage = 1;
   String? _errorMessage;
   Timer? _debounceTimer;
+  int _searchRequestId = 0;
+
+  static const double _loadMoreThreshold = 200;
 
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _scrollController.addListener(_onScroll);
   }
 
 
@@ -55,24 +63,72 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  Future<void> _performSearch(String query) async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  void _onScroll() {
+    if (!_scrollController.hasClients || _isLoading || _isLoadingMore) return;
+    if (!_hasMore || !_hasSearched) return;
+
+    final position = _scrollController.position;
+    if (position.pixels >= position.maxScrollExtent - _loadMoreThreshold) {
+      _loadMoreResults();
+    }
+  }
+
+  Future<void> _loadMoreResults() async {
+    final query = _searchController.text.trim();
+    if (query.length < 2 || !_hasMore || _isLoadingMore) return;
+    await _performSearch(query, loadMore: true);
+  }
+
+  Future<void> _performSearch(String query, {bool loadMore = false}) async {
+    final requestId = loadMore ? _searchRequestId : ++_searchRequestId;
+
+    if (loadMore) {
+      if (_isLoadingMore || !_hasMore) return;
+      setState(() => _isLoadingMore = true);
+    } else {
+      setState(() {
+        _isLoading = true;
+        _isLoadingMore = false;
+        _errorMessage = null;
+        _hasMore = false;
+        _currentPage = 1;
+        _results = [];
+      });
+    }
+
+    final page = loadMore ? _currentPage + 1 : 1;
 
     try {
-      final results = await BeautyApiService.searchProducts(query);
+      final result = await BeautyApiService.searchProducts(query, page: page);
+      if (!mounted || requestId != _searchRequestId) return;
+
       setState(() {
-        _results = results;
-        _hasSearched = true;
+        if (loadMore) {
+          final existingBarcodes = _results.map((p) => p.barcode).toSet();
+          _results.addAll(
+            result.products.where((p) => !existingBarcodes.contains(p.barcode)),
+          );
+        } else {
+          _results = result.products;
+          _hasSearched = true;
+        }
+        _currentPage = result.page;
+        _hasMore = result.hasMore;
       });
     } catch (e) {
+      if (!mounted || requestId != _searchRequestId) return;
       setState(() {
-        _errorMessage = AppLocalizations.of(context)!.searchConnectionError;
+        if (!loadMore) {
+          _errorMessage = AppLocalizations.of(context)!.searchConnectionError;
+        }
       });
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted && requestId == _searchRequestId) {
+        setState(() {
+          _isLoading = false;
+          _isLoadingMore = false;
+        });
+      }
     }
   }
 
@@ -82,6 +138,8 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _results = [];
       _hasSearched = false;
+      _hasMore = false;
+      _currentPage = 1;
       _errorMessage = null;
     });
     _searchFocusNode.requestFocus();
@@ -100,6 +158,8 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _debounceTimer?.cancel();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -378,10 +438,29 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
 
+    final showLoadMoreFooter = _hasMore || _isLoadingMore;
+
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: _results.length,
+      itemCount: _results.length + (showLoadMoreFooter ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index >= _results.length) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          );
+        }
+
         final product = _results[index];
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

@@ -2025,6 +2025,132 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se pudo borrar la cuenta. Comprueba tu conexión o si el servidor ya tiene esta función disponible.'**
   String get deleteAccountError;
+
+  /// No description provided for @faqs.
+  ///
+  /// In es, this message translates to:
+  /// **'Preguntas frecuentes'**
+  String get faqs;
+
+  /// No description provided for @faqWhatIsAppQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué es DueGlow?'**
+  String get faqWhatIsAppQ;
+
+  /// No description provided for @faqWhatIsAppA.
+  ///
+  /// In es, this message translates to:
+  /// **'DueGlow es una app para organizar productos de belleza, controlar fechas de caducidad y crear rutinas de cuidado personal. Te ayuda a mantener hábitos de autocuidado de forma simple y visual.'**
+  String get faqWhatIsAppA;
+
+  /// No description provided for @faqAddProductQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo añado un producto?'**
+  String get faqAddProductQ;
+
+  /// No description provided for @faqAddProductA.
+  ///
+  /// In es, this message translates to:
+  /// **'Desde la pestaña «Nuevo» puedes escanear el código de barras, buscar en la base de datos o rellenar los datos manualmente. También puedes añadir productos desde los resultados de búsqueda o al escanear uno que no exista en la base de datos.'**
+  String get faqAddProductA;
+
+  /// No description provided for @faqExpirationQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo funcionan la caducidad y el PAO?'**
+  String get faqExpirationQ;
+
+  /// No description provided for @faqExpirationA.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes indicar la fecha de caducidad impresa en el envase o el PAO (periodo tras abrir, p. ej. «6M»). Si marcas un producto como abierto con una fecha, la app puede calcular cuándo caduca según el PAO. En inicio verás los que caducan pronto.'**
+  String get faqExpirationA;
+
+  /// No description provided for @faqProductListsQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué son las listas de productos?'**
+  String get faqProductListsQ;
+
+  /// No description provided for @faqProductListsA.
+  ///
+  /// In es, this message translates to:
+  /// **'En «Mis productos» tienes varias listas: los que tienes, los deseados (wishlist) y los que has terminado este mes. Puedes cambiar de lista desde el detalle de cada producto.'**
+  String get faqProductListsA;
+
+  /// No description provided for @faqRoutinesQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo creo una rutina de skincare?'**
+  String get faqRoutinesQ;
+
+  /// No description provided for @faqRoutinesA.
+  ///
+  /// In es, this message translates to:
+  /// **'Ve a «Rutinas», crea una rutina de mañana o de noche, elige los días de la semana y añade productos de tu tocador. En inicio aparecerá tu próxima rutina según el calendario.'**
+  String get faqRoutinesA;
+
+  /// No description provided for @faqScanNotFoundQ.
+  ///
+  /// In es, this message translates to:
+  /// **'El escáner no encuentra mi producto, ¿qué hago?'**
+  String get faqScanNotFoundQ;
+
+  /// No description provided for @faqScanNotFoundA.
+  ///
+  /// In es, this message translates to:
+  /// **'Si el código de barras no está en la base de datos, la app te ofrecerá crear el producto manualmente. Rellena nombre, marca y, si puedes, caducidad o PAO para llevar un control correcto.'**
+  String get faqScanNotFoundA;
+
+  /// No description provided for @faqExpiringSoonQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Dónde veo los productos que caducan pronto?'**
+  String get faqExpiringSoonQ;
+
+  /// No description provided for @faqExpiringSoonA.
+  ///
+  /// In es, this message translates to:
+  /// **'En la pantalla de inicio hay una sección «Próximos a caducar» con los productos que debes usar antes. Priorízalos para no desperdiciarlos.'**
+  String get faqExpiringSoonA;
+
+  /// No description provided for @faqSettingsLangQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo cambio el idioma o el tema?'**
+  String get faqSettingsLangQ;
+
+  /// No description provided for @faqSettingsLangA.
+  ///
+  /// In es, this message translates to:
+  /// **'Abre «Configuración» desde el menú (icono de tres líneas). Ahí puedes activar notificaciones, elegir modo claro u oscuro y cambiar entre español, inglés y ruso.'**
+  String get faqSettingsLangA;
+
+  /// No description provided for @faqOpenFinishQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo marco un producto como abierto o terminado?'**
+  String get faqOpenFinishQ;
+
+  /// No description provided for @faqOpenFinishA.
+  ///
+  /// In es, this message translates to:
+  /// **'En el detalle del producto puedes marcarlo como abierto (con la fecha del día u otra), cerrarlo de nuevo o marcarlo como terminado. Los terminados se registran en tu historial de uso mensual.'**
+  String get faqOpenFinishA;
+
+  /// No description provided for @faqDeleteAccountQ.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo borro mi cuenta?'**
+  String get faqDeleteAccountQ;
+
+  /// No description provided for @faqDeleteAccountA.
+  ///
+  /// In es, this message translates to:
+  /// **'En «Configuración», al final, está «Borrar cuenta». Es una acción permanente: se eliminan productos, rutinas, imágenes y todos los datos asociados. Solo confírmalo si estás seguro.'**
+  String get faqDeleteAccountA;
 }
 
 class _AppLocalizationsDelegate

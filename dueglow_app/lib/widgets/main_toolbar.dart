@@ -99,7 +99,7 @@ class CustomAppBar extends StatelessWidget {
                 _buildDrawerItem(
                   context,
                   Icons.question_answer_outlined,
-                  l10n.about, //! cambiar a FAQs
+                  l10n.faqs,
                   AppConstants.routeFAQs,
                 ),
                 const Divider(),

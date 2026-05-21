@@ -1042,4 +1042,79 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'No se pudo borrar la cuenta. Comprueba tu conexión o si el servidor ya tiene esta función disponible.';
+
+  @override
+  String get faqs => 'Preguntas frecuentes';
+
+  @override
+  String get faqWhatIsAppQ => '¿Qué es DueGlow?';
+
+  @override
+  String get faqWhatIsAppA =>
+      'DueGlow es una app para organizar productos de belleza, controlar fechas de caducidad y crear rutinas de cuidado personal. Te ayuda a mantener hábitos de autocuidado de forma simple y visual.';
+
+  @override
+  String get faqAddProductQ => '¿Cómo añado un producto?';
+
+  @override
+  String get faqAddProductA =>
+      'Desde la pestaña «Nuevo» puedes escanear el código de barras, buscar en la base de datos o rellenar los datos manualmente. También puedes añadir productos desde los resultados de búsqueda o al escanear uno que no exista en la base de datos.';
+
+  @override
+  String get faqExpirationQ => '¿Cómo funcionan la caducidad y el PAO?';
+
+  @override
+  String get faqExpirationA =>
+      'Puedes indicar la fecha de caducidad impresa en el envase o el PAO (periodo tras abrir, p. ej. «6M»). Si marcas un producto como abierto con una fecha, la app puede calcular cuándo caduca según el PAO. En inicio verás los que caducan pronto.';
+
+  @override
+  String get faqProductListsQ => '¿Qué son las listas de productos?';
+
+  @override
+  String get faqProductListsA =>
+      'En «Mis productos» tienes varias listas: los que tienes, los deseados (wishlist) y los que has terminado este mes. Puedes cambiar de lista desde el detalle de cada producto.';
+
+  @override
+  String get faqRoutinesQ => '¿Cómo creo una rutina de skincare?';
+
+  @override
+  String get faqRoutinesA =>
+      'Ve a «Rutinas», crea una rutina de mañana o de noche, elige los días de la semana y añade productos de tu tocador. En inicio aparecerá tu próxima rutina según el calendario.';
+
+  @override
+  String get faqScanNotFoundQ =>
+      'El escáner no encuentra mi producto, ¿qué hago?';
+
+  @override
+  String get faqScanNotFoundA =>
+      'Si el código de barras no está en la base de datos, la app te ofrecerá crear el producto manualmente. Rellena nombre, marca y, si puedes, caducidad o PAO para llevar un control correcto.';
+
+  @override
+  String get faqExpiringSoonQ => '¿Dónde veo los productos que caducan pronto?';
+
+  @override
+  String get faqExpiringSoonA =>
+      'En la pantalla de inicio hay una sección «Próximos a caducar» con los productos que debes usar antes. Priorízalos para no desperdiciarlos.';
+
+  @override
+  String get faqSettingsLangQ => '¿Cómo cambio el idioma o el tema?';
+
+  @override
+  String get faqSettingsLangA =>
+      'Abre «Configuración» desde el menú (icono de tres líneas). Ahí puedes activar notificaciones, elegir modo claro u oscuro y cambiar entre español, inglés y ruso.';
+
+  @override
+  String get faqOpenFinishQ =>
+      '¿Cómo marco un producto como abierto o terminado?';
+
+  @override
+  String get faqOpenFinishA =>
+      'En el detalle del producto puedes marcarlo como abierto (con la fecha del día u otra), cerrarlo de nuevo o marcarlo como terminado. Los terminados se registran en tu historial de uso mensual.';
+
+  @override
+  String get faqDeleteAccountQ => '¿Cómo borro mi cuenta?';
+
+  @override
+  String get faqDeleteAccountA =>
+      'En «Configuración», al final, está «Borrar cuenta». Es una acción permanente: se eliminan productos, rutinas, imágenes y todos los datos asociados. Solo confírmalo si estás seguro.';
 }

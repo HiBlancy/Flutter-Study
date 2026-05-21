@@ -1040,4 +1040,78 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAccountError =>
       'Could not delete the account. Check your connection or whether the server supports this yet.';
+
+  @override
+  String get faqs => 'Frequently asked questions';
+
+  @override
+  String get faqWhatIsAppQ => 'What is DueGlow?';
+
+  @override
+  String get faqWhatIsAppA =>
+      'DueGlow is an app to organize beauty products, track expiration dates, and build personal care routines. It helps you keep self-care habits simple and visual.';
+
+  @override
+  String get faqAddProductQ => 'How do I add a product?';
+
+  @override
+  String get faqAddProductA =>
+      'From the \"New\" tab you can scan a barcode, search the database, or enter details manually. You can also add products from search results or when a scan is not found in the database.';
+
+  @override
+  String get faqExpirationQ => 'How do expiration and PAO work?';
+
+  @override
+  String get faqExpirationA =>
+      'You can set the printed expiration date or PAO (period after opening, e.g. \"6M\"). If you mark a product as opened with a date, the app can calculate when it expires from the PAO. Home shows items expiring soon.';
+
+  @override
+  String get faqProductListsQ => 'What are the product lists?';
+
+  @override
+  String get faqProductListsA =>
+      'In \"My products\" you have several lists: items you have, wishlist, and products you finished this month. You can change the list from each product\'s detail screen.';
+
+  @override
+  String get faqRoutinesQ => 'How do I create a skincare routine?';
+
+  @override
+  String get faqRoutinesA =>
+      'Go to \"Routines\", create a morning or night routine, pick the days of the week, and add products from your vanity. Home shows your next routine based on the schedule.';
+
+  @override
+  String get faqScanNotFoundQ =>
+      'The scanner can\'t find my product — what now?';
+
+  @override
+  String get faqScanNotFoundA =>
+      'If the barcode is not in the database, the app lets you create the product manually. Fill in name, brand, and expiration or PAO when possible for accurate tracking.';
+
+  @override
+  String get faqExpiringSoonQ => 'Where do I see products expiring soon?';
+
+  @override
+  String get faqExpiringSoonA =>
+      'On the home screen, the \"Expiring Soon\" section lists products to use before they go bad. Prioritize them to avoid waste.';
+
+  @override
+  String get faqSettingsLangQ => 'How do I change language or theme?';
+
+  @override
+  String get faqSettingsLangA =>
+      'Open \"Settings\" from the menu (three-line icon). There you can toggle notifications, choose light or dark mode, and switch between Spanish, English, and Russian.';
+
+  @override
+  String get faqOpenFinishQ => 'How do I mark a product as opened or finished?';
+
+  @override
+  String get faqOpenFinishA =>
+      'On the product detail screen you can mark it as opened (today or another date), close it again, or mark it as finished. Finished items are recorded in your monthly usage history.';
+
+  @override
+  String get faqDeleteAccountQ => 'How do I delete my account?';
+
+  @override
+  String get faqDeleteAccountA =>
+      'In \"Settings\", at the bottom, tap \"Delete account\". This is permanent: products, routines, images, and all linked data are removed. Only confirm if you are sure.';
 }
