@@ -52,7 +52,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-
     final unselectedColor = theme.colorScheme.onSurface.withValues(alpha: 0.5);
     final borderColor = theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
@@ -78,9 +77,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
         label: l10n.routines,
       ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.person_outline),
-        activeIcon: Icon(Icons.person),
-        label: l10n.profile,
+        icon: Icon(Icons.category_outlined),
+        activeIcon: Icon(Icons.category),
+        label: l10n.profile, // cambiar de perfil a categorias
       ),
     ];
 

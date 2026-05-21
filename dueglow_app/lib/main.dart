@@ -1,3 +1,4 @@
+import 'package:dueglow/screens/faqs_screen.dart';
 import 'package:dueglow/screens/routines_screen.dart';
 import 'package:dueglow/screens/scan_screen.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +80,8 @@ class MyApp extends StatelessWidget {
             AppConstants.routeEdit: (context) => const EditScreen(),
             AppConstants.routeAbout: (context) => const AboutScreen(),
             AppConstants.routeMyProducts: (context) => const MyProductsScreen(),
-            AppConstants.routeMyRoutines: (context) => const RoutinesScreen()
+            AppConstants.routeMyRoutines: (context) => const RoutinesScreen(),
+            AppConstants.routeFAQs: (context) => const FAQsScreen()
           },
         );
       },

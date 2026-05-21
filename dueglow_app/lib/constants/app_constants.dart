@@ -15,6 +15,7 @@ class AppConstants {
   static const String routeEdit = '/edit';
   static const String routeMyProducts = '/my_products';
   static const String routeMyRoutines = '/routines';
+  static const String routeFAQs = '/faqs';
 
   static const String prefUserEmail = 'user_email';
   static const String prefUserName = 'user_name';

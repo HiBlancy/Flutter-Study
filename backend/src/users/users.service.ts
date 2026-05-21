@@ -109,13 +109,11 @@ export class UsersService {
       .exec();
     for (const product of products) {
       await this.deleteCloudinaryImageByUrl(
-        product.imageUrl,
-        '🗑️ Imagen de producto eliminada',
+        product.imageUrl
       );
     }
     await this.deleteCloudinaryImageByUrl(
-      user.profileImage,
-      '🗑️ Imagen de perfil eliminada',
+      user.profileImage
     );
 
     await this.productModel.deleteMany({ userId: id });
