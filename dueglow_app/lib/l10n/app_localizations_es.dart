@@ -212,6 +212,34 @@ class AppLocalizationsEs extends AppLocalizations {
   String get notifText => 'Recibir alertas y actualizaciones';
 
   @override
+  String get notifMasterSubtitle =>
+      'Activa o desactiva todos los recordatorios de DueGlow';
+
+  @override
+  String get notifTypesHeader => 'Tipos de aviso';
+
+  @override
+  String get notifExpirationTitle => 'Caducidad de productos';
+
+  @override
+  String get notifExpirationSubtitle =>
+      'Avisos a 30, 25, 20, 15, 10 y 5 días, el día de caducidad y cuando caduca';
+
+  @override
+  String get notifRoutinesTitle => 'Rutinas de skincare';
+
+  @override
+  String get notifRoutinesSubtitle =>
+      'Te avisa antes de tu próxima rutina de mañana o noche';
+
+  @override
+  String get notifWeeklyTitle => 'Resumen semanal';
+
+  @override
+  String get notifWeeklySubtitle =>
+      'Cada domingo, un repaso de productos que caducan pronto';
+
+  @override
   String get appearance => 'Apariencia';
 
   @override

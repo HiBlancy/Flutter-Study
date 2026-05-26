@@ -9,6 +9,7 @@ import '../widgets/edit_product_dialog.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/warning_dialog.dart';
 import '../l10n/app_localizations.dart';
+import '../services/notifications_coordinator.dart';
 
 class ProductScreen extends StatefulWidget {
   final BeautyProduct product;
@@ -134,6 +135,7 @@ class _ProductScreenState extends State<ProductScreen> {
     if (result != null) {
       setState(() => _currentProduct = result);
       await _showMessage(successMessage);
+      NotificationsCoordinator.refresh();
       onSuccess?.call();
     } else {
       await _showMessage(AppLocalizations.of(context)!.errorPerformingOperation, isError: true);
@@ -324,6 +326,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
     if (deleted) {
       await _showMessage(AppLocalizations.of(context)!.productDeletedFromList(_currentProduct.name));
+      NotificationsCoordinator.refresh();
       if (mounted) Navigator.pop(context, true);
     } else {
       await _showMessage(AppLocalizations.of(context)!.deleteProductError, isError: true);

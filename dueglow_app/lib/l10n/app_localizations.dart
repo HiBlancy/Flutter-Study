@@ -472,6 +472,54 @@ abstract class AppLocalizations {
   /// **'Recibir alertas y actualizaciones'**
   String get notifText;
 
+  /// No description provided for @notifMasterSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Activa o desactiva todos los recordatorios de DueGlow'**
+  String get notifMasterSubtitle;
+
+  /// No description provided for @notifTypesHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipos de aviso'**
+  String get notifTypesHeader;
+
+  /// No description provided for @notifExpirationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Caducidad de productos'**
+  String get notifExpirationTitle;
+
+  /// No description provided for @notifExpirationSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Avisos a 30, 25, 20, 15, 10 y 5 días, el día de caducidad y cuando caduca'**
+  String get notifExpirationSubtitle;
+
+  /// No description provided for @notifRoutinesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Rutinas de skincare'**
+  String get notifRoutinesTitle;
+
+  /// No description provided for @notifRoutinesSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Te avisa antes de tu próxima rutina de mañana o noche'**
+  String get notifRoutinesSubtitle;
+
+  /// No description provided for @notifWeeklyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen semanal'**
+  String get notifWeeklyTitle;
+
+  /// No description provided for @notifWeeklySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada domingo, un repaso de productos que caducan pronto'**
+  String get notifWeeklySubtitle;
+
   /// No description provided for @appearance.
   ///
   /// In es, this message translates to:

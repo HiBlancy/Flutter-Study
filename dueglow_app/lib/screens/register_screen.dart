@@ -6,6 +6,7 @@ import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
 import '../models/tutorial_launch.dart';
+import '../services/notifications_coordinator.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -92,8 +93,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             margin: const EdgeInsets.all(16),
           ),
         );
-        Future.delayed(const Duration(seconds: 1), () {
+        Future.delayed(const Duration(seconds: 1), () async {
           if (mounted) {
+            await NotificationsCoordinator.refresh();
+            if (!mounted) return;
             Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
               AppConstants.routeHome,
               (route) => false,

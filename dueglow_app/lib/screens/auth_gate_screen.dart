@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
+import '../services/notifications_coordinator.dart';
 
 class AuthGateScreen extends StatefulWidget {
   const AuthGateScreen({super.key});
@@ -45,6 +46,8 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
 
     // Best-effort refresh user data in the background.
     Future(() async => _authService.getProfile());
+
+    await NotificationsCoordinator.refresh();
 
     Navigator.pushNamedAndRemoveUntil(
       context,

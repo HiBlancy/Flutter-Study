@@ -8,6 +8,7 @@ import 'add_routine_screen.dart';
 import 'routine_detail.screen.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/tutorial_target.dart';
+import '../services/notifications_coordinator.dart';
 
 class RoutinesScreen extends StatefulWidget {
   const RoutinesScreen({super.key});
@@ -76,6 +77,7 @@ class _RoutinesScreenState extends State<RoutinesScreen>
     try {
       await _routineService.deleteRoutine(routine.id!);
       _showSnackBar(AppLocalizations.of(context)!.routineDeleted);
+      NotificationsCoordinator.refresh();
       await _loadRoutines();
     } catch (e) {
       _showSnackBar(AppLocalizations.of(context)!.routineDeleteError, isError: true);

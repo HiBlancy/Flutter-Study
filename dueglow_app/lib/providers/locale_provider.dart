@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/notifications_coordinator.dart';
 
 class LocaleProvider extends ChangeNotifier {
   Locale _locale = const Locale('es');
@@ -25,6 +26,7 @@ class LocaleProvider extends ChangeNotifier {
   Future<void> _saveLocale(Locale locale) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_localeKey, locale.languageCode);
+    NotificationsCoordinator.refresh();
   }
 
   void setSpanish() async {

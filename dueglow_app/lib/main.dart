@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/notification_preferences_provider.dart';
+import 'services/notification_service.dart';
 import 'screens/about_screen.dart';
 import 'screens/edit_screen.dart';
 import 'screens/search_screen.dart';
@@ -22,6 +24,7 @@ import 'models/tutorial_launch.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.instance.initialize();
   final initialTheme = await ThemeProvider.readInitialThemeMode();
   runApp(
     MultiProvider(
@@ -30,6 +33,9 @@ Future<void> main() async {
           create: (_) => ThemeProvider(initial: initialTheme),
         ),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(
+          create: (_) => NotificationPreferencesProvider()..load(),
+        ),
       ],
       child: const MyApp(),
     ),

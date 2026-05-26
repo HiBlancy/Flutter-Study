@@ -211,6 +211,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifText => 'Receive alerts and updates';
 
   @override
+  String get notifMasterSubtitle => 'Turn all DueGlow reminders on or off';
+
+  @override
+  String get notifTypesHeader => 'Reminder types';
+
+  @override
+  String get notifExpirationTitle => 'Product expiration';
+
+  @override
+  String get notifExpirationSubtitle =>
+      'Alerts at 30, 25, 20, 15, 10 and 5 days, on expiry day, and when expired';
+
+  @override
+  String get notifRoutinesTitle => 'Skincare routines';
+
+  @override
+  String get notifRoutinesSubtitle =>
+      'Reminds you before your next morning or night routine';
+
+  @override
+  String get notifWeeklyTitle => 'Weekly summary';
+
+  @override
+  String get notifWeeklySubtitle =>
+      'Every Sunday, a recap of products expiring soon';
+
+  @override
   String get appearance => 'Appearance';
 
   @override

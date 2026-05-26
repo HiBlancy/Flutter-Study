@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 import 'api_config.dart';
+import 'notification_service.dart';
 
 class AuthService {
   static const String _tokenKey = 'auth_token';
@@ -442,6 +443,7 @@ String _getMimeType(String path) {
 
 
   Future<void> logout() async {
+    await NotificationService.instance.cancelAll();
     final prefs = await _prefs;
     await prefs.remove(_tokenKey);
     await prefs.remove(AppConstants.prefUserEmail);

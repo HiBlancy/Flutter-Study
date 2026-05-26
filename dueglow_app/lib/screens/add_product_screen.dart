@@ -11,6 +11,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/tutorial_target.dart';
+import '../services/notifications_coordinator.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -316,6 +317,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           setState(() => _isLoading = false);
           _showSnackBar(AppLocalizations.of(context)!.productAddedSuccess);
           _clearForm();
+          NotificationsCoordinator.refresh();
         }
       } else {
         if (mounted) {

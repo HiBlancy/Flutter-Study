@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
+import '../providers/notification_preferences_provider.dart';
 import '../services/auth_service.dart';
 import '../widgets/main_toolbar.dart';
 import '../l10n/app_localizations.dart';
@@ -24,9 +25,10 @@ class SettingsScreen extends StatelessWidget {
 
           _SettingsSection(
             title: AppLocalizations.of(context)!.general,
-            children: [
-            _NotificationTile(),
-          ]),
+            children: const [
+              _NotificationsSection(),
+            ],
+          ),
 
           Divider(color: dividerColor, height: 1),
 
@@ -72,59 +74,126 @@ class SettingsScreen extends StatelessWidget {
 }
 
 
-class _NotificationTile extends StatefulWidget {
-  const _NotificationTile();
+class _NotificationsSection extends StatelessWidget {
+  const _NotificationsSection();
 
   @override
-  State<_NotificationTile> createState() => _NotificationTileState();
+  Widget build(BuildContext context) {
+    return Consumer<NotificationPreferencesProvider>(
+      builder: (context, provider, _) {
+        if (!provider.isLoaded) {
+          return const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final theme = Theme.of(context);
+        final l10n = AppLocalizations.of(context)!;
+        final s = provider.settings;
+
+        return Column(
+          children: [
+            _NotificationSwitchTile(
+              icon: Icons.notifications_active_outlined,
+              title: l10n.notifications,
+              subtitle: l10n.notifMasterSubtitle,
+              value: s.masterEnabled,
+              onChanged: (v) => _toggle(context, () => provider.setMasterEnabled(v), v, l10n),
+            ),
+            if (s.masterEnabled) ...[
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Text(
+                  l10n.notifTypesHeader,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _NotificationSwitchTile(
+                icon: Icons.event_busy_outlined,
+                title: l10n.notifExpirationTitle,
+                subtitle: l10n.notifExpirationSubtitle,
+                value: s.expirationEnabled,
+                enabled: s.masterEnabled,
+                onChanged: (v) =>
+                    _toggle(context, () => provider.setExpirationEnabled(v), v, l10n),
+              ),
+              _NotificationSwitchTile(
+                icon: Icons.schedule_outlined,
+                title: l10n.notifRoutinesTitle,
+                subtitle: l10n.notifRoutinesSubtitle,
+                value: s.routinesEnabled,
+                enabled: s.masterEnabled,
+                onChanged: (v) =>
+                    _toggle(context, () => provider.setRoutinesEnabled(v), v, l10n),
+              ),
+              _NotificationSwitchTile(
+                icon: Icons.calendar_view_week_outlined,
+                title: l10n.notifWeeklyTitle,
+                subtitle: l10n.notifWeeklySubtitle,
+                value: s.weeklyDigestEnabled,
+                enabled: s.masterEnabled,
+                onChanged: (v) =>
+                    _toggle(context, () => provider.setWeeklyDigestEnabled(v), v, l10n),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _toggle(
+    BuildContext context,
+    Future<void> Function() action,
+    bool value,
+    AppLocalizations l10n,
+  ) async {
+    await action();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(value ? l10n.notificationsEnabled : l10n.notificationsDisabled),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
 }
 
-class _NotificationTileState extends State<_NotificationTile> {
-  bool _notificationsEnabled = true;
+class _NotificationSwitchTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  const _NotificationSwitchTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    this.enabled = true,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final subtleText = theme.colorScheme.onSurface.withValues(alpha: 0.6);
-    final l10n = AppLocalizations.of(context)!;
 
     return ListTile(
-      leading: Icon(Icons.notifications, color: theme.colorScheme.primary),
-      title: Text(l10n.notifications),
-      subtitle: Text(l10n.notifText, style: TextStyle(color: subtleText)),
+      leading: Icon(icon, color: theme.colorScheme.primary),
+      title: Text(title),
+      subtitle: Text(subtitle, style: TextStyle(color: subtleText, height: 1.35)),
       trailing: Switch(
-        value: _notificationsEnabled,
-        thumbColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.primary;
-          }
-          return null;
-        }),
-        trackColor: WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return theme.colorScheme.primary.withValues(alpha: 0.5);
-          }
-          return null;
-        }),
-        onChanged: (bool value) {
-          setState(() {
-            _notificationsEnabled = value;
-          });
-
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                value ? l10n.notificationsEnabled : l10n.notificationsDisabled,
-                style: TextStyle(color: theme.colorScheme.onPrimary),
-              ),
-              backgroundColor: theme.colorScheme.primary,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              duration: const Duration(seconds: 1),
-            ),
-          );
-        },
+        value: value,
+        onChanged: enabled ? onChanged : null,
       ),
     );
   }

@@ -215,6 +215,34 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notifText => 'Получать уведомления и обновления';
 
   @override
+  String get notifMasterSubtitle =>
+      'Включить или выключить все напоминания DueGlow';
+
+  @override
+  String get notifTypesHeader => 'Типы напоминаний';
+
+  @override
+  String get notifExpirationTitle => 'Срок годности продуктов';
+
+  @override
+  String get notifExpirationSubtitle =>
+      'За 30, 25, 20, 15, 10 и 5 дней, в день истечения и после';
+
+  @override
+  String get notifRoutinesTitle => 'Рутины ухода';
+
+  @override
+  String get notifRoutinesSubtitle =>
+      'Напоминание перед следующей утренней или вечерней рутиной';
+
+  @override
+  String get notifWeeklyTitle => 'Еженедельный обзор';
+
+  @override
+  String get notifWeeklySubtitle =>
+      'Каждое воскресенье — продукты с истекающим сроком';
+
+  @override
   String get appearance => 'Внешний вид';
 
   @override

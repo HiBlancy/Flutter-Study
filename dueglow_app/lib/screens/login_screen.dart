@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
 import '../l10n/app_localizations.dart';
+import '../services/notifications_coordinator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -49,6 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
 
       if (authData != null && mounted) {
+        await NotificationsCoordinator.refresh();
+        if (!mounted) return;
         Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
           AppConstants.routeHome,
           (route) => false,

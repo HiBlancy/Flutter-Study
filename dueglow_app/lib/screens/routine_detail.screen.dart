@@ -10,6 +10,7 @@ import '../widgets/main_toolbar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../l10n/app_localizations.dart';
+import '../services/notifications_coordinator.dart';
 import 'product_screen.dart';
 
 class RoutineDetailScreen extends StatefulWidget {
@@ -97,6 +98,7 @@ class _RoutineDetailScreenState extends State<RoutineDetailScreen> {
         _isEditing = false;
       });
       _showSnackBar(AppLocalizations.of(context)!.routineUpdated);
+      NotificationsCoordinator.refresh();
     } catch (e) {
       _showSnackBar(AppLocalizations.of(context)!.updateError, isError: true);
     } finally {

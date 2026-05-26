@@ -6,6 +6,7 @@ import '../widgets/main_toolbar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../l10n/app_localizations.dart';
+import '../services/notifications_coordinator.dart';
 
 class AddRoutineScreen extends StatefulWidget {
   const AddRoutineScreen({super.key});
@@ -97,6 +98,7 @@ class _AddRoutineScreenState extends State<AddRoutineScreen> {
             duration: Duration(seconds: 2),
           ),
         );
+        NotificationsCoordinator.refresh();
         Navigator.pop(context, true);
       }
     } catch (e) {
