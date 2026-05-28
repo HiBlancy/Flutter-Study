@@ -320,7 +320,7 @@ class _AboutTile extends StatelessWidget {
       leading: Icon(Icons.info, color: theme.colorScheme.primary),
       title: Text(l10n.about),
       subtitle: Text(
-        l10n.versionLabel('1.0.0'),
+        l10n.versionLabel(AppConstants.version),
         style: TextStyle(color: subtleText),
       ),
       trailing: Icon(Icons.chevron_right, color: subtleText),
